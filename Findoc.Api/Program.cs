@@ -15,9 +15,28 @@ var builder = WebApplication.CreateBuilder(args);
 // DATABASE
 // ======================================================
 
+var databaseProvider =
+    builder.Configuration["Database:Provider"]
+    ?? "Sqlite";
+
+var connectionString =
+    builder.Configuration.GetConnectionString("DefaultConnection")
+    ?? throw new InvalidOperationException(
+        "Database connection string is missing.");
+
 builder.Services.AddDbContext<FindocDbContext>(options =>
-    options.UseSqlite(
-        builder.Configuration.GetConnectionString("DefaultConnection")));
+{
+    if (databaseProvider.Equals(
+            "PostgreSQL",
+            StringComparison.OrdinalIgnoreCase))
+    {
+        options.UseNpgsql(connectionString);
+    }
+    else
+    {
+        options.UseSqlite(connectionString);
+    }
+});
 
 // ======================================================
 // PASSWORD HASHING
@@ -33,18 +52,22 @@ builder.Services.AddScoped<
 
 var jwtKey =
     builder.Configuration["Jwt:Key"]
-    ?? throw new InvalidOperationException("JWT Key is missing.");
+    ?? throw new InvalidOperationException(
+        "JWT Key is missing.");
 
 var jwtIssuer =
     builder.Configuration["Jwt:Issuer"]
-    ?? throw new InvalidOperationException("JWT Issuer is missing.");
+    ?? throw new InvalidOperationException(
+        "JWT Issuer is missing.");
 
 var jwtAudience =
     builder.Configuration["Jwt:Audience"]
-    ?? throw new InvalidOperationException("JWT Audience is missing.");
+    ?? throw new InvalidOperationException(
+        "JWT Audience is missing.");
 
 builder.Services
-    .AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+    .AddAuthentication(
+        JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options =>
     {
         options.TokenValidationParameters =
@@ -60,7 +83,8 @@ builder.Services
 
                 IssuerSigningKey =
                     new SymmetricSecurityKey(
-                        Encoding.UTF8.GetBytes(jwtKey)),
+                        Encoding.UTF8.GetBytes(
+                            jwtKey)),
 
                 ClockSkew = TimeSpan.Zero
             };
@@ -76,17 +100,20 @@ var frontendUrl =
     builder.Configuration["Frontend:Url"]
     ?? "http://localhost:5173";
 
-frontendUrl = frontendUrl.TrimEnd('/');
+frontendUrl =
+    frontendUrl.TrimEnd('/');
 
 builder.Services.AddCors(options =>
 {
-    options.AddPolicy("Frontend", policy =>
-    {
-        policy
-            .WithOrigins(frontendUrl)
-            .AllowAnyHeader()
-            .AllowAnyMethod();
-    });
+    options.AddPolicy(
+        "Frontend",
+        policy =>
+        {
+            policy
+                .WithOrigins(frontendUrl)
+                .AllowAnyHeader()
+                .AllowAnyMethod();
+        });
 });
 
 var app = builder.Build();
@@ -95,12 +122,16 @@ var app = builder.Build();
 // DATABASE MIGRATION & DEMO DATA SEEDING
 // ======================================================
 
-using (var scope = app.Services.CreateScope())
+using (var scope =
+       app.Services.CreateScope())
 {
-    var db = scope.ServiceProvider
-        .GetRequiredService<FindocDbContext>();
+    var db =
+        scope.ServiceProvider
+            .GetRequiredService<
+                FindocDbContext>();
 
     await db.Database.MigrateAsync();
+
     await DbSeeder.SeedAsync(db);
 }
 
@@ -111,44 +142,48 @@ using (var scope = app.Services.CreateScope())
 app.UseCors("Frontend");
 
 app.UseAuthentication();
+
 app.UseAuthorization();
 
 // ======================================================
 // HELPER FUNCTIONS
 // ======================================================
 
-string CreateJwtToken(ApplicationUser user)
+string CreateJwtToken(
+    ApplicationUser user)
 {
-    var claims = new List<Claim>
-    {
-        new(
-            JwtRegisteredClaimNames.Sub,
-            user.Id.ToString()),
+    var claims =
+        new List<Claim>
+        {
+            new(
+                JwtRegisteredClaimNames.Sub,
+                user.Id.ToString()),
 
-        new(
-            ClaimTypes.NameIdentifier,
-            user.Id.ToString()),
+            new(
+                ClaimTypes.NameIdentifier,
+                user.Id.ToString()),
 
-        new(
-            ClaimTypes.Name,
-            user.FullName),
+            new(
+                ClaimTypes.Name,
+                user.FullName),
 
-        new(
-            ClaimTypes.Email,
-            user.Email),
+            new(
+                ClaimTypes.Email,
+                user.Email),
 
-        new(
-            JwtRegisteredClaimNames.Email,
-            user.Email),
+            new(
+                JwtRegisteredClaimNames.Email,
+                user.Email),
 
-        new(
-            JwtRegisteredClaimNames.Jti,
-            Guid.NewGuid().ToString())
-    };
+            new(
+                JwtRegisteredClaimNames.Jti,
+                Guid.NewGuid().ToString())
+        };
 
     var key =
         new SymmetricSecurityKey(
-            Encoding.UTF8.GetBytes(jwtKey));
+            Encoding.UTF8.GetBytes(
+                jwtKey));
 
     var credentials =
         new SigningCredentials(
@@ -164,13 +199,15 @@ string CreateJwtToken(ApplicationUser user)
             audience: jwtAudience,
             claims: claims,
             expires: expiresAt,
-            signingCredentials: credentials);
+            signingCredentials:
+                credentials);
 
     return new JwtSecurityTokenHandler()
         .WriteToken(token);
 }
 
-int? GetAuthenticatedUserId(ClaimsPrincipal principal)
+int? GetAuthenticatedUserId(
+    ClaimsPrincipal principal)
 {
     var claim =
         principal.FindFirst(
@@ -195,26 +232,32 @@ int? GetAuthenticatedUserId(ClaimsPrincipal principal)
 // HOME
 // ======================================================
 
-app.MapGet("/", () =>
-{
-    return Results.Ok(new
+app.MapGet(
+    "/",
+    () =>
     {
-        message = "Welcome to Findoc API"
+        return Results.Ok(new
+        {
+            message =
+                "Welcome to Findoc API"
+        });
     });
-});
 
 // ======================================================
 // HEALTH
 // ======================================================
 
-app.MapGet("/api/health", () =>
-{
-    return Results.Ok(new
+app.MapGet(
+    "/api/health",
+    () =>
     {
-        status = "healthy",
-        application = "Findoc API"
+        return Results.Ok(new
+        {
+            status = "healthy",
+            application =
+                "Findoc API"
+        });
     });
-});
 
 // ======================================================
 // AUTH
@@ -229,7 +272,8 @@ app.MapPost(
     async (
         RegisterRequest request,
         FindocDbContext db,
-        IPasswordHasher<ApplicationUser> passwordHasher) =>
+        IPasswordHasher<ApplicationUser>
+            passwordHasher) =>
     {
         var fullName =
             request.FullName.Trim();
@@ -239,66 +283,86 @@ app.MapPost(
                 .Trim()
                 .ToLowerInvariant();
 
-        if (string.IsNullOrWhiteSpace(fullName))
+        if (string.IsNullOrWhiteSpace(
+                fullName))
         {
-            return Results.BadRequest(new
-            {
-                message = "Full name is required"
-            });
+            return Results.BadRequest(
+                new
+                {
+                    message =
+                        "Full name is required"
+                });
         }
 
-        if (string.IsNullOrWhiteSpace(email))
+        if (string.IsNullOrWhiteSpace(
+                email))
         {
-            return Results.BadRequest(new
-            {
-                message = "Email is required"
-            });
+            return Results.BadRequest(
+                new
+                {
+                    message =
+                        "Email is required"
+                });
         }
 
         if (!email.Contains('@'))
         {
-            return Results.BadRequest(new
-            {
-                message = "Invalid email address"
-            });
+            return Results.BadRequest(
+                new
+                {
+                    message =
+                        "Invalid email address"
+                });
         }
 
-        if (string.IsNullOrWhiteSpace(request.Password))
+        if (string.IsNullOrWhiteSpace(
+                request.Password))
         {
-            return Results.BadRequest(new
-            {
-                message = "Password is required"
-            });
+            return Results.BadRequest(
+                new
+                {
+                    message =
+                        "Password is required"
+                });
         }
 
-        if (request.Password.Length < 8)
+        if (request.Password.Length <
+            8)
         {
-            return Results.BadRequest(new
-            {
-                message =
-                    "Password must contain at least 8 characters"
-            });
+            return Results.BadRequest(
+                new
+                {
+                    message =
+                        "Password must contain at least 8 characters"
+                });
         }
 
         var emailExists =
             await db.Users.AnyAsync(
-                u => u.Email == email);
+                u =>
+                    u.Email == email);
 
         if (emailExists)
         {
-            return Results.Conflict(new
-            {
-                message =
-                    "An account with this email already exists"
-            });
+            return Results.Conflict(
+                new
+                {
+                    message =
+                        "An account with this email already exists"
+                });
         }
 
         var user =
             new ApplicationUser
             {
-                FullName = fullName,
-                Email = email,
-                CreatedAtUtc = DateTime.UtcNow
+                FullName =
+                    fullName,
+
+                Email =
+                    email,
+
+                CreatedAtUtc =
+                    DateTime.UtcNow
             };
 
         user.PasswordHash =
@@ -314,28 +378,33 @@ app.MapPost(
         }
         catch (DbUpdateException)
         {
-            return Results.Conflict(new
-            {
-                message =
-                    "An account with this email already exists"
-            });
+            return Results.Conflict(
+                new
+                {
+                    message =
+                        "An account with this email already exists"
+                });
         }
 
         var token =
             CreateJwtToken(user);
 
-        return Results.Ok(new
-        {
-            token,
-            expiresIn = 86400,
-
-            user = new
+        return Results.Ok(
+            new
             {
-                user.Id,
-                user.FullName,
-                user.Email
-            }
-        });
+                token,
+
+                expiresIn =
+                    86400,
+
+                user =
+                    new
+                    {
+                        user.Id,
+                        user.FullName,
+                        user.Email
+                    }
+            });
     });
 
 // ------------------------------------------------------
@@ -347,7 +416,8 @@ app.MapPost(
     async (
         LoginRequest request,
         FindocDbContext db,
-        IPasswordHasher<ApplicationUser> passwordHasher) =>
+        IPasswordHasher<ApplicationUser>
+            passwordHasher) =>
     {
         var email =
             request.Email
@@ -357,51 +427,64 @@ app.MapPost(
         var user =
             await db.Users
                 .FirstOrDefaultAsync(
-                    u => u.Email == email);
+                    u =>
+                        u.Email ==
+                        email);
 
         if (user is null)
         {
-            return Results.Unauthorized();
+            return Results
+                .Unauthorized();
         }
 
         var verificationResult =
-            passwordHasher.VerifyHashedPassword(
-                user,
-                user.PasswordHash,
-                request.Password);
+            passwordHasher
+                .VerifyHashedPassword(
+                    user,
+                    user.PasswordHash,
+                    request.Password);
 
         if (verificationResult ==
-            PasswordVerificationResult.Failed)
+            PasswordVerificationResult
+                .Failed)
         {
-            return Results.Unauthorized();
+            return Results
+                .Unauthorized();
         }
 
         if (verificationResult ==
-            PasswordVerificationResult.SuccessRehashNeeded)
+            PasswordVerificationResult
+                .SuccessRehashNeeded)
         {
             user.PasswordHash =
-                passwordHasher.HashPassword(
-                    user,
-                    request.Password);
+                passwordHasher
+                    .HashPassword(
+                        user,
+                        request.Password);
 
-            await db.SaveChangesAsync();
+            await db
+                .SaveChangesAsync();
         }
 
         var token =
             CreateJwtToken(user);
 
-        return Results.Ok(new
-        {
-            token,
-            expiresIn = 86400,
-
-            user = new
+        return Results.Ok(
+            new
             {
-                user.Id,
-                user.FullName,
-                user.Email
-            }
-        });
+                token,
+
+                expiresIn =
+                    86400,
+
+                user =
+                    new
+                    {
+                        user.Id,
+                        user.FullName,
+                        user.Email
+                    }
+            });
     });
 
 // ------------------------------------------------------
@@ -420,27 +503,32 @@ app.MapGet(
 
             if (userId is null)
             {
-                return Results.Unauthorized();
+                return Results
+                    .Unauthorized();
             }
 
             var user =
                 await db.Users
                     .AsNoTracking()
                     .FirstOrDefaultAsync(
-                        u => u.Id == userId.Value);
+                        u =>
+                            u.Id ==
+                            userId.Value);
 
             if (user is null)
             {
-                return Results.Unauthorized();
+                return Results
+                    .Unauthorized();
             }
 
-            return Results.Ok(new
-            {
-                user.Id,
-                user.FullName,
-                user.Email,
-                user.CreatedAtUtc
-            });
+            return Results.Ok(
+                new
+                {
+                    user.Id,
+                    user.FullName,
+                    user.Email,
+                    user.CreatedAtUtc
+                });
         })
     .RequireAuthorization();
 
@@ -464,7 +552,8 @@ app.MapGet(
                 .AsNoTracking()
                 .AsQueryable();
 
-        if (!string.IsNullOrWhiteSpace(specialty))
+        if (!string.IsNullOrWhiteSpace(
+                specialty))
         {
             query =
                 query.Where(
@@ -474,7 +563,8 @@ app.MapGet(
                             $"%{specialty.Trim()}%"));
         }
 
-        if (!string.IsNullOrWhiteSpace(city))
+        if (!string.IsNullOrWhiteSpace(
+                city))
         {
             query =
                 query.Where(
@@ -487,10 +577,12 @@ app.MapGet(
         var doctors =
             await query
                 .OrderByDescending(
-                    d => d.Rating)
+                    d =>
+                        d.Rating)
                 .ToListAsync();
 
-        return Results.Ok(doctors);
+        return Results.Ok(
+            doctors);
     });
 
 // ------------------------------------------------------
@@ -507,17 +599,21 @@ app.MapGet(
             await db.Doctors
                 .AsNoTracking()
                 .FirstOrDefaultAsync(
-                    d => d.Id == id);
+                    d =>
+                        d.Id == id);
 
         if (doctor is null)
         {
-            return Results.NotFound(new
-            {
-                message = "Doctor not found"
-            });
+            return Results.NotFound(
+                new
+                {
+                    message =
+                        "Doctor not found"
+                });
         }
 
-        return Results.Ok(doctor);
+        return Results.Ok(
+            doctor);
     });
 
 // ------------------------------------------------------
@@ -530,7 +626,8 @@ app.MapPost(
         Doctor doctor,
         FindocDbContext db) =>
     {
-        db.Doctors.Add(doctor);
+        db.Doctors.Add(
+            doctor);
 
         await db.SaveChangesAsync();
 
@@ -550,17 +647,21 @@ app.MapDelete(
         FindocDbContext db) =>
     {
         var doctor =
-            await db.Doctors.FindAsync(id);
+            await db.Doctors.FindAsync(
+                id);
 
         if (doctor is null)
         {
-            return Results.NotFound(new
-            {
-                message = "Doctor not found"
-            });
+            return Results.NotFound(
+                new
+                {
+                    message =
+                        "Doctor not found"
+                });
         }
 
-        db.Doctors.Remove(doctor);
+        db.Doctors.Remove(
+            doctor);
 
         await db.SaveChangesAsync();
 
@@ -573,19 +674,23 @@ app.MapDelete(
 
 app.MapGet(
     "/api/specialties",
-    async (FindocDbContext db) =>
+    async (
+        FindocDbContext db) =>
     {
         var specialties =
             await db.Doctors
                 .AsNoTracking()
                 .Select(
-                    d => d.Specialty)
+                    d =>
+                        d.Specialty)
                 .Distinct()
                 .OrderBy(
-                    s => s)
+                    s =>
+                        s)
                 .ToListAsync();
 
-        return Results.Ok(specialties);
+        return Results.Ok(
+            specialties);
     });
 
 // ======================================================
@@ -601,28 +706,33 @@ app.MapGet(
     {
         var doctorExists =
             await db.Doctors.AnyAsync(
-                d => d.Id == id);
+                d =>
+                    d.Id == id);
 
         if (!doctorExists)
         {
-            return Results.NotFound(new
-            {
-                message = "Doctor not found"
-            });
+            return Results.NotFound(
+                new
+                {
+                    message =
+                        "Doctor not found"
+                });
         }
 
         if (!DateOnly.TryParseExact(
                 date,
                 "yyyy-MM-dd",
-                CultureInfo.InvariantCulture,
+                CultureInfo
+                    .InvariantCulture,
                 DateTimeStyles.None,
                 out var selectedDate))
         {
-            return Results.BadRequest(new
-            {
-                message =
-                    "Date must use yyyy-MM-dd format"
-            });
+            return Results.BadRequest(
+                new
+                {
+                    message =
+                        "Date must use yyyy-MM-dd format"
+                });
         }
 
         var today =
@@ -631,11 +741,12 @@ app.MapGet(
 
         if (selectedDate < today)
         {
-            return Results.BadRequest(new
-            {
-                message =
-                    "Past dates are not available"
-            });
+            return Results.BadRequest(
+                new
+                {
+                    message =
+                        "Past dates are not available"
+                });
         }
 
         if (selectedDate.DayOfWeek
@@ -648,7 +759,9 @@ app.MapGet(
 
         var dayStart =
             selectedDate.ToDateTime(
-                new TimeOnly(0, 0));
+                new TimeOnly(
+                    0,
+                    0));
 
         var dayEnd =
             dayStart.AddDays(1);
@@ -658,12 +771,17 @@ app.MapGet(
                 .AsNoTracking()
                 .Where(
                     a =>
-                        a.DoctorId == id &&
-                        a.Status != "Cancelled" &&
-                        a.StartsAt >= dayStart &&
-                        a.StartsAt < dayEnd)
+                        a.DoctorId ==
+                            id &&
+                        a.Status !=
+                            "Cancelled" &&
+                        a.StartsAt >=
+                            dayStart &&
+                        a.StartsAt <
+                            dayEnd)
                 .Select(
-                    a => a.StartsAt)
+                    a =>
+                        a.StartsAt)
                 .ToListAsync();
 
         var slots =
@@ -671,28 +789,42 @@ app.MapGet(
 
         var current =
             selectedDate.ToDateTime(
-                new TimeOnly(9, 0));
+                new TimeOnly(
+                    9,
+                    0));
 
         var closingTime =
             selectedDate.ToDateTime(
-                new TimeOnly(17, 0));
+                new TimeOnly(
+                    17,
+                    0));
 
-        while (current < closingTime)
+        while (current <
+               closingTime)
         {
-            if (!bookedTimes.Contains(current))
+            if (!bookedTimes.Contains(
+                    current))
             {
-                slots.Add(new
-                {
-                    startsAt = current,
-                    time = current.ToString("HH:mm")
-                });
+                slots.Add(
+                    new
+                    {
+                        startsAt =
+                            current,
+
+                        time =
+                            current
+                                .ToString(
+                                    "HH:mm")
+                    });
             }
 
             current =
-                current.AddMinutes(30);
+                current.AddMinutes(
+                    30);
         }
 
-        return Results.Ok(slots);
+        return Results.Ok(
+            slots);
     });
 
 // ======================================================
@@ -713,21 +845,23 @@ app.MapPost(
         if (string.IsNullOrWhiteSpace(
                 request.PatientName))
         {
-            return Results.BadRequest(new
-            {
-                message =
-                    "Patient name is required"
-            });
+            return Results.BadRequest(
+                new
+                {
+                    message =
+                        "Patient name is required"
+                });
         }
 
         if (string.IsNullOrWhiteSpace(
                 request.PatientEmail))
         {
-            return Results.BadRequest(new
-            {
-                message =
-                    "Patient email is required"
-            });
+            return Results.BadRequest(
+                new
+                {
+                    message =
+                        "Patient email is required"
+                });
         }
 
         var doctor =
@@ -736,61 +870,79 @@ app.MapPost(
 
         if (doctor is null)
         {
-            return Results.NotFound(new
-            {
-                message = "Doctor not found"
-            });
+            return Results.NotFound(
+                new
+                {
+                    message =
+                        "Doctor not found"
+                });
         }
 
-        if (request.StartsAt <= DateTime.Now)
+        if (request.StartsAt <=
+            DateTime.Now)
         {
-            return Results.BadRequest(new
-            {
-                message =
-                    "Appointment cannot be in the past"
-            });
+            return Results.BadRequest(
+                new
+                {
+                    message =
+                        "Appointment cannot be in the past"
+                });
         }
 
         if (request.StartsAt.DayOfWeek
             is DayOfWeek.Saturday
             or DayOfWeek.Sunday)
         {
-            return Results.BadRequest(new
-            {
-                message =
-                    "Appointments are not available on weekends"
-            });
+            return Results.BadRequest(
+                new
+                {
+                    message =
+                        "Appointments are not available on weekends"
+                });
         }
 
         var openingTime =
-            new TimeSpan(9, 0, 0);
+            new TimeSpan(
+                9,
+                0,
+                0);
 
         var closingTime =
-            new TimeSpan(17, 0, 0);
+            new TimeSpan(
+                17,
+                0,
+                0);
 
-        if (request.StartsAt.TimeOfDay < openingTime ||
-            request.StartsAt.TimeOfDay >= closingTime)
+        if (request.StartsAt.TimeOfDay <
+                openingTime ||
+            request.StartsAt.TimeOfDay >=
+                closingTime)
         {
-            return Results.BadRequest(new
-            {
-                message =
-                    "Appointment time must be between 09:00 and 17:00"
-            });
+            return Results.BadRequest(
+                new
+                {
+                    message =
+                        "Appointment time must be between 09:00 and 17:00"
+                });
         }
 
-        if (request.StartsAt.Second != 0 ||
-            request.StartsAt.Millisecond != 0 ||
+        if (request.StartsAt.Second !=
+                0 ||
+            request.StartsAt.Millisecond !=
+                0 ||
             request.StartsAt.Minute
             is not 0 and not 30)
         {
-            return Results.BadRequest(new
-            {
-                message =
-                    "Appointments must start on a 30-minute slot"
-            });
+            return Results.BadRequest(
+                new
+                {
+                    message =
+                        "Appointments must start on a 30-minute slot"
+                });
         }
 
-        int? authenticatedUserId = null;
+        int? authenticatedUserId =
+            null;
 
         if (httpContext.User.Identity
             ?.IsAuthenticated == true)
@@ -805,29 +957,34 @@ app.MapPost(
                 .FirstOrDefaultAsync(
                     a =>
                         a.DoctorId ==
-                        request.DoctorId &&
+                            request.DoctorId &&
                         a.StartsAt ==
-                        request.StartsAt);
+                            request.StartsAt);
 
-        if (existingAppointment is not null)
+        if (existingAppointment
+            is not null)
         {
             if (existingAppointment.Status !=
                 "Cancelled")
             {
-                return Results.Conflict(new
-                {
-                    message =
-                        "This appointment slot is no longer available"
-                });
+                return Results.Conflict(
+                    new
+                    {
+                        message =
+                            "This appointment slot is no longer available"
+                    });
             }
 
             existingAppointment.UserId =
                 authenticatedUserId;
 
-            existingAppointment.PatientName =
-                request.PatientName.Trim();
+            existingAppointment
+                    .PatientName =
+                request.PatientName
+                    .Trim();
 
-            existingAppointment.PatientEmail =
+            existingAppointment
+                    .PatientEmail =
                 request.PatientEmail
                     .Trim()
                     .ToLowerInvariant();
@@ -835,26 +992,35 @@ app.MapPost(
             existingAppointment.Status =
                 "Confirmed";
 
-            existingAppointment.CreatedAtUtc =
+            existingAppointment
+                    .CreatedAtUtc =
                 DateTime.UtcNow;
 
             await db.SaveChangesAsync();
 
-            return Results.Ok(new
-            {
-                existingAppointment.Id,
-                existingAppointment.DoctorId,
-                existingAppointment.UserId,
+            return Results.Ok(
+                new
+                {
+                    existingAppointment.Id,
+                    existingAppointment
+                        .DoctorId,
+                    existingAppointment
+                        .UserId,
 
-                doctorName =
-                    $"{doctor.FirstName} {doctor.LastName}",
+                    doctorName =
+                        $"{doctor.FirstName} {doctor.LastName}",
 
-                existingAppointment.PatientName,
-                existingAppointment.PatientEmail,
-                existingAppointment.StartsAt,
-                existingAppointment.Status,
-                existingAppointment.CreatedAtUtc
-            });
+                    existingAppointment
+                        .PatientName,
+                    existingAppointment
+                        .PatientEmail,
+                    existingAppointment
+                        .StartsAt,
+                    existingAppointment
+                        .Status,
+                    existingAppointment
+                        .CreatedAtUtc
+                });
         }
 
         var appointment =
@@ -867,7 +1033,8 @@ app.MapPost(
                     authenticatedUserId,
 
                 PatientName =
-                    request.PatientName.Trim(),
+                    request.PatientName
+                        .Trim(),
 
                 PatientEmail =
                     request.PatientEmail
@@ -893,11 +1060,12 @@ app.MapPost(
         }
         catch (DbUpdateException)
         {
-            return Results.Conflict(new
-            {
-                message =
-                    "This appointment slot is no longer available"
-            });
+            return Results.Conflict(
+                new
+                {
+                    message =
+                        "This appointment slot is no longer available"
+                });
         }
 
         return Results.Created(
@@ -935,41 +1103,53 @@ app.MapGet(
 
             if (userId is null)
             {
-                return Results.Unauthorized();
+                return Results
+                    .Unauthorized();
             }
 
             var appointments =
                 await db.Appointments
                     .AsNoTracking()
                     .Include(
-                        a => a.Doctor)
+                        a =>
+                            a.Doctor)
                     .Where(
                         a =>
                             a.UserId ==
                             userId.Value)
                     .OrderBy(
-                        a => a.StartsAt)
+                        a =>
+                            a.StartsAt)
                     .Select(
-                        a => new
-                        {
-                            a.Id,
-                            a.StartsAt,
-                            a.Status,
-                            a.PatientName,
-                            a.PatientEmail,
-
-                            doctor = new
+                        a =>
+                            new
                             {
-                                a.Doctor.Id,
-                                a.Doctor.FirstName,
-                                a.Doctor.LastName,
-                                a.Doctor.Specialty,
-                                a.Doctor.City,
-                                a.Doctor.Address,
-                                a.Doctor.ConsultationPrice,
-                                a.Doctor.Rating
-                            }
-                        })
+                                a.Id,
+                                a.StartsAt,
+                                a.Status,
+                                a.PatientName,
+                                a.PatientEmail,
+
+                                doctor =
+                                    new
+                                    {
+                                        a.Doctor.Id,
+                                        a.Doctor
+                                            .FirstName,
+                                        a.Doctor
+                                            .LastName,
+                                        a.Doctor
+                                            .Specialty,
+                                        a.Doctor
+                                            .City,
+                                        a.Doctor
+                                            .Address,
+                                        a.Doctor
+                                            .ConsultationPrice,
+                                        a.Doctor
+                                            .Rating
+                                    }
+                            })
                     .ToListAsync();
 
             return Results.Ok(
@@ -994,53 +1174,76 @@ app.MapGet(
 
             if (userId is null)
             {
-                return Results.Unauthorized();
+                return Results
+                    .Unauthorized();
             }
 
             var appointment =
                 await db.Appointments
                     .AsNoTracking()
                     .Include(
-                        a => a.Doctor)
+                        a =>
+                            a.Doctor)
                     .FirstOrDefaultAsync(
-                        a => a.Id == id);
+                        a =>
+                            a.Id == id);
 
             if (appointment is null)
             {
-                return Results.NotFound(new
-                {
-                    message =
-                        "Appointment not found"
-                });
+                return Results.NotFound(
+                    new
+                    {
+                        message =
+                            "Appointment not found"
+                    });
             }
 
-            if (appointment.UserId != userId.Value)
+            if (appointment.UserId !=
+                userId.Value)
             {
                 return Results.Forbid();
             }
 
-            return Results.Ok(new
-            {
-                appointment.Id,
-                appointment.UserId,
-                appointment.PatientName,
-                appointment.PatientEmail,
-                appointment.StartsAt,
-                appointment.Status,
-                appointment.CreatedAtUtc,
-
-                doctor = new
+            return Results.Ok(
+                new
                 {
-                    appointment.Doctor.Id,
-                    appointment.Doctor.FirstName,
-                    appointment.Doctor.LastName,
-                    appointment.Doctor.Specialty,
-                    appointment.Doctor.City,
-                    appointment.Doctor.Address,
-                    appointment.Doctor.ConsultationPrice,
-                    appointment.Doctor.Rating
-                }
-            });
+                    appointment.Id,
+                    appointment.UserId,
+                    appointment.PatientName,
+                    appointment.PatientEmail,
+                    appointment.StartsAt,
+                    appointment.Status,
+                    appointment.CreatedAtUtc,
+
+                    doctor =
+                        new
+                        {
+                            appointment
+                                .Doctor.Id,
+
+                            appointment
+                                .Doctor.FirstName,
+
+                            appointment
+                                .Doctor.LastName,
+
+                            appointment
+                                .Doctor.Specialty,
+
+                            appointment
+                                .Doctor.City,
+
+                            appointment
+                                .Doctor.Address,
+
+                            appointment
+                                .Doctor
+                                .ConsultationPrice,
+
+                            appointment
+                                .Doctor.Rating
+                        }
+                });
         })
     .RequireAuthorization();
 
@@ -1061,24 +1264,28 @@ app.MapPatch(
 
             if (userId is null)
             {
-                return Results.Unauthorized();
+                return Results
+                    .Unauthorized();
             }
 
             var appointment =
                 await db.Appointments
                     .FirstOrDefaultAsync(
-                        a => a.Id == id);
+                        a =>
+                            a.Id == id);
 
             if (appointment is null)
             {
-                return Results.NotFound(new
-                {
-                    message =
-                        "Appointment not found"
-                });
+                return Results.NotFound(
+                    new
+                    {
+                        message =
+                            "Appointment not found"
+                    });
             }
 
-            if (appointment.UserId != userId.Value)
+            if (appointment.UserId !=
+                userId.Value)
             {
                 return Results.Forbid();
             }
@@ -1086,21 +1293,23 @@ app.MapPatch(
             if (appointment.Status ==
                 "Cancelled")
             {
-                return Results.BadRequest(new
-                {
-                    message =
-                        "Appointment is already cancelled"
-                });
+                return Results.BadRequest(
+                    new
+                    {
+                        message =
+                            "Appointment is already cancelled"
+                    });
             }
 
             if (appointment.StartsAt <=
                 DateTime.Now)
             {
-                return Results.BadRequest(new
-                {
-                    message =
-                        "Past appointments cannot be cancelled"
-                });
+                return Results.BadRequest(
+                    new
+                    {
+                        message =
+                            "Past appointments cannot be cancelled"
+                    });
             }
 
             appointment.Status =
@@ -1108,14 +1317,15 @@ app.MapPatch(
 
             await db.SaveChangesAsync();
 
-            return Results.Ok(new
-            {
-                appointment.Id,
-                appointment.Status,
+            return Results.Ok(
+                new
+                {
+                    appointment.Id,
+                    appointment.Status,
 
-                message =
-                    "Appointment cancelled successfully"
-            });
+                    message =
+                        "Appointment cancelled successfully"
+                });
         })
     .RequireAuthorization();
 
