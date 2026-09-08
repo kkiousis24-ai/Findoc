@@ -72,29 +72,18 @@ builder.Services.AddAuthorization();
 // CORS
 // ======================================================
 
+var frontendUrl =
+    builder.Configuration["Frontend:Url"]
+    ?? "http://localhost:5173";
+
+frontendUrl = frontendUrl.TrimEnd('/');
+
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("Frontend", policy =>
     {
         policy
-            .SetIsOriginAllowed(origin =>
-            {
-                if (!Uri.TryCreate(
-                        origin,
-                        UriKind.Absolute,
-                        out var uri))
-                {
-                    return false;
-                }
-
-                return uri.Host.Equals(
-                           "localhost",
-                           StringComparison.OrdinalIgnoreCase)
-                       ||
-                       uri.Host.Equals(
-                           "127.0.0.1",
-                           StringComparison.OrdinalIgnoreCase);
-            })
+            .WithOrigins(frontendUrl)
             .AllowAnyHeader()
             .AllowAnyMethod();
     });
