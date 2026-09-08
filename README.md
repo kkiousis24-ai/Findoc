@@ -1,5 +1,7 @@
 # Findoc
 
+[![CI](https://github.com/kkiousis24-ai/Findoc/actions/workflows/ci.yml/badge.svg)](https://github.com/kkiousis24-ai/Findoc/actions/workflows/ci.yml)
+
 Findoc is a full-stack doctor discovery and appointment booking platform designed for the Greek healthcare market.
 
 Users can search for doctors by specialty and location, view doctor profiles, check appointment availability, book appointments, manage their personal bookings, and cancel upcoming appointments through a modern responsive interface.
@@ -115,12 +117,25 @@ The project was developed as a portfolio-ready full-stack application using **Re
 - Automatic database migration
 - Automatic development data seeding
 
+### DevOps
+
+- Git
+- GitHub
+- GitHub Actions
+- Automated frontend build
+- Automated backend build
+- Continuous Integration
+
 ---
 
 ## Project Structure
 
 ```text
 Findoc
+│
+├── .github
+│   └── workflows
+│       └── ci.yml
 │
 ├── Findoc.Api
 │   │
@@ -464,7 +479,7 @@ Real insurance-provider support is planned for a future version.
 
 ---
 
-## Current Architecture
+## Architecture
 
 The application follows a client-server architecture.
 
@@ -481,6 +496,40 @@ ASP.NET Core REST API
 ```
 
 Authentication is handled using JWT Bearer tokens between the frontend and backend.
+
+---
+
+## Continuous Integration
+
+Findoc uses **GitHub Actions** for automated Continuous Integration.
+
+The CI workflow is located at:
+
+```text
+.github/workflows/ci.yml
+```
+
+The workflow runs automatically when code is pushed to the `main` branch or when a pull request targets `main`.
+
+The pipeline performs two independent jobs:
+
+### Backend CI
+
+- Checks out the repository
+- Installs .NET 10
+- Restores NuGet dependencies
+- Builds the ASP.NET Core backend in Release configuration
+
+### Frontend CI
+
+- Checks out the repository
+- Installs Node.js
+- Installs npm dependencies using `npm ci`
+- Builds the React + TypeScript frontend
+
+A successful workflow confirms that both the frontend and backend compile correctly.
+
+Current CI status is displayed at the top of this README.
 
 ---
 
@@ -506,8 +555,10 @@ Future improvements may include:
 - PostgreSQL production database
 - Online payments
 - Multi-language support
-- Automated testing
-- CI/CD pipeline
+- Automated unit testing
+- Integration testing
+- End-to-end testing
+- CD deployment pipeline
 
 ---
 
@@ -530,13 +581,15 @@ Findoc was created to demonstrate practical full-stack development skills includ
 - Healthcare appointment workflows
 - Secure secret management
 - Git
-- GitHub workflow
+- GitHub
+- GitHub Actions
+- Continuous Integration
 
 ---
 
 ## Portfolio Focus
 
-This project demonstrates experience across both frontend and backend development.
+This project demonstrates experience across frontend, backend, database, security and DevOps development.
 
 ### Frontend Skills
 
@@ -565,6 +618,15 @@ This project demonstrates experience across both frontend and backend developmen
 - Password hashing
 - Data validation
 
+### DevOps Skills
+
+- Git version control
+- GitHub repository management
+- GitHub Actions
+- Automated builds
+- Continuous Integration
+- Multi-job CI workflows
+
 ---
 
 ## Repository
@@ -577,6 +639,7 @@ This repository contains both the frontend and backend source code for Findoc.
 - ORM: Entity Framework Core
 - Authentication: JWT
 - Development data: Automatic seeding
+- CI: GitHub Actions
 
 ---
 
