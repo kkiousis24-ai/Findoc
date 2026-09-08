@@ -66,7 +66,9 @@ type AuthMode = "login" | "register";
    CONFIG
 ===================================================== */
 
-const API_URL = "http://localhost:5087";
+const API_URL =
+  import.meta.env.VITE_API_URL ??
+  "http://localhost:5087";
 
 /* =====================================================
    SPECIALTY LABELS
@@ -85,28 +87,13 @@ const specialtyLabels: Record<string, string> = {
 ===================================================== */
 
 const doctorPhotoMap: Record<number, string> = {
-  // Maria Papadopoulou
   1: "https://randomuser.me/api/portraits/women/44.jpg",
-
-  // Giorgos Nikolaidis
   2: "https://randomuser.me/api/portraits/men/32.jpg",
-
-  // Eleni Markou
   3: "https://randomuser.me/api/portraits/women/65.jpg",
-
-  // Dimitris Vrettos
   4: "https://randomuser.me/api/portraits/men/46.jpg",
-
-  // Sofia Antonopoulou
   5: "https://randomuser.me/api/portraits/women/68.jpg",
-
-  // Nikos Karagiannis
   6: "https://randomuser.me/api/portraits/men/52.jpg",
-
-  // Anna Georgiou
   7: "https://randomuser.me/api/portraits/women/47.jpg",
-
-  // Panagiotis Zervas
   8: "https://randomuser.me/api/portraits/men/36.jpg",
 };
 
@@ -1426,8 +1413,6 @@ function App() {
 
           <div className="search-panel">
 
-            {/* SPECIALTY */}
-
             <div className="search-item">
 
               <div className="search-icon">
@@ -1467,8 +1452,6 @@ function App() {
 
               </div>
             </div>
-
-            {/* CITY */}
 
             <div className="search-item">
 
@@ -1513,8 +1496,6 @@ function App() {
               </div>
 
             </div>
-
-            {/* INSURANCE */}
 
             <div className="search-item">
 
@@ -1566,8 +1547,6 @@ function App() {
             </button>
 
           </div>
-
-          {/* TRUST ROW */}
 
           <div className="trust-row">
 
@@ -1643,8 +1622,6 @@ function App() {
                           className="doctor-card"
                           key={doctor.id}
                         >
-
-                          {/* PHOTO */}
 
                           <div className="doctor-card-avatar">
 
@@ -2630,8 +2607,6 @@ function App() {
               </div>
             )}
 
-            {/* DATE */}
-
             <div className="booking-section">
 
               <label>
@@ -2659,8 +2634,6 @@ function App() {
               />
 
             </div>
-
-            {/* AVAILABLE TIMES */}
 
             <div className="booking-section">
 
@@ -2720,8 +2693,6 @@ function App() {
               )}
 
             </div>
-
-            {/* PATIENT DETAILS */}
 
             <div className="booking-section">
 
