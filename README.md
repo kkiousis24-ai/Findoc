@@ -2,7 +2,7 @@
 
 Findoc is a full-stack doctor discovery and appointment booking platform designed for the Greek healthcare market.
 
-Users can search for doctors by specialty and location, view doctor profiles, check real-time appointment availability, book appointments, manage their bookings, and cancel upcoming appointments through a modern responsive interface.
+Users can search for doctors by specialty and location, view doctor profiles, check appointment availability, book appointments, manage their personal bookings, and cancel upcoming appointments through a modern responsive interface.
 
 The project was developed as a portfolio-ready full-stack application using **React, TypeScript, ASP.NET Core, Entity Framework Core, SQLite, and JWT Authentication**.
 
@@ -46,10 +46,11 @@ The project was developed as a portfolio-ready full-stack application using **Re
 - Real-time appointment availability
 - 30-minute appointment slots
 - Weekday scheduling
-- Prevention of double booking
 - Appointment validation
+- Prevention of double booking
 - Booking confirmation
 - Automatic release of cancelled appointment slots
+- Reuse of cancelled appointment slots
 
 ### Authentication
 
@@ -66,7 +67,9 @@ The project was developed as a portfolio-ready full-stack application using **Re
 - View personal appointments
 - View appointment status
 - View doctor information
-- View appointment date, location and price
+- View appointment date
+- View clinic location
+- View consultation price
 - Cancel upcoming appointments
 - Keep cancelled appointments visible in appointment history
 
@@ -81,7 +84,7 @@ The project was developed as a portfolio-ready full-stack application using **Re
 - Authentication modal
 - Appointment management interface
 - Responsive doctor cards
-- Premium dark green, mint and coral design system
+- Dark green, mint and coral design system
 
 ---
 
@@ -109,6 +112,8 @@ The project was developed as a portfolio-ready full-stack application using **Re
 
 - SQLite
 - Entity Framework Core Migrations
+- Automatic database migration
+- Automatic development data seeding
 
 ---
 
@@ -118,7 +123,9 @@ The project was developed as a portfolio-ready full-stack application using **Re
 Findoc
 │
 ├── Findoc.Api
+│   │
 │   ├── Data
+│   │   ├── DbSeeder.cs
 │   │   └── FindocDbContext.cs
 │   │
 │   ├── Migrations
@@ -129,11 +136,13 @@ Findoc
 │   │   └── Doctor.cs
 │   │
 │   ├── Properties
+│   │
 │   ├── Program.cs
 │   ├── appsettings.json
 │   └── Findoc.Api.csproj
 │
 ├── findoc-client
+│   │
 │   ├── public
 │   │
 │   ├── src
@@ -201,6 +210,12 @@ GET   /api/appointments/{id}
 PATCH /api/appointments/{id}/cancel
 ```
 
+### Health Check
+
+```http
+GET /api/health
+```
+
 ---
 
 ## Local Development
@@ -218,14 +233,19 @@ Make sure the following are installed:
 
 ## Backend Setup
 
-Open a terminal inside the project:
+Open a terminal from the project root:
 
 ```powershell
 cd Findoc.Api
 dotnet restore
-dotnet ef database update
 dotnet run
 ```
+
+On application startup, Findoc automatically:
+
+- Applies all pending Entity Framework Core migrations
+- Creates the local SQLite database when necessary
+- Seeds the database with fictional demo doctors when no doctors exist
 
 The API runs by default at:
 
@@ -233,11 +253,13 @@ The API runs by default at:
 http://localhost:5087
 ```
 
+For local development, the SQLite database file is generated locally and excluded from Git through `.gitignore`.
+
 ---
 
 ## Frontend Setup
 
-Open a second terminal:
+Open a second terminal from the project root:
 
 ```powershell
 cd findoc-client
@@ -253,6 +275,12 @@ npm.cmd run dev
 ```
 
 Open the local Vite URL displayed in the terminal.
+
+The frontend communicates with the local API at:
+
+```text
+http://localhost:5087
+```
 
 ---
 
@@ -270,7 +298,7 @@ dotnet user-secrets init
 dotnet user-secrets set "Jwt:Key" "YOUR-DEVELOPMENT-JWT-KEY"
 ```
 
-The public JWT configuration stored in `appsettings.json` contains only:
+The public JWT configuration stored in `appsettings.json` contains only non-sensitive values such as:
 
 ```json
 {
@@ -281,7 +309,7 @@ The public JWT configuration stored in `appsettings.json` contains only:
 }
 ```
 
-The signing key should remain outside source control.
+The JWT signing key remains outside source control.
 
 ---
 
@@ -291,34 +319,41 @@ Findoc uses **SQLite** for local development.
 
 The database schema is managed using Entity Framework Core migrations.
 
-Apply all existing migrations with:
+When the backend starts, the application executes:
 
-```powershell
-cd Findoc.Api
-dotnet ef database update
+```csharp
+await db.Database.MigrateAsync();
 ```
+
+This automatically applies pending migrations.
 
 The local database file is excluded from Git through `.gitignore`.
 
 ---
 
-## Appointment Availability
+## Automatic Demo Data Seeding
 
-The current appointment system includes:
+Findoc includes an automatic database seeder for development and portfolio demonstration.
 
-- Monday-Friday availability
-- 30-minute appointment slots
-- Working hours from 09:00 to 17:00
-- Past-date validation
-- Weekend validation
-- Double-booking protection
-- Automatic reopening of cancelled appointment slots
+The seeding logic is located in:
+
+```text
+Findoc.Api/Data/DbSeeder.cs
+```
+
+When the application starts, it checks whether doctors already exist.
+
+If the doctor table is empty, Findoc automatically creates a set of fictional doctor profiles.
+
+If doctors already exist, the seeder does nothing.
+
+This prevents duplicate demo records while allowing a fresh clone of the project to work immediately.
 
 ---
 
-## Demo Data
+## Demo Doctors
 
-The development version includes fictional doctor profiles across multiple specialties and Greek cities.
+The development database includes fictional doctors across multiple specialties and Greek cities.
 
 ### Specialties
 
@@ -335,7 +370,48 @@ The development version includes fictional doctor profiles across multiple speci
 - Patras
 - Ioannina
 
-All doctor profiles and patient-facing demo data are used only for development and portfolio demonstration purposes.
+The demo records include:
+
+- Doctor name
+- Specialty
+- City
+- Clinic address
+- Biography
+- Consultation price
+- Rating
+
+All doctor data used in Findoc is fictional and intended only for development and portfolio demonstration.
+
+---
+
+## Appointment Availability
+
+The current appointment system includes:
+
+- Monday-Friday availability
+- 30-minute appointment slots
+- Working hours from 09:00 to 17:00
+- Past-date validation
+- Weekend validation
+- Double-booking protection
+- Automatic reopening of cancelled appointment slots
+- Rebooking of previously cancelled slots
+
+---
+
+## Authentication Flow
+
+Findoc uses JWT Bearer Authentication.
+
+After a successful registration or login:
+
+1. The backend creates a JWT token
+2. The frontend stores the token locally
+3. Protected API requests include the JWT
+4. The backend validates the authenticated user
+5. The user can access personal appointment functionality
+
+JWT tokens currently expire after 24 hours.
 
 ---
 
@@ -345,19 +421,23 @@ The application currently implements:
 
 - Password hashing
 - JWT authentication
+- JWT signature validation
+- JWT issuer validation
+- JWT audience validation
 - Protected patient endpoints
 - Appointment ownership validation
 - Unique doctor/time appointment constraints
 - Local secret management with .NET User Secrets
-- Credential exclusions through `.gitignore`
+- Sensitive credential exclusions through `.gitignore`
 - SQLite database exclusion from source control
 - Authorization checks for appointment cancellation
+- Backend validation for appointment scheduling
 
 ---
 
 ## Current Patient Flow
 
-Findoc currently supports the complete core patient journey:
+Findoc currently supports the core patient journey:
 
 1. Create an account
 2. Sign in
@@ -365,11 +445,12 @@ Findoc currently supports the complete core patient journey:
 4. Filter doctors by specialty and city
 5. View a doctor's profile
 6. Check appointment availability
-7. Select a date and time
-8. Book an appointment
-9. View personal appointments
-10. Cancel an upcoming appointment
-11. Reuse a cancelled appointment slot
+7. Select a date
+8. Select an available time slot
+9. Book an appointment
+10. View personal appointments
+11. Cancel an upcoming appointment
+12. Reuse a cancelled appointment slot
 
 ---
 
@@ -377,7 +458,29 @@ Findoc currently supports the complete core patient journey:
 
 The current interface includes an insurance selector for UI demonstration.
 
-Backend insurance-provider filtering is planned for a future version.
+Insurance-provider filtering is not yet implemented in the backend.
+
+Real insurance-provider support is planned for a future version.
+
+---
+
+## Current Architecture
+
+The application follows a client-server architecture.
+
+```text
+React + TypeScript Frontend
+          │
+          │ HTTP / JSON
+          ▼
+ASP.NET Core REST API
+          │
+          │ Entity Framework Core
+          ▼
+      SQLite Database
+```
+
+Authentication is handled using JWT Bearer tokens between the frontend and backend.
 
 ---
 
@@ -388,19 +491,23 @@ Future improvements may include:
 - Doctor dashboard
 - Doctor registration and onboarding
 - Doctor authentication
+- Doctor availability management
 - Real insurance provider support
 - Appointment rescheduling
 - Email notifications
 - SMS notifications
-- Patient reviews and ratings
+- Patient reviews
+- Patient ratings
 - Advanced doctor search
 - Map-based doctor discovery
 - Admin dashboard
-- Doctor availability management
+- Role-based authorization
 - Cloud deployment
 - PostgreSQL production database
 - Online payments
 - Multi-language support
+- Automated testing
+- CI/CD pipeline
 
 ---
 
@@ -409,9 +516,12 @@ Future improvements may include:
 Findoc was created to demonstrate practical full-stack development skills including:
 
 - REST API design
-- Authentication and authorization
+- Authentication
+- Authorization
 - Relational database modeling
 - Entity Framework Core
+- Database migrations
+- Database seeding
 - React application development
 - TypeScript
 - Responsive UI/UX
@@ -419,7 +529,41 @@ Findoc was created to demonstrate practical full-stack development skills includ
 - State management
 - Healthcare appointment workflows
 - Secure secret management
-- Git and GitHub workflow
+- Git
+- GitHub workflow
+
+---
+
+## Portfolio Focus
+
+This project demonstrates experience across both frontend and backend development.
+
+### Frontend Skills
+
+- React component development
+- TypeScript
+- Responsive design
+- State handling
+- API integration
+- Authentication state
+- Dynamic search interfaces
+- Modal-based workflows
+- Mobile optimization
+
+### Backend Skills
+
+- ASP.NET Core
+- Minimal APIs
+- REST API design
+- Entity Framework Core
+- SQLite
+- Database relationships
+- Database migrations
+- Automatic data seeding
+- JWT authentication
+- Authorization
+- Password hashing
+- Data validation
 
 ---
 
@@ -430,7 +574,9 @@ This repository contains both the frontend and backend source code for Findoc.
 - Frontend: React + TypeScript
 - Backend: ASP.NET Core
 - Database: SQLite
+- ORM: Entity Framework Core
 - Authentication: JWT
+- Development data: Automatic seeding
 
 ---
 
@@ -438,7 +584,9 @@ This repository contains both the frontend and backend source code for Findoc.
 
 Findoc is a portfolio and educational project.
 
-The doctors, profiles, appointments and related healthcare information displayed in the demo are fictional and are not intended to represent real medical professionals or real healthcare services.
+The doctors, profiles, appointments, ratings, addresses, and related healthcare information displayed in the application are fictional and are not intended to represent real medical professionals or real healthcare services.
+
+The application should not be used as a production healthcare service in its current form.
 
 ---
 
