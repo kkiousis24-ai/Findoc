@@ -1749,6 +1749,26 @@ function App() {
   function openBooking(
     doctor: Doctor
   ) {
+    if (
+      !authToken ||
+      !authUser
+    ) {
+      setSelectedDoctor(
+        null
+      );
+
+      setBookingMessage(
+        ""
+      );
+
+      openAuth(
+        "login"
+      );
+
+      return;
+    }
+
+
     const defaultDate =
       getNextAvailableDate();
 
@@ -1764,14 +1784,12 @@ function App() {
 
 
     setPatientName(
-      authUser?.fullName ||
-        ""
+      authUser.fullName
     );
 
 
     setPatientEmail(
-      authUser?.email ||
-        ""
+      authUser.email
     );
 
 
