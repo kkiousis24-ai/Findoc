@@ -4,6 +4,7 @@ import { createRoot } from "react-dom/client";
 import "./index.css";
 import "./FilterBubbles.css";
 import "./DoctorCards.css";
+import "./ProfileModal.css";
 
 import App from "./App.tsx";
 import SmartSearchChat from "./SmartSearchChat.tsx";

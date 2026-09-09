@@ -1,0 +1,1112 @@
+/* =====================================================
+   FINDOC — PREMIUM DOCTOR PROFILE MODAL
+   Safe override layer
+===================================================== */
+
+
+/* =====================================================
+   OVERLAY
+===================================================== */
+
+.profile-overlay {
+  padding: 28px;
+
+  background:
+    radial-gradient(
+      circle at 50% 15%,
+      rgba(83, 214, 189, 0.07),
+      transparent 32%
+    ),
+    rgba(1, 10, 8, 0.8);
+
+  backdrop-filter:
+    blur(20px)
+    saturate(120%);
+
+  -webkit-backdrop-filter:
+    blur(20px)
+    saturate(120%);
+}
+
+
+/* =====================================================
+   PROFILE MODAL
+===================================================== */
+
+.profile-modal {
+  position: relative;
+
+  width:
+    min(100%, 760px);
+
+  max-height:
+    calc(100vh - 56px);
+
+  padding: 0;
+
+  overflow-x: hidden;
+  overflow-y: auto;
+
+  border:
+    1px solid
+    rgba(255, 255, 255, 0.085);
+
+  border-radius: 34px;
+
+  background:
+    linear-gradient(
+      145deg,
+      rgba(13, 43, 37, 0.99),
+      rgba(7, 28, 24, 0.99)
+    );
+
+  box-shadow:
+    0 45px 110px
+      rgba(0, 0, 0, 0.55),
+    0 0 0 1px
+      rgba(83, 214, 189, 0.025),
+    inset 0 1px 0
+      rgba(255, 255, 255, 0.055);
+
+  animation:
+    profileModalEnter
+    0.22s
+    ease-out;
+}
+
+
+/* subtle top glow */
+
+.profile-modal::before {
+  content: "";
+
+  position: absolute;
+
+  width: 420px;
+  height: 260px;
+
+  top: -180px;
+  left: 50%;
+
+  transform:
+    translateX(-50%);
+
+  border-radius: 50%;
+
+  background:
+    radial-gradient(
+      circle,
+      rgba(83, 214, 189, 0.16),
+      transparent 68%
+    );
+
+  pointer-events: none;
+}
+
+
+/* top highlight */
+
+.profile-modal::after {
+  content: "";
+
+  position: absolute;
+
+  top: 0;
+  left: 60px;
+  right: 60px;
+
+  height: 1px;
+
+  background:
+    linear-gradient(
+      90deg,
+      transparent,
+      rgba(105, 229, 205, 0.32),
+      transparent
+    );
+
+  pointer-events: none;
+}
+
+
+@keyframes profileModalEnter {
+  from {
+    opacity: 0;
+
+    transform:
+      translateY(12px)
+      scale(0.975);
+  }
+
+  to {
+    opacity: 1;
+
+    transform:
+      translateY(0)
+      scale(1);
+  }
+}
+
+
+/* =====================================================
+   SCROLLBAR
+===================================================== */
+
+.profile-modal::-webkit-scrollbar {
+  width: 7px;
+}
+
+.profile-modal::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.profile-modal::-webkit-scrollbar-thumb {
+  border-radius: 999px;
+
+  background:
+    rgba(83, 214, 189, 0.18);
+}
+
+
+/* =====================================================
+   CLOSE BUTTON
+===================================================== */
+
+.profile-modal
+.profile-close {
+  top: 22px;
+  right: 22px;
+
+  width: 42px;
+  height: 42px;
+
+  border:
+    1px solid
+    rgba(255, 255, 255, 0.085);
+
+  border-radius: 15px;
+
+  background:
+    rgba(255, 255, 255, 0.045);
+
+  color:
+    rgba(239, 250, 247, 0.72);
+
+  backdrop-filter:
+    blur(14px);
+
+  -webkit-backdrop-filter:
+    blur(14px);
+
+  transition:
+    transform 0.18s ease,
+    background 0.18s ease,
+    border-color 0.18s ease,
+    color 0.18s ease;
+}
+
+.profile-modal
+.profile-close:hover {
+  transform:
+    rotate(4deg)
+    scale(1.04);
+
+  border-color:
+    rgba(242, 118, 97, 0.25);
+
+  background:
+    rgba(242, 118, 97, 0.09);
+
+  color: #ff9b87;
+}
+
+
+/* =====================================================
+   TOP DOCTOR SECTION
+===================================================== */
+
+.profile-top {
+  position: relative;
+  z-index: 2;
+
+  display: grid;
+
+  grid-template-columns:
+    128px
+    minmax(0, 1fr);
+
+  align-items: center;
+
+  gap: 28px;
+
+  padding:
+    42px
+    42px
+    32px;
+
+  background:
+    linear-gradient(
+      180deg,
+      rgba(83, 214, 189, 0.045),
+      transparent
+    );
+}
+
+
+/* =====================================================
+   AVATAR
+===================================================== */
+
+.profile-avatar {
+  position: relative;
+
+  width: 128px;
+  height: 128px;
+
+  flex:
+    0 0 128px;
+
+  border:
+    1px solid
+    rgba(255, 255, 255, 0.14);
+
+  border-radius: 32px;
+
+  background:
+    linear-gradient(
+      145deg,
+      #65e2ca,
+      #3dbca5
+    );
+
+  box-shadow:
+    0 20px 45px
+      rgba(0, 0, 0, 0.3),
+    0 0 0 7px
+      rgba(83, 214, 189, 0.05);
+
+  color: #06382f;
+
+  font-size: 30px;
+  font-weight: 850;
+}
+
+.profile-avatar img {
+  width: 100%;
+  height: 100%;
+
+  object-fit: cover;
+  object-position: center 24%;
+
+  border-radius: inherit;
+}
+
+
+/* =====================================================
+   MAIN DOCTOR INFO
+===================================================== */
+
+.profile-main-info {
+  min-width: 0;
+}
+
+
+/* verified pill */
+
+.verified-doctor {
+  width: fit-content;
+
+  display: inline-flex;
+  align-items: center;
+
+  margin-bottom: 11px;
+
+  padding:
+    7px
+    11px;
+
+  border:
+    1px solid
+    rgba(83, 214, 189, 0.16);
+
+  border-radius: 999px;
+
+  background:
+    rgba(83, 214, 189, 0.08);
+
+  color: #6ce1cb;
+
+  font-size: 9px;
+  font-weight: 800;
+
+  letter-spacing: 0.4px;
+}
+
+
+/* doctor name */
+
+.profile-main-info h2 {
+  margin: 0;
+
+  max-width: 470px;
+
+  color: #ffffff;
+
+  font-size:
+    clamp(
+      27px,
+      4vw,
+      36px
+    );
+
+  font-weight: 720;
+
+  line-height: 1.08;
+
+  letter-spacing: -1.25px;
+}
+
+
+/* specialty */
+
+.profile-specialty {
+  width: fit-content;
+
+  margin:
+    10px
+    0
+    6px;
+
+  padding:
+    6px
+    10px;
+
+  border-radius: 999px;
+
+  background:
+    rgba(255, 255, 255, 0.045);
+
+  color:
+    rgba(231, 247, 243, 0.68);
+
+  font-size: 12px;
+  font-weight: 650;
+}
+
+
+/* subspecialty */
+
+.profile-main-info > p:not(.profile-specialty) {
+  margin:
+    7px
+    0;
+
+  color:
+    rgba(222, 241, 237, 0.48);
+
+  font-size: 11px;
+}
+
+
+/* rating */
+
+.profile-rating {
+  width: fit-content;
+
+  display: inline-flex;
+  align-items: center;
+
+  margin-top: 5px;
+
+  padding:
+    7px
+    11px;
+
+  border:
+    1px solid
+    rgba(255, 210, 111, 0.11);
+
+  border-radius: 999px;
+
+  background:
+    rgba(255, 210, 111, 0.06);
+
+  color: #ffd16d;
+
+  font-size: 11px;
+  font-weight: 800;
+}
+
+.profile-rating span {
+  margin-left: 3px;
+
+  color:
+    rgba(240, 245, 243, 0.4);
+
+  font-weight: 550;
+}
+
+
+/* =====================================================
+   DIVIDER
+===================================================== */
+
+.profile-divider {
+  height: 1px;
+
+  margin:
+    0
+    42px
+    28px;
+
+  background:
+    linear-gradient(
+      90deg,
+      transparent,
+      rgba(255, 255, 255, 0.08),
+      transparent
+    );
+}
+
+
+/* =====================================================
+   DETAILS GRID
+===================================================== */
+
+.profile-details-grid {
+  position: relative;
+  z-index: 2;
+
+  grid-template-columns:
+    repeat(
+      4,
+      minmax(0, 1fr)
+    );
+
+  gap: 11px;
+
+  padding:
+    0
+    42px;
+}
+
+
+.profile-detail {
+  min-height: 112px;
+
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+
+  padding: 17px;
+
+  border:
+    1px solid
+    rgba(255, 255, 255, 0.055);
+
+  border-radius: 19px;
+
+  background:
+    linear-gradient(
+      145deg,
+      rgba(255, 255, 255, 0.045),
+      rgba(255, 255, 255, 0.018)
+    );
+
+  box-shadow:
+    inset 0 1px 0
+    rgba(255, 255, 255, 0.025);
+
+  transition:
+    transform 0.18s ease,
+    border-color 0.18s ease,
+    background 0.18s ease;
+}
+
+.profile-detail:hover {
+  transform:
+    translateY(-2px);
+
+  border-color:
+    rgba(83, 214, 189, 0.15);
+
+  background:
+    rgba(83, 214, 189, 0.04);
+}
+
+
+.profile-detail span {
+  margin-bottom: 8px;
+
+  color:
+    rgba(218, 239, 234, 0.32);
+
+  font-size: 8px;
+  font-weight: 850;
+
+  letter-spacing: 1.15px;
+}
+
+
+.profile-detail strong {
+  color: #ffffff;
+
+  font-size: 14px;
+  font-weight: 720;
+
+  line-height: 1.3;
+}
+
+
+.profile-detail p {
+  margin:
+    6px
+    0
+    0;
+
+  color:
+    rgba(222, 242, 237, 0.44);
+
+  font-size: 10px;
+  line-height: 1.4;
+}
+
+
+/* =====================================================
+   ABOUT SECTION
+===================================================== */
+
+.profile-about {
+  position: relative;
+  z-index: 2;
+
+  margin:
+    30px
+    42px
+    0;
+
+  padding: 24px;
+
+  border:
+    1px solid
+    rgba(255, 255, 255, 0.055);
+
+  border-radius: 22px;
+
+  background:
+    rgba(255, 255, 255, 0.025);
+}
+
+
+.profile-about > span {
+  margin-bottom: 7px;
+
+  color: #5edcc5;
+
+  font-size: 8px;
+  font-weight: 850;
+
+  letter-spacing: 1.45px;
+}
+
+
+.profile-about h3 {
+  margin:
+    0
+    0
+    12px;
+
+  color: #ffffff;
+
+  font-size: 19px;
+  font-weight: 700;
+
+  letter-spacing: -0.45px;
+}
+
+
+.profile-about p {
+  margin: 0;
+
+  color:
+    rgba(226, 244, 240, 0.57);
+
+  font-size: 12px;
+  line-height: 1.8;
+}
+
+
+/* =====================================================
+   FEATURES
+===================================================== */
+
+.profile-features {
+  position: relative;
+  z-index: 2;
+
+  gap: 9px;
+
+  margin:
+    22px
+    42px
+    0;
+}
+
+
+.profile-features div {
+  display: inline-flex;
+  align-items: center;
+
+  gap: 4px;
+
+  padding:
+    9px
+    12px;
+
+  border:
+    1px solid
+    rgba(83, 214, 189, 0.1);
+
+  border-radius: 999px;
+
+  background:
+    rgba(83, 214, 189, 0.055);
+
+  color:
+    rgba(224, 247, 241, 0.7);
+
+  font-size: 9.5px;
+  font-weight: 650;
+}
+
+
+.profile-features b {
+  color: #66e0ca;
+
+  font-weight: 900;
+}
+
+
+/* =====================================================
+   FOOTER
+===================================================== */
+
+.profile-footer {
+  position: sticky;
+
+  bottom: 0;
+
+  z-index: 5;
+
+  margin-top: 30px;
+
+  padding:
+    22px
+    42px
+    26px;
+
+  border-top:
+    1px solid
+    rgba(255, 255, 255, 0.065);
+
+  background:
+    rgba(7, 28, 24, 0.92);
+
+  backdrop-filter:
+    blur(22px);
+
+  -webkit-backdrop-filter:
+    blur(22px);
+}
+
+
+.profile-footer small {
+  margin-bottom: 4px;
+
+  color:
+    rgba(220, 241, 236, 0.36);
+
+  font-size: 9px;
+
+  text-transform: uppercase;
+
+  letter-spacing: 0.65px;
+}
+
+
+.profile-footer strong {
+  display: block;
+
+  color: #ffffff;
+
+  font-size: 26px;
+  font-weight: 780;
+
+  letter-spacing: -0.6px;
+}
+
+
+/* booking CTA */
+
+.profile-footer button {
+  min-width: 180px;
+  height: 52px;
+
+  padding:
+    0
+    24px;
+
+  border:
+    1px solid
+    rgba(255, 255, 255, 0.1);
+
+  border-radius: 17px;
+
+  background:
+    linear-gradient(
+      180deg,
+      #f88773,
+      #ed6d59
+    );
+
+  color: #ffffff;
+
+  box-shadow:
+    0 13px 28px
+      rgba(242, 118, 97, 0.2),
+    inset 0 1px 0
+      rgba(255, 255, 255, 0.18);
+
+  font-size: 12px;
+  font-weight: 850;
+
+  transition:
+    transform 0.18s ease,
+    box-shadow 0.18s ease,
+    background 0.18s ease;
+}
+
+
+.profile-footer button:hover {
+  transform:
+    translateY(-2px);
+
+  background:
+    linear-gradient(
+      180deg,
+      #fa927f,
+      #f47763
+    );
+
+  box-shadow:
+    0 17px 34px
+      rgba(242, 118, 97, 0.27);
+}
+
+
+.profile-footer button:active {
+  transform:
+    scale(0.985);
+}
+
+
+/* =====================================================
+   LOADING CARD
+===================================================== */
+
+.profile-loading {
+  padding:
+    20px
+    26px;
+
+  border:
+    1px solid
+    rgba(255, 255, 255, 0.07);
+
+  border-radius: 18px;
+
+  background:
+    rgba(10, 33, 29, 0.95);
+
+  color:
+    rgba(240, 250, 247, 0.82);
+
+  box-shadow:
+    0 25px 60px
+    rgba(0, 0, 0, 0.32);
+
+  backdrop-filter:
+    blur(18px);
+
+  -webkit-backdrop-filter:
+    blur(18px);
+
+  font-size: 12px;
+  font-weight: 700;
+}
+
+
+/* =====================================================
+   TABLET
+===================================================== */
+
+@media (
+  max-width: 760px
+) {
+
+  .profile-details-grid {
+    grid-template-columns:
+      repeat(
+        2,
+        minmax(0, 1fr)
+      );
+  }
+
+}
+
+
+/* =====================================================
+   MOBILE
+===================================================== */
+
+@media (
+  max-width: 600px
+) {
+
+  .profile-overlay {
+    align-items: flex-end;
+
+    padding: 12px;
+  }
+
+
+  .profile-modal {
+    width: 100%;
+
+    max-height:
+      calc(100vh - 24px);
+
+    border-radius:
+      28px
+      28px
+      22px
+      22px;
+  }
+
+
+  .profile-modal::after {
+    left: 34px;
+    right: 34px;
+  }
+
+
+  .profile-modal
+  .profile-close {
+    top: 16px;
+    right: 16px;
+
+    width: 38px;
+    height: 38px;
+
+    border-radius: 13px;
+  }
+
+
+  .profile-top {
+    grid-template-columns:
+      88px
+      minmax(0, 1fr);
+
+    gap: 18px;
+
+    padding:
+      28px
+      22px
+      24px;
+  }
+
+
+  .profile-avatar {
+    width: 88px;
+    height: 88px;
+
+    flex:
+      0 0 88px;
+
+    border-radius: 23px;
+
+    box-shadow:
+      0 15px 30px
+        rgba(0, 0, 0, 0.28),
+      0 0 0 5px
+        rgba(83, 214, 189, 0.05);
+  }
+
+
+  .profile-main-info h2 {
+    padding-right: 30px;
+
+    font-size: 23px;
+  }
+
+
+  .profile-specialty {
+    font-size: 10px;
+  }
+
+
+  .profile-divider {
+    margin:
+      0
+      22px
+      22px;
+  }
+
+
+  .profile-details-grid {
+    grid-template-columns:
+      repeat(
+        2,
+        minmax(0, 1fr)
+      );
+
+    gap: 9px;
+
+    padding:
+      0
+      22px;
+  }
+
+
+  .profile-detail {
+    min-height: 100px;
+
+    padding: 14px;
+
+    border-radius: 17px;
+  }
+
+
+  .profile-detail strong {
+    font-size: 12px;
+  }
+
+
+  .profile-about {
+    margin:
+      22px
+      22px
+      0;
+
+    padding: 19px;
+
+    border-radius: 19px;
+  }
+
+
+  .profile-about h3 {
+    font-size: 17px;
+  }
+
+
+  .profile-about p {
+    font-size: 11px;
+  }
+
+
+  .profile-features {
+    margin:
+      18px
+      22px
+      0;
+  }
+
+
+  .profile-footer {
+    gap: 14px;
+
+    padding:
+      18px
+      22px
+      20px;
+  }
+
+
+  .profile-footer strong {
+    font-size: 22px;
+  }
+
+
+  .profile-footer button {
+    min-width: 150px;
+    height: 48px;
+
+    padding:
+      0
+      18px;
+
+    border-radius: 15px;
+
+    font-size: 11px;
+  }
+
+}
+
+
+/* =====================================================
+   VERY SMALL MOBILE
+===================================================== */
+
+@media (
+  max-width: 420px
+) {
+
+  .profile-top {
+    grid-template-columns: 1fr;
+
+    text-align: center;
+  }
+
+
+  .profile-avatar {
+    margin:
+      0
+      auto;
+  }
+
+
+  .verified-doctor,
+  .profile-specialty,
+  .profile-rating {
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+
+  .profile-main-info h2 {
+    padding-right: 0;
+  }
+
+
+  .profile-details-grid {
+    grid-template-columns: 1fr;
+  }
+
+
+  .profile-footer {
+    flex-direction: column;
+
+    align-items: stretch;
+  }
+
+
+  .profile-footer > div {
+    text-align: center;
+  }
+
+
+  .profile-footer button {
+    width: 100%;
+  }
+
+}
