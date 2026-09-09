@@ -1,0 +1,692 @@
+/* =====================================================
+   FINDOC — PREMIUM HEADER / NAVIGATION
+   Safe override layer
+===================================================== */
+
+
+/* =====================================================
+   TOP BAR
+===================================================== */
+
+.topbar {
+  position: sticky;
+
+  top: 0;
+
+  z-index: 100;
+
+  min-height: 88px;
+
+  border-bottom:
+    1px solid
+    rgba(255, 255, 255, 0.055);
+
+  background:
+    linear-gradient(
+      180deg,
+      rgba(7, 24, 21, 0.94),
+      rgba(7, 21, 18, 0.89)
+    );
+
+  box-shadow:
+    0 12px 36px
+    rgba(0, 0, 0, 0.12);
+
+  backdrop-filter:
+    blur(22px)
+    saturate(125%);
+
+  -webkit-backdrop-filter:
+    blur(22px)
+    saturate(125%);
+}
+
+
+/* subtle bottom highlight */
+
+.topbar::after {
+  content: "";
+
+  position: absolute;
+
+  left: 50%;
+
+  bottom: -1px;
+
+  width:
+    min(760px, 60%);
+
+  height: 1px;
+
+  transform:
+    translateX(-50%);
+
+  background:
+    linear-gradient(
+      90deg,
+      transparent,
+      rgba(83, 214, 189, 0.16),
+      transparent
+    );
+
+  pointer-events: none;
+}
+
+
+/* =====================================================
+   NAVBAR
+===================================================== */
+
+.navbar {
+  min-height: 88px;
+
+  column-gap: 44px;
+}
+
+
+/* =====================================================
+   BRAND
+===================================================== */
+
+.brand {
+  gap: 12px;
+
+  padding:
+    7px
+    10px
+    7px
+    7px;
+
+  border-radius: 16px;
+
+  transition:
+    background 0.18s ease,
+    transform 0.18s ease;
+}
+
+
+.brand:hover {
+  transform:
+    translateY(-1px);
+
+  background:
+    rgba(255, 255, 255, 0.025);
+}
+
+
+.brand-icon {
+  width: 42px;
+  height: 42px;
+
+  border:
+    1px solid
+    rgba(255, 255, 255, 0.13);
+
+  border-radius: 14px;
+
+  background:
+    linear-gradient(
+      180deg,
+      #68e2cb,
+      #4fcdb5
+    );
+
+  color: #07342c;
+
+  box-shadow:
+    0 9px 22px
+    rgba(83, 214, 189, 0.16),
+    inset 0 1px 0
+    rgba(255, 255, 255, 0.22);
+
+  font-size: 21px;
+}
+
+
+.brand-name {
+  font-size: 25px;
+
+  font-weight: 820;
+
+  letter-spacing: -1.1px;
+}
+
+
+.brand-name span {
+  color: #62dec7;
+}
+
+
+/* =====================================================
+   MAIN NAVIGATION
+===================================================== */
+
+.main-nav {
+  gap: 38px;
+
+  margin-left: 6px;
+}
+
+
+.main-nav a {
+  position: relative;
+
+  padding:
+    10px
+    3px;
+
+  color:
+    rgba(231, 247, 243, 0.61);
+
+  font-size: 13px;
+  font-weight: 650;
+
+  transition:
+    color 0.18s ease;
+}
+
+
+.main-nav a::after {
+  content: "";
+
+  position: absolute;
+
+  left: 50%;
+  bottom: 3px;
+
+  width: 0;
+  height: 2px;
+
+  transform:
+    translateX(-50%);
+
+  border-radius: 999px;
+
+  background: #59d9c1;
+
+  box-shadow:
+    0 0 14px
+    rgba(83, 214, 189, 0.35);
+
+  transition:
+    width 0.2s ease;
+}
+
+
+.main-nav a:hover {
+  color: #ffffff;
+}
+
+
+.main-nav a:hover::after {
+  width: 18px;
+}
+
+
+/* =====================================================
+   RIGHT ACTIONS
+===================================================== */
+
+.nav-actions {
+  gap: 9px;
+
+  margin-left: 18px;
+}
+
+
+/* common premium button */
+
+.language-button,
+.my-appointments-nav,
+.logout-button,
+.login-button,
+.account-chip {
+  min-height: 44px;
+
+  border:
+    1px solid
+    rgba(255, 255, 255, 0.07);
+
+  border-radius: 14px;
+
+  background:
+    linear-gradient(
+      180deg,
+      rgba(255, 255, 255, 0.045),
+      rgba(255, 255, 255, 0.025)
+    );
+
+  box-shadow:
+    inset 0 1px 0
+    rgba(255, 255, 255, 0.035);
+
+  transition:
+    transform 0.18s ease,
+    border-color 0.18s ease,
+    background 0.18s ease,
+    box-shadow 0.18s ease,
+    color 0.18s ease;
+}
+
+
+.language-button:hover,
+.my-appointments-nav:hover,
+.logout-button:hover,
+.account-chip:hover {
+  transform:
+    translateY(-1px);
+
+  border-color:
+    rgba(83, 214, 189, 0.18);
+
+  background:
+    rgba(83, 214, 189, 0.055);
+
+  box-shadow:
+    0 8px 20px
+    rgba(0, 0, 0, 0.1),
+    inset 0 1px 0
+    rgba(255, 255, 255, 0.04);
+}
+
+
+/* =====================================================
+   LANGUAGE
+===================================================== */
+
+.language-button {
+  min-width: 50px;
+
+  padding:
+    0
+    14px;
+
+  color:
+    rgba(235, 249, 245, 0.72);
+
+  font-size: 11px;
+  font-weight: 800;
+
+  letter-spacing: 0.4px;
+}
+
+
+/* =====================================================
+   MY APPOINTMENTS
+===================================================== */
+
+.my-appointments-nav {
+  padding:
+    0
+    16px;
+
+  color:
+    rgba(235, 249, 245, 0.78);
+
+  font-size: 11px;
+  font-weight: 750;
+}
+
+
+.my-appointments-nav:hover {
+  color: #71e3ce;
+}
+
+
+/* =====================================================
+   LOGOUT
+===================================================== */
+
+.logout-button {
+  padding:
+    0
+    15px;
+
+  border-color:
+    rgba(242, 118, 97, 0.09);
+
+  color:
+    rgba(255, 174, 157, 0.72);
+
+  font-size: 11px;
+  font-weight: 750;
+}
+
+
+.logout-button:hover {
+  border-color:
+    rgba(242, 118, 97, 0.2);
+
+  background:
+    rgba(242, 118, 97, 0.07);
+
+  color: #ff9d8a;
+}
+
+
+/* =====================================================
+   LOGIN CTA
+===================================================== */
+
+.login-button {
+  padding:
+    0
+    20px;
+
+  border:
+    1px solid
+    rgba(255, 255, 255, 0.12);
+
+  background:
+    linear-gradient(
+      180deg,
+      #66e1c9,
+      #50ceb6
+    );
+
+  color: #07362e;
+
+  box-shadow:
+    0 10px 24px
+    rgba(83, 214, 189, 0.18),
+    inset 0 1px 0
+    rgba(255, 255, 255, 0.2);
+
+  font-size: 12px;
+  font-weight: 850;
+}
+
+
+.login-button:hover {
+  transform:
+    translateY(-2px);
+
+  border-color:
+    rgba(255, 255, 255, 0.16);
+
+  background:
+    linear-gradient(
+      180deg,
+      #72e8d1,
+      #59d8c0
+    );
+
+  box-shadow:
+    0 14px 30px
+    rgba(83, 214, 189, 0.23);
+}
+
+
+/* =====================================================
+   ACCOUNT CHIP
+===================================================== */
+
+.account-chip {
+  min-width: 176px;
+
+  padding:
+    0
+    13px
+    0
+    7px;
+
+  gap: 10px;
+}
+
+
+.account-chip > span {
+  width: 34px;
+  height: 34px;
+
+  flex:
+    0
+    0
+    34px;
+
+  border:
+    1px solid
+    rgba(255, 255, 255, 0.13);
+
+  border-radius: 11px;
+
+  background:
+    linear-gradient(
+      180deg,
+      #66e1c9,
+      #4fcdb5
+    );
+
+  color: #07362e;
+
+  box-shadow:
+    0 7px 17px
+    rgba(83, 214, 189, 0.14);
+
+  font-size: 14px;
+  font-weight: 900;
+}
+
+
+.account-chip strong {
+  max-width: 125px;
+
+  color:
+    rgba(248, 253, 252, 0.94);
+
+  font-size: 11px;
+  font-weight: 750;
+}
+
+
+.account-chip small {
+  max-width: 125px;
+
+  color:
+    rgba(224, 243, 238, 0.38);
+
+  font-size: 9px;
+}
+
+
+/* =====================================================
+   TABLET
+===================================================== */
+
+@media (
+  max-width: 1050px
+) {
+
+  .navbar {
+    grid-template-columns:
+      auto
+      1fr;
+
+    column-gap: 22px;
+  }
+
+
+  .main-nav {
+    display: none;
+  }
+
+
+  .nav-actions {
+    justify-self: end;
+
+    margin-left: 0;
+  }
+
+}
+
+
+/* =====================================================
+   MOBILE
+===================================================== */
+
+@media (
+  max-width: 720px
+) {
+
+  .topbar {
+    min-height: 74px;
+  }
+
+
+  .navbar {
+    min-height: 74px;
+
+    grid-template-columns:
+      auto
+      1fr;
+
+    column-gap: 12px;
+  }
+
+
+  .brand {
+    gap: 8px;
+
+    padding:
+      4px
+      6px
+      4px
+      4px;
+  }
+
+
+  .brand-icon {
+    width: 38px;
+    height: 38px;
+
+    border-radius: 12px;
+
+    font-size: 19px;
+  }
+
+
+  .brand-name {
+    font-size: 21px;
+  }
+
+
+  .nav-actions {
+    gap: 6px;
+  }
+
+
+  .language-button {
+    display: none;
+  }
+
+
+  .account-chip {
+    min-width: 0;
+
+    width: 42px;
+
+    padding: 3px;
+  }
+
+
+  .account-chip > span {
+    width: 34px;
+    height: 34px;
+
+    flex-basis: 34px;
+  }
+
+
+  .account-chip > div {
+    display: none;
+  }
+
+
+  .my-appointments-nav {
+    min-width: 42px;
+
+    max-width: 42px;
+
+    overflow: hidden;
+
+    padding: 0;
+
+    color: transparent;
+
+    font-size: 0;
+  }
+
+
+  .my-appointments-nav::before {
+    content: "◷";
+
+    color:
+      rgba(235, 249, 245, 0.82);
+
+    font-size: 18px;
+  }
+
+
+  .logout-button {
+    min-width: 42px;
+
+    max-width: 42px;
+
+    overflow: hidden;
+
+    padding: 0;
+
+    color: transparent;
+
+    font-size: 0;
+  }
+
+
+  .logout-button::before {
+    content: "↗";
+
+    color: #ff9d8a;
+
+    font-size: 17px;
+  }
+
+
+  .login-button {
+    height: 42px;
+
+    padding:
+      0
+      16px;
+
+    border-radius: 13px;
+
+    font-size: 11px;
+  }
+
+}
+
+
+/* =====================================================
+   SMALL MOBILE
+===================================================== */
+
+@media (
+  max-width: 420px
+) {
+
+  .brand-name {
+    display: none;
+  }
+
+
+  .nav-actions {
+    gap: 5px;
+  }
+
+
+  .login-button {
+    padding:
+      0
+      13px;
+  }
+
+}

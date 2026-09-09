@@ -8,6 +8,7 @@ import "./ProfileModal.css";
 import "./BookingModal.css";
 import "./MyAppointments.css";
 import "./AuthModal.css";
+import "./Header.css";
 
 import App from "./App.tsx";
 import SmartSearchChat from "./SmartSearchChat.tsx";
