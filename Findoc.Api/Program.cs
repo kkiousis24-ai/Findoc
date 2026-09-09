@@ -3,6 +3,7 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
 using Findoc.Api.Data;
+using Findoc.Api.Endpoints;
 using Findoc.Api.Models;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
@@ -205,7 +206,8 @@ string CreateJwtToken(ApplicationUser user)
         .WriteToken(token);
 }
 
-int? GetAuthenticatedUserId(ClaimsPrincipal principal)
+int? GetAuthenticatedUserId(
+    ClaimsPrincipal principal)
 {
     var claim =
         principal.FindFirst(
@@ -298,7 +300,8 @@ app.MapPost(
             });
         }
 
-        if (string.IsNullOrWhiteSpace(request.Password))
+        if (string.IsNullOrWhiteSpace(
+                request.Password))
         {
             return Results.BadRequest(new
             {
@@ -462,7 +465,8 @@ app.MapGet(
                 await db.Users
                     .AsNoTracking()
                     .FirstOrDefaultAsync(
-                        u => u.Id == userId.Value);
+                        u => u.Id ==
+                             userId.Value);
 
             if (user is null)
             {
@@ -522,19 +526,37 @@ app.MapGet(
 
             query =
                 query.Where(d =>
-                    d.FirstName.ToLower().Contains(search) ||
-                    d.LastName.ToLower().Contains(search) ||
-                    d.Specialty.ToLower().Contains(search) ||
-                    d.Subspecialty.ToLower().Contains(search) ||
-                    d.City.ToLower().Contains(search) ||
-                    d.Area.ToLower().Contains(search));
+                    d.FirstName
+                        .ToLower()
+                        .Contains(search) ||
+
+                    d.LastName
+                        .ToLower()
+                        .Contains(search) ||
+
+                    d.Specialty
+                        .ToLower()
+                        .Contains(search) ||
+
+                    d.Subspecialty
+                        .ToLower()
+                        .Contains(search) ||
+
+                    d.City
+                        .ToLower()
+                        .Contains(search) ||
+
+                    d.Area
+                        .ToLower()
+                        .Contains(search));
         }
 
         // ==================================================
         // SPECIALTY
         // ==================================================
 
-        if (!string.IsNullOrWhiteSpace(specialty))
+        if (!string.IsNullOrWhiteSpace(
+                specialty))
         {
             var specialtyValue =
                 specialty.Trim()
@@ -544,10 +566,13 @@ app.MapGet(
                 query.Where(d =>
                     d.Specialty
                         .ToLower()
-                        .Contains(specialtyValue) ||
+                        .Contains(
+                            specialtyValue) ||
+
                     d.Subspecialty
                         .ToLower()
-                        .Contains(specialtyValue));
+                        .Contains(
+                            specialtyValue));
         }
 
         // ==================================================
@@ -626,7 +651,8 @@ app.MapGet(
         // SPECIFIC INSURANCE PROVIDER
         // ==================================================
 
-        if (!string.IsNullOrWhiteSpace(insurance))
+        if (!string.IsNullOrWhiteSpace(
+                insurance))
         {
             var insuranceValue =
                 insurance.Trim()
@@ -636,7 +662,8 @@ app.MapGet(
                 query.Where(d =>
                     d.InsuranceProviders
                         .ToLower()
-                        .Contains(insuranceValue));
+                        .Contains(
+                            insuranceValue));
         }
 
         // ==================================================
@@ -655,7 +682,8 @@ app.MapGet(
         // LANGUAGE
         // ==================================================
 
-        if (!string.IsNullOrWhiteSpace(language))
+        if (!string.IsNullOrWhiteSpace(
+                language))
         {
             var languageValue =
                 language.Trim()
@@ -665,7 +693,8 @@ app.MapGet(
                 query.Where(d =>
                     d.Languages
                         .ToLower()
-                        .Contains(languageValue));
+                        .Contains(
+                            languageValue));
         }
 
         // ==================================================
@@ -727,6 +756,12 @@ app.MapGet(
 
         return Results.Ok(doctors);
     });
+
+// ------------------------------------------------------
+// SMART NATURAL-LANGUAGE SEARCH
+// ------------------------------------------------------
+
+app.MapDoctorSearchEndpoints();
 
 // ------------------------------------------------------
 // GET DOCTOR BY ID
@@ -850,7 +885,8 @@ app.MapGet(
                 .Where(
                     a =>
                         a.DoctorId == id &&
-                        a.Status != "Cancelled" &&
+                        a.Status !=
+                        "Cancelled" &&
                         a.StartsAt >= dayStart &&
                         a.StartsAt < dayEnd)
                 .Select(
@@ -870,12 +906,15 @@ app.MapGet(
 
         while (current < closingTime)
         {
-            if (!bookedTimes.Contains(current))
+            if (!bookedTimes.Contains(
+                    current))
             {
                 slots.Add(new
                 {
                     startsAt = current,
-                    time = current.ToString("HH:mm")
+                    time =
+                        current.ToString(
+                            "HH:mm")
                 });
             }
 
@@ -925,18 +964,21 @@ app.MapPost(
             await db.Doctors
                 .FirstOrDefaultAsync(
                     d =>
-                        d.Id == request.DoctorId &&
+                        d.Id ==
+                        request.DoctorId &&
                         d.IsActive);
 
         if (doctor is null)
         {
             return Results.NotFound(new
             {
-                message = "Doctor not found"
+                message =
+                    "Doctor not found"
             });
         }
 
-        if (request.StartsAt <= DateTime.Now)
+        if (request.StartsAt <=
+            DateTime.Now)
         {
             return Results.BadRequest(new
             {
@@ -957,13 +999,21 @@ app.MapPost(
         }
 
         var openingTime =
-            new TimeSpan(9, 0, 0);
+            new TimeSpan(
+                9,
+                0,
+                0);
 
         var closingTime =
-            new TimeSpan(17, 0, 0);
+            new TimeSpan(
+                17,
+                0,
+                0);
 
-        if (request.StartsAt.TimeOfDay < openingTime ||
-            request.StartsAt.TimeOfDay >= closingTime)
+        if (request.StartsAt.TimeOfDay <
+                openingTime ||
+            request.StartsAt.TimeOfDay >=
+                closingTime)
         {
             return Results.BadRequest(new
             {
@@ -984,7 +1034,8 @@ app.MapPost(
             });
         }
 
-        int? authenticatedUserId = null;
+        int? authenticatedUserId =
+            null;
 
         if (httpContext.User.Identity
             ?.IsAuthenticated == true)
@@ -1061,7 +1112,8 @@ app.MapPost(
                     authenticatedUserId,
 
                 PatientName =
-                    request.PatientName.Trim(),
+                    request.PatientName
+                        .Trim(),
 
                 PatientEmail =
                     request.PatientEmail
@@ -1142,7 +1194,8 @@ app.MapGet(
                             a.UserId ==
                             userId.Value)
                     .OrderBy(
-                        a => a.StartsAt)
+                        a =>
+                            a.StartsAt)
                     .Select(
                         a => new
                         {
@@ -1209,7 +1262,8 @@ app.MapGet(
                 });
             }
 
-            if (appointment.UserId != userId.Value)
+            if (appointment.UserId !=
+                userId.Value)
             {
                 return Results.Forbid();
             }
@@ -1274,7 +1328,8 @@ app.MapPatch(
                 });
             }
 
-            if (appointment.UserId != userId.Value)
+            if (appointment.UserId !=
+                userId.Value)
             {
                 return Results.Forbid();
             }

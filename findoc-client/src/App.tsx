@@ -76,6 +76,27 @@ interface ApiMessage {
   message?: string;
 }
 
+interface SmartSearchInterpretation {
+  specialty: string | null;
+  city: string | null;
+  area: string | null;
+  maxPrice: number | null;
+  minRating: number | null;
+  acceptsInsurance: boolean | null;
+  insurance: string | null;
+  online: boolean | null;
+  language: string | null;
+  verified: boolean | null;
+  sort: string;
+}
+
+interface SmartSearchResponse {
+  originalQuery: string;
+  interpreted: SmartSearchInterpretation;
+  resultCount: number;
+  doctors: Doctor[];
+}
+
 type AuthMode = "login" | "register";
 
 /* =====================================================
@@ -90,10 +111,7 @@ const API_URL =
    LABELS
 ===================================================== */
 
-const specialtyLabels: Record<
-  string,
-  string
-> = {
+const specialtyLabels: Record<string, string> = {
   Cardiologist: "Καρδιολόγος",
   Dermatologist: "Δερματολόγος",
   Neurologist: "Νευρολόγος",
@@ -101,10 +119,7 @@ const specialtyLabels: Record<
   Orthopedic: "Ορθοπαιδικός",
 };
 
-const cityLabels: Record<
-  string,
-  string
-> = {
+const cityLabels: Record<string, string> = {
   Athens: "Αθήνα",
   Thessaloniki: "Θεσσαλονίκη",
   Patras: "Πάτρα",
@@ -115,10 +130,7 @@ const cityLabels: Record<
    DEMO DOCTOR PHOTOS
 ===================================================== */
 
-const doctorPhotoMap: Record<
-  number,
-  string
-> = {
+const doctorPhotoMap: Record<number, string> = {
   1: "https://randomuser.me/api/portraits/women/44.jpg",
   2: "https://randomuser.me/api/portraits/men/32.jpg",
   3: "https://randomuser.me/api/portraits/women/65.jpg",
@@ -152,9 +164,7 @@ function getDoctorImageUrl(
    DATE HELPERS
 ===================================================== */
 
-function formatDateForInput(
-  date: Date
-) {
+function formatDateForInput(date: Date) {
   const year = date.getFullYear();
 
   const month = String(
@@ -171,17 +181,13 @@ function formatDateForInput(
 function getNextAvailableDate() {
   const date = new Date();
 
-  date.setDate(
-    date.getDate() + 1
-  );
+  date.setDate(date.getDate() + 1);
 
   while (
     date.getDay() === 0 ||
     date.getDay() === 6
   ) {
-    date.setDate(
-      date.getDate() + 1
-    );
+    date.setDate(date.getDate() + 1);
   }
 
   return formatDateForInput(date);
@@ -214,80 +220,52 @@ function App() {
      SEARCH
   =================================================== */
 
-  const [
-    doctors,
-    setDoctors,
-  ] = useState<Doctor[]>([]);
+  const [doctors, setDoctors] =
+    useState<Doctor[]>([]);
 
-  const [
-    specialties,
-    setSpecialties,
-  ] = useState<string[]>([]);
+  const [specialties, setSpecialties] =
+    useState<string[]>([]);
 
-  const [
-    searchText,
-    setSearchText,
-  ] = useState("");
+  const [searchText, setSearchText] =
+    useState("");
 
-  const [
-    specialty,
-    setSpecialty,
-  ] = useState("");
+  const [specialty, setSpecialty] =
+    useState("");
 
-  const [
-    city,
-    setCity,
-  ] = useState("");
+  const [city, setCity] =
+    useState("");
 
-  const [
-    area,
-    setArea,
-  ] = useState("");
+  const [area, setArea] =
+    useState("");
 
-  const [
-    insurance,
-    setInsurance,
-  ] = useState("");
+  const [insurance, setInsurance] =
+    useState("");
 
-  const [
-    maxPrice,
-    setMaxPrice,
-  ] = useState("");
+  const [maxPrice, setMaxPrice] =
+    useState("");
 
-  const [
-    minRating,
-    setMinRating,
-  ] = useState("");
+  const [minRating, setMinRating] =
+    useState("");
 
-  const [
-    language,
-    setLanguage,
-  ] = useState("");
+  const [language, setLanguage] =
+    useState("");
 
-  const [
-    onlineOnly,
-    setOnlineOnly,
-  ] = useState(false);
+  const [onlineOnly, setOnlineOnly] =
+    useState(false);
 
   const [
     verifiedOnly,
     setVerifiedOnly,
   ] = useState(false);
 
-  const [
-    sort,
-    setSort,
-  ] = useState("rating");
+  const [sort, setSort] =
+    useState("rating");
 
-  const [
-    loading,
-    setLoading,
-  ] = useState(false);
+  const [loading, setLoading] =
+    useState(false);
 
-  const [
-    searched,
-    setSearched,
-  ] = useState(false);
+  const [searched, setSearched] =
+    useState(false);
 
   const [
     searchMessage,
@@ -301,9 +279,7 @@ function App() {
   const [
     profileDoctor,
     setProfileDoctor,
-  ] = useState<Doctor | null>(
-    null
-  );
+  ] = useState<Doctor | null>(null);
 
   const [
     profileLoading,
@@ -317,9 +293,7 @@ function App() {
   const [
     selectedDoctor,
     setSelectedDoctor,
-  ] = useState<Doctor | null>(
-    null
-  );
+  ] = useState<Doctor | null>(null);
 
   const [
     appointmentDate,
@@ -331,16 +305,15 @@ function App() {
   const [
     availability,
     setAvailability,
-  ] = useState<
-    AvailabilitySlot[]
-  >([]);
+  ] = useState<AvailabilitySlot[]>([]);
 
   const [
     selectedSlot,
     setSelectedSlot,
-  ] = useState<
-    AvailabilitySlot | null
-  >(null);
+  ] =
+    useState<AvailabilitySlot | null>(
+      null
+    );
 
   const [
     patientName,
@@ -376,43 +349,29 @@ function App() {
      AUTH
   =================================================== */
 
-  const [
-    authUser,
-    setAuthUser,
-  ] = useState<AuthUser | null>(
-    null
-  );
+  const [authUser, setAuthUser] =
+    useState<AuthUser | null>(null);
 
-  const [
-    authToken,
-    setAuthToken,
-  ] = useState<string | null>(
-    localStorage.getItem(
-      "findoc_token"
-    )
-  );
+  const [authToken, setAuthToken] =
+    useState<string | null>(
+      localStorage.getItem(
+        "findoc_token"
+      )
+    );
 
-  const [
-    authOpen,
-    setAuthOpen,
-  ] = useState(false);
+  const [authOpen, setAuthOpen] =
+    useState(false);
 
-  const [
-    authMode,
-    setAuthMode,
-  ] = useState<AuthMode>(
-    "login"
-  );
+  const [authMode, setAuthMode] =
+    useState<AuthMode>("login");
 
   const [
     authFullName,
     setAuthFullName,
   ] = useState("");
 
-  const [
-    authEmail,
-    setAuthEmail,
-  ] = useState("");
+  const [authEmail, setAuthEmail] =
+    useState("");
 
   const [
     authPassword,
@@ -441,9 +400,7 @@ function App() {
   const [
     myAppointments,
     setMyAppointments,
-  ] = useState<
-    MyAppointment[]
-  >([]);
+  ] = useState<MyAppointment[]>([]);
 
   const [
     appointmentsLoading,
@@ -458,9 +415,7 @@ function App() {
   const [
     cancellingAppointmentId,
     setCancellingAppointmentId,
-  ] = useState<
-    number | null
-  >(null);
+  ] = useState<number | null>(null);
 
   /* ===================================================
      INITIAL LOAD
@@ -524,6 +479,18 @@ function App() {
     setAuthPassword("");
     setAuthMessage("");
     setAuthOpen(true);
+  }
+
+  function switchAuthMode(
+    mode: AuthMode
+  ) {
+    setAuthMode(mode);
+    setAuthMessage("");
+    setAuthPassword("");
+
+    if (mode === "login") {
+      setAuthFullName("");
+    }
   }
 
   function closeAuth() {
@@ -668,7 +635,6 @@ function App() {
       );
 
       setAuthOpen(false);
-
       setAuthFullName("");
       setAuthEmail("");
       setAuthPassword("");
@@ -730,7 +696,84 @@ function App() {
   }
 
   /* ===================================================
-     ADVANCED SEARCH
+     SEARCH HELPERS
+  =================================================== */
+
+  function hasSmartInterpretation(
+    interpreted:
+      SmartSearchInterpretation
+  ) {
+    return Boolean(
+      interpreted.specialty ||
+      interpreted.city ||
+      interpreted.area ||
+      interpreted.maxPrice !== null ||
+      interpreted.minRating !== null ||
+      interpreted.acceptsInsurance !==
+        null ||
+      interpreted.insurance ||
+      interpreted.online !== null ||
+      interpreted.language ||
+      interpreted.verified !== null ||
+      interpreted.sort !== "rating"
+    );
+  }
+
+  function scrollToResults() {
+    window.setTimeout(() => {
+      document
+        .getElementById(
+          "results"
+        )
+        ?.scrollIntoView({
+          behavior: "smooth",
+          block: "start",
+        });
+    }, 100);
+  }
+
+  async function getSmartInterpretation(
+    text: string
+  ): Promise<
+    SmartSearchInterpretation | null
+  > {
+    try {
+      const response =
+        await fetch(
+          `${API_URL}/api/doctors/smart-search?query=${encodeURIComponent(
+            text
+          )}`
+        );
+
+      if (!response.ok) {
+        return null;
+      }
+
+      const data:
+        SmartSearchResponse =
+        await response.json();
+
+      if (
+        !hasSmartInterpretation(
+          data.interpreted
+        )
+      ) {
+        return null;
+      }
+
+      return data.interpreted;
+    } catch (error) {
+      console.warn(
+        "Smart search unavailable:",
+        error
+      );
+
+      return null;
+    }
+  }
+
+  /* ===================================================
+     ADVANCED + SMART SEARCH
   =================================================== */
 
   async function searchDoctors() {
@@ -738,50 +781,125 @@ function App() {
       setLoading(true);
       setSearchMessage("");
 
+      let smart:
+        SmartSearchInterpretation | null =
+        null;
+
+      if (searchText.trim()) {
+        smart =
+          await getSmartInterpretation(
+            searchText.trim()
+          );
+      }
+
       const params =
         new URLSearchParams();
 
-      if (searchText.trim()) {
-        params.append(
-          "q",
-          searchText.trim()
-        );
-      }
+      /*
+       * Αν το smart parser κατάλαβε το
+       * κείμενο, χρησιμοποιούμε τα φίλτρα
+       * που εξήγαγε.
+       *
+       * Τα χειροκίνητα φίλτρα έχουν
+       * προτεραιότητα.
+       */
 
-      if (specialty) {
+      const finalSpecialty =
+        specialty ||
+        smart?.specialty ||
+        "";
+
+      const finalCity =
+        city ||
+        smart?.city ||
+        "";
+
+      const finalArea =
+        area.trim() ||
+        smart?.area ||
+        "";
+
+      const finalMaxPrice =
+        maxPrice ||
+        (
+          smart?.maxPrice !== null &&
+          smart?.maxPrice !== undefined
+            ? String(
+                smart.maxPrice
+              )
+            : ""
+        );
+
+      const finalMinRating =
+        minRating ||
+        (
+          smart?.minRating !== null &&
+          smart?.minRating !== undefined
+            ? String(
+                smart.minRating
+              )
+            : ""
+        );
+
+      const finalLanguage =
+        language ||
+        smart?.language ||
+        "";
+
+      const finalSort =
+        sort !== "rating"
+          ? sort
+          : smart?.sort ||
+            "rating";
+
+      if (finalSpecialty) {
         params.append(
           "specialty",
-          specialty
+          finalSpecialty
         );
       }
 
-      if (city) {
+      if (finalCity) {
         params.append(
           "city",
-          city
+          finalCity
         );
       }
 
-      if (area.trim()) {
+      if (finalArea) {
         params.append(
           "area",
-          area.trim()
+          finalArea
         );
       }
 
-      if (maxPrice) {
+      if (finalMaxPrice) {
         params.append(
           "maxPrice",
-          maxPrice
+          finalMaxPrice
         );
       }
 
-      if (minRating) {
+      if (finalMinRating) {
         params.append(
           "minRating",
-          minRating
+          finalMinRating
         );
       }
+
+      if (finalLanguage) {
+        params.append(
+          "language",
+          finalLanguage
+        );
+      }
+
+      /*
+       * ΑΣΦΑΛΙΣΗ
+       *
+       * Χειροκίνητη επιλογή >
+       * smart interpretation.
+       */
 
       if (insurance) {
         if (
@@ -798,33 +916,74 @@ function App() {
             insurance
           );
         }
+      } else if (
+        smart?.insurance
+      ) {
+        params.append(
+          "insurance",
+          smart.insurance
+        );
+      } else if (
+        smart?.acceptsInsurance ===
+        true
+      ) {
+        params.append(
+          "acceptsInsurance",
+          "true"
+        );
       }
 
-      if (onlineOnly) {
+      /*
+       * ONLINE CONSULTATION
+       */
+
+      if (
+        onlineOnly ||
+        smart?.online === true
+      ) {
         params.append(
           "online",
           "true"
         );
       }
 
-      if (verifiedOnly) {
+      /*
+       * VERIFIED
+       */
+
+      if (
+        verifiedOnly ||
+        smart?.verified === true
+      ) {
         params.append(
           "verified",
           "true"
         );
       }
 
-      if (language) {
+      if (finalSort) {
         params.append(
-          "language",
-          language
+          "sort",
+          finalSort
         );
       }
 
-      if (sort) {
+      /*
+       * Αν ο parser ΔΕΝ κατάλαβε το
+       * κείμενο, το χρησιμοποιούμε σαν
+       * κλασικό free-text search.
+       *
+       * Έτσι συνεχίζει να δουλεύει η
+       * αναζήτηση με όνομα γιατρού.
+       */
+
+      if (
+        searchText.trim() &&
+        !smart
+      ) {
         params.append(
-          "sort",
-          sort
+          "q",
+          searchText.trim()
         );
       }
 
@@ -851,16 +1010,7 @@ function App() {
       setDoctors(data);
       setSearched(true);
 
-      window.setTimeout(() => {
-        document
-          .getElementById(
-            "results"
-          )
-          ?.scrollIntoView({
-            behavior: "smooth",
-            block: "start",
-          });
-      }, 100);
+      scrollToResults();
     } catch (error) {
       console.error(
         "Doctors search error:",
@@ -887,6 +1037,7 @@ function App() {
     setOnlineOnly(false);
     setVerifiedOnly(false);
     setSort("rating");
+    setSearchMessage("");
   }
 
   /* ===================================================
@@ -950,10 +1101,7 @@ function App() {
     date: string
   ) {
     try {
-      setAvailabilityLoading(
-        true
-      );
-
+      setAvailabilityLoading(true);
       setSelectedSlot(null);
 
       const response =
@@ -983,16 +1131,13 @@ function App() {
       );
 
       setAvailability([]);
-
       setBookingSuccess(false);
 
       setBookingMessage(
         "Δεν ήταν δυνατή η φόρτωση των διαθέσιμων ωρών."
       );
     } finally {
-      setAvailabilityLoading(
-        false
-      );
+      setAvailabilityLoading(false);
     }
   }
 
@@ -1003,7 +1148,6 @@ function App() {
       getNextAvailableDate();
 
     setSelectedDoctor(doctor);
-
     setAppointmentDate(
       defaultDate
     );
@@ -1044,7 +1188,6 @@ function App() {
     date: string
   ) {
     setAppointmentDate(date);
-
     setBookingMessage("");
     setBookingSuccess(false);
     setSelectedSlot(null);
@@ -1103,7 +1246,6 @@ function App() {
 
     try {
       setBookingLoading(true);
-
       setBookingMessage("");
       setBookingSuccess(false);
 
@@ -1145,9 +1287,10 @@ function App() {
           }
         );
 
-      const data:
-        ApiMessage =
-        await response.json();
+      const data: ApiMessage =
+        await response
+          .json()
+          .catch(() => ({}));
 
       if (!response.ok) {
         setBookingMessage(
@@ -1219,10 +1362,7 @@ function App() {
     }
 
     try {
-      setAppointmentsLoading(
-        true
-      );
-
+      setAppointmentsLoading(true);
       setAppointmentsMessage("");
 
       const response =
@@ -1265,9 +1405,7 @@ function App() {
         "Δεν ήταν δυνατή η φόρτωση των ραντεβού σου."
       );
     } finally {
-      setAppointmentsLoading(
-        false
-      );
+      setAppointmentsLoading(false);
     }
   }
 
@@ -1561,17 +1699,17 @@ function App() {
 
             <div className="search-item">
               <div className="search-icon">
-                ⌕
+                ✦
               </div>
 
               <div>
                 <label>
-                  ΑΝΑΖΗΤΗΣΗ
+                  ΕΞΥΠΝΗ ΑΝΑΖΗΤΗΣΗ
                 </label>
 
                 <input
                   type="text"
-                  placeholder="Όνομα, ειδικότητα, περιοχή..."
+                  placeholder="π.χ. Καρδιολόγος στην Αθήνα με ΕΟΠΥΥ μέχρι 50€"
                   value={searchText}
                   onChange={(event) =>
                     setSearchText(
@@ -2179,6 +2317,38 @@ function App() {
                 : "Ξεκίνα με το Findoc"}
             </h2>
 
+            <div
+              style={{
+                display: "flex",
+                gap: "10px",
+                marginBottom: "22px",
+              }}
+            >
+              <button
+                type="button"
+                className="profile-button"
+                onClick={() =>
+                  switchAuthMode(
+                    "login"
+                  )
+                }
+              >
+                Σύνδεση
+              </button>
+
+              <button
+                type="button"
+                className="profile-button"
+                onClick={() =>
+                  switchAuthMode(
+                    "register"
+                  )
+                }
+              >
+                Εγγραφή
+              </button>
+            </div>
+
             {authMode ===
               "register" && (
               <div className="auth-field">
@@ -2189,6 +2359,7 @@ function App() {
 
                 <input
                   type="text"
+                  autoComplete="name"
                   value={
                     authFullName
                   }
@@ -2210,6 +2381,7 @@ function App() {
 
               <input
                 type="email"
+                autoComplete="email"
                 value={authEmail}
                 onChange={(event) =>
                   setAuthEmail(
@@ -2228,6 +2400,12 @@ function App() {
 
               <input
                 type="password"
+                autoComplete={
+                  authMode ===
+                  "register"
+                    ? "new-password"
+                    : "current-password"
+                }
                 value={
                   authPassword
                 }
@@ -2236,6 +2414,14 @@ function App() {
                     event.target.value
                   )
                 }
+                onKeyDown={(event) => {
+                  if (
+                    event.key ===
+                    "Enter"
+                  ) {
+                    void submitAuth();
+                  }
+                }}
               />
 
             </div>
@@ -2381,12 +2567,17 @@ function App() {
                         </p>
 
                         <p>
-                          {
+                          {cityLabels[
                             appointment
                               .doctor
                               .city
-                          }
+                          ] ||
+                            appointment
+                              .doctor
+                              .city}
+
                           {" · "}
+
                           {
                             appointment
                               .doctor
@@ -2413,7 +2604,10 @@ function App() {
                                 )
                               }
                             >
-                              Ακύρωση ραντεβού
+                              {cancellingAppointmentId ===
+                              appointment.id
+                                ? "Ακύρωση..."
+                                : "Ακύρωση ραντεβού"}
                             </button>
                           )}
 
@@ -2518,11 +2712,13 @@ function App() {
                     profileDoctor.specialty}
                 </p>
 
-                <p>
-                  {
-                    profileDoctor.subspecialty
-                  }
-                </p>
+                {profileDoctor.subspecialty && (
+                  <p>
+                    {
+                      profileDoctor.subspecialty
+                    }
+                  </p>
+                )}
 
                 <div className="profile-rating">
                   ★{" "}
@@ -2562,7 +2758,12 @@ function App() {
 
                 <p>
                   {profileDoctor.area}
-                  {" · "}
+
+                  {profileDoctor.area &&
+                    profileDoctor.address
+                    ? " · "
+                    : ""}
+
                   {
                     profileDoctor.address
                   }
@@ -2742,7 +2943,10 @@ function App() {
 
                 {" · "}
 
-                {selectedDoctor.city}
+                {cityLabels[
+                  selectedDoctor.city
+                ] ||
+                  selectedDoctor.city}
               </p>
 
             </div>
