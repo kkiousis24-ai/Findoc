@@ -3,6 +3,7 @@ import {
   useRef,
   useState,
 } from "react";
+
 import type {
   FormEvent,
 } from "react";
@@ -47,12 +48,8 @@ interface SmartSearchInterpretation {
 
 interface SmartSearchResponse {
   originalQuery: string;
-
-  interpreted:
-    SmartSearchInterpretation;
-
+  interpreted: SmartSearchInterpretation;
   resultCount: number;
-
   doctors: Doctor[];
 }
 
@@ -66,6 +63,8 @@ interface ChatMessage {
   text: string;
 
   doctors?: Doctor[];
+
+  contextSummary?: string;
 }
 
 /* =====================================================
@@ -97,12 +96,37 @@ const cityLabels:
   Ioannina: "Ιωάννινα",
 };
 
+const languageLabels:
+  Record<string, string> = {
+  Greek: "Ελληνικά",
+  English: "Αγγλικά",
+  French: "Γαλλικά",
+  German: "Γερμανικά",
+};
+
 /* =====================================================
    HELPERS
 ===================================================== */
 
 function createMessageId() {
   return `${Date.now()}-${Math.random()}`;
+}
+
+function createEmptyContext():
+  SmartSearchInterpretation {
+  return {
+    specialty: null,
+    city: null,
+    area: null,
+    maxPrice: null,
+    minRating: null,
+    acceptsInsurance: null,
+    insurance: null,
+    online: null,
+    language: null,
+    verified: null,
+    sort: "rating",
+  };
 }
 
 function getSpecialtyLabel(
@@ -121,6 +145,361 @@ function getCityLabel(
     cityLabels[city] ??
     city
   );
+}
+
+function getLanguageLabel(
+  language: string
+) {
+  return (
+    languageLabels[language] ??
+    language
+  );
+}
+
+function hasInterpretation(
+  interpretation:
+    SmartSearchInterpretation
+) {
+  return Boolean(
+    interpretation.specialty ||
+    interpretation.city ||
+    interpretation.area ||
+    interpretation.maxPrice !== null ||
+    interpretation.minRating !== null ||
+    interpretation.acceptsInsurance !==
+      null ||
+    interpretation.insurance ||
+    interpretation.online !== null ||
+    interpretation.language ||
+    interpretation.verified !== null ||
+    interpretation.sort !== "rating"
+  );
+}
+
+function hasContext(
+  context:
+    SmartSearchInterpretation
+) {
+  return Boolean(
+    context.specialty ||
+    context.city ||
+    context.area ||
+    context.maxPrice !== null ||
+    context.minRating !== null ||
+    context.acceptsInsurance !== null ||
+    context.insurance ||
+    context.online !== null ||
+    context.language ||
+    context.verified !== null ||
+    context.sort !== "rating"
+  );
+}
+
+/* =====================================================
+   MERGE CONVERSATION CONTEXT
+===================================================== */
+
+function mergeContext(
+  previous:
+    SmartSearchInterpretation,
+
+  incoming:
+    SmartSearchInterpretation
+):
+  SmartSearchInterpretation {
+  const nextInsurance =
+    incoming.insurance ??
+    previous.insurance;
+
+  const nextAcceptsInsurance =
+    incoming.acceptsInsurance ??
+    previous.acceptsInsurance ??
+    (
+      nextInsurance
+        ? true
+        : null
+    );
+
+  return {
+    specialty:
+      incoming.specialty ??
+      previous.specialty,
+
+    city:
+      incoming.city ??
+      previous.city,
+
+    area:
+      incoming.area ??
+      previous.area,
+
+    maxPrice:
+      incoming.maxPrice ??
+      previous.maxPrice,
+
+    minRating:
+      incoming.minRating ??
+      previous.minRating,
+
+    acceptsInsurance:
+      nextAcceptsInsurance,
+
+    insurance:
+      nextInsurance,
+
+    online:
+      incoming.online ??
+      previous.online,
+
+    language:
+      incoming.language ??
+      previous.language,
+
+    verified:
+      incoming.verified ??
+      previous.verified,
+
+    sort:
+      incoming.sort !== "rating"
+        ? incoming.sort
+        : previous.sort,
+  };
+}
+
+/* =====================================================
+   BUILD SEARCH QUERY
+===================================================== */
+
+function buildDoctorSearchParams(
+  context:
+    SmartSearchInterpretation,
+
+  freeText?: string
+) {
+  const params =
+    new URLSearchParams();
+
+  if (freeText?.trim()) {
+    params.append(
+      "q",
+      freeText.trim()
+    );
+  }
+
+  if (context.specialty) {
+    params.append(
+      "specialty",
+      context.specialty
+    );
+  }
+
+  if (context.city) {
+    params.append(
+      "city",
+      context.city
+    );
+  }
+
+  if (context.area) {
+    params.append(
+      "area",
+      context.area
+    );
+  }
+
+  if (
+    context.maxPrice !== null
+  ) {
+    params.append(
+      "maxPrice",
+      String(
+        context.maxPrice
+      )
+    );
+  }
+
+  if (
+    context.minRating !== null
+  ) {
+    params.append(
+      "minRating",
+      String(
+        context.minRating
+      )
+    );
+  }
+
+  if (context.insurance) {
+    params.append(
+      "insurance",
+      context.insurance
+    );
+  } else if (
+    context.acceptsInsurance ===
+    true
+  ) {
+    params.append(
+      "acceptsInsurance",
+      "true"
+    );
+  }
+
+  if (
+    context.online === true
+  ) {
+    params.append(
+      "online",
+      "true"
+    );
+  }
+
+  if (context.language) {
+    params.append(
+      "language",
+      context.language
+    );
+  }
+
+  if (
+    context.verified === true
+  ) {
+    params.append(
+      "verified",
+      "true"
+    );
+  }
+
+  params.append(
+    "sort",
+    context.sort || "rating"
+  );
+
+  return params;
+}
+
+/* =====================================================
+   CONTEXT SUMMARY
+===================================================== */
+
+function buildContextSummary(
+  context:
+    SmartSearchInterpretation
+) {
+  const items: string[] =
+    [];
+
+  if (context.specialty) {
+    items.push(
+      getSpecialtyLabel(
+        context.specialty
+      )
+    );
+  }
+
+  if (context.city) {
+    items.push(
+      getCityLabel(
+        context.city
+      )
+    );
+  }
+
+  if (context.area) {
+    items.push(
+      context.area
+    );
+  }
+
+  if (context.insurance) {
+    items.push(
+      context.insurance
+    );
+  } else if (
+    context.acceptsInsurance ===
+    true
+  ) {
+    items.push(
+      "Με ασφάλιση"
+    );
+  }
+
+  if (
+    context.maxPrice !== null
+  ) {
+    items.push(
+      `έως €${context.maxPrice}`
+    );
+  }
+
+  if (
+    context.minRating !== null
+  ) {
+    items.push(
+      `rating ${context.minRating}+`
+    );
+  }
+
+  if (
+    context.online === true
+  ) {
+    items.push(
+      "Online"
+    );
+  }
+
+  if (context.language) {
+    items.push(
+      getLanguageLabel(
+        context.language
+      )
+    );
+  }
+
+  if (
+    context.verified === true
+  ) {
+    items.push(
+      "Verified"
+    );
+  }
+
+  if (
+    context.sort ===
+    "price_asc"
+  ) {
+    items.push(
+      "φθηνότεροι πρώτα"
+    );
+  }
+
+  if (
+    context.sort ===
+    "price_desc"
+  ) {
+    items.push(
+      "ακριβότεροι πρώτα"
+    );
+  }
+
+  if (
+    context.sort ===
+    "experience"
+  ) {
+    items.push(
+      "περισσότερη εμπειρία"
+    );
+  }
+
+  if (
+    context.sort ===
+    "reviews"
+  ) {
+    items.push(
+      "περισσότερες κριτικές"
+    );
+  }
+
+  return items.join(" · ");
 }
 
 /* =====================================================
@@ -144,6 +523,14 @@ function SmartSearchChat() {
   ] = useState(false);
 
   const [
+    searchContext,
+    setSearchContext,
+  ] =
+    useState<SmartSearchInterpretation>(
+      createEmptyContext()
+    );
+
+  const [
     messages,
     setMessages,
   ] = useState<ChatMessage[]>([
@@ -153,7 +540,7 @@ function SmartSearchChat() {
       role: "assistant",
 
       text:
-        "Γεια σου! 👋 Είμαι ο Findoc Assistant. Πες μου τι γιατρό ψάχνεις, σε ποια περιοχή και ό,τι άλλο σε ενδιαφέρει.",
+        "Γεια σου! 👋 Είμαι ο Findoc Assistant. Πες μου τι γιατρό ψάχνεις και θα σε βοηθήσω να βρεις την καλύτερη επιλογή.",
     },
   ]);
 
@@ -178,7 +565,67 @@ function SmartSearchChat() {
   ]);
 
   /* ===================================================
-     SEARCH
+     SMART PARSER
+  =================================================== */
+
+  async function interpretMessage(
+    query: string
+  ) {
+    const response =
+      await fetch(
+        `${API_URL}/api/doctors/smart-search?query=${encodeURIComponent(
+          query
+        )}`
+      );
+
+    if (!response.ok) {
+      throw new Error(
+        "Smart search failed"
+      );
+    }
+
+    const data:
+      SmartSearchResponse =
+      await response.json();
+
+    return data.interpreted;
+  }
+
+  /* ===================================================
+     FETCH DOCTORS
+  =================================================== */
+
+  async function searchDoctors(
+    context:
+      SmartSearchInterpretation,
+
+    freeText?: string
+  ) {
+    const params =
+      buildDoctorSearchParams(
+        context,
+        freeText
+      );
+
+    const response =
+      await fetch(
+        `${API_URL}/api/doctors?${params.toString()}`
+      );
+
+    if (!response.ok) {
+      throw new Error(
+        "Doctor search failed"
+      );
+    }
+
+    const data: Doctor[] =
+      await response.json();
+
+    return data;
+  }
+
+  /* ===================================================
+     SEND MESSAGE
   =================================================== */
 
   async function sendMessage(
@@ -193,6 +640,34 @@ function SmartSearchChat() {
       !query ||
       loading
     ) {
+      return;
+    }
+
+    /* -------------------------------------------------
+       SPECIAL RESET COMMANDS
+    ------------------------------------------------- */
+
+    const normalizedQuery =
+      query
+        .toLocaleLowerCase(
+          "el-GR"
+        )
+        .trim();
+
+    if (
+      normalizedQuery ===
+        "reset" ||
+      normalizedQuery ===
+        "clear" ||
+      normalizedQuery.includes(
+        "νέα αναζήτηση"
+      ) ||
+      normalizedQuery.includes(
+        "ξεκίνα από την αρχή"
+      )
+    ) {
+      resetChat();
+
       return;
     }
 
@@ -216,25 +691,69 @@ function SmartSearchChat() {
     setLoading(true);
 
     try {
-      const response =
-        await fetch(
-          `${API_URL}/api/doctors/smart-search?query=${encodeURIComponent(
-            query
-          )}`
+      /* -----------------------------------------------
+         1. INTERPRET CURRENT MESSAGE
+      ----------------------------------------------- */
+
+      const interpretation =
+        await interpretMessage(
+          query
         );
 
-      if (!response.ok) {
-        throw new Error(
-          "Smart search request failed"
+      const recognized =
+        hasInterpretation(
+          interpretation
+        );
+
+      /* -----------------------------------------------
+         2. MERGE WITH PREVIOUS MEMORY
+      ----------------------------------------------- */
+
+      let nextContext =
+        searchContext;
+
+      if (recognized) {
+        nextContext =
+          mergeContext(
+            searchContext,
+            interpretation
+          );
+
+        setSearchContext(
+          nextContext
         );
       }
 
-      const data:
-        SmartSearchResponse =
-        await response.json();
+      /* -----------------------------------------------
+         3. NORMAL TEXT FALLBACK
+      ----------------------------------------------- */
+
+      const useFreeText =
+        !recognized
+          ? query
+          : undefined;
+
+      /* -----------------------------------------------
+         4. SEARCH WITH ALL REMEMBERED FILTERS
+      ----------------------------------------------- */
+
+      const doctors =
+        await searchDoctors(
+          nextContext,
+          useFreeText
+        );
+
+      const contextSummary =
+        buildContextSummary(
+          nextContext
+        );
+
+      /* -----------------------------------------------
+         5. RESPONSE
+      ----------------------------------------------- */
 
       if (
-        data.resultCount === 0
+        doctors.length === 0
       ) {
         setMessages(
           current => [
@@ -248,7 +767,11 @@ function SmartSearchChat() {
                 "assistant",
 
               text:
-                "Δεν βρήκα γιατρό που να ταιριάζει ακριβώς σε αυτά τα κριτήρια. Δοκίμασε να αλλάξεις περιοχή, τιμή ή κάποια άλλη προϋπόθεση.",
+                "Δεν βρήκα γιατρό που να καλύπτει όλα αυτά τα κριτήρια. Μπορείς να μου πεις να αλλάξω κάποια από τις προϋποθέσεις.",
+
+              contextSummary:
+                contextSummary ||
+                undefined,
             },
           ]
         );
@@ -257,9 +780,9 @@ function SmartSearchChat() {
       }
 
       const resultText =
-        data.resultCount === 1
-          ? "Βρήκα 1 γιατρό που ταιριάζει σε αυτό που ζήτησες:"
-          : `Βρήκα ${data.resultCount} γιατρούς που ταιριάζουν σε αυτό που ζήτησες:`;
+        doctors.length === 1
+          ? "Βρήκα 1 γιατρό που ταιριάζει με όσα μου έχεις ζητήσει:"
+          : `Βρήκα ${doctors.length} γιατρούς που ταιριάζουν με όσα μου έχεις ζητήσει:`;
 
       setMessages(
         current => [
@@ -275,8 +798,11 @@ function SmartSearchChat() {
             text:
               resultText,
 
-            doctors:
-              data.doctors,
+            doctors,
+
+            contextSummary:
+              contextSummary ||
+              undefined,
           },
         ]
       );
@@ -298,7 +824,7 @@ function SmartSearchChat() {
               "assistant",
 
             text:
-              "Δεν κατάφερα να επικοινωνήσω με το Findoc αυτή τη στιγμή. Έλεγξε ότι το backend είναι ενεργό και δοκίμασε ξανά.",
+              "Δεν μπόρεσα να επικοινωνήσω με το Findoc αυτή τη στιγμή. Έλεγξε ότι το backend λειτουργεί και δοκίμασε ξανά.",
           },
         ]
       );
@@ -308,11 +834,15 @@ function SmartSearchChat() {
   }
 
   /* ===================================================
-     NEW CHAT
+     RESET MEMORY
   =================================================== */
 
   function resetChat() {
     setInput("");
+
+    setSearchContext(
+      createEmptyContext()
+    );
 
     setMessages([
       {
@@ -323,10 +853,19 @@ function SmartSearchChat() {
           "assistant",
 
         text:
-          "Νέα αναζήτηση! Πες μου τι γιατρό χρειάζεσαι.",
+          "Ξεκινάμε νέα αναζήτηση. Πες μου τι γιατρό χρειάζεσαι.",
       },
     ]);
   }
+
+  /* ===================================================
+     CURRENT MEMORY
+  =================================================== */
+
+  const currentContextSummary =
+    buildContextSummary(
+      searchContext
+    );
 
   /* ===================================================
      UI
@@ -367,12 +906,7 @@ function SmartSearchChat() {
 
             box-shadow:
               0 18px 50px
-              rgba(
-                0,
-                0,
-                0,
-                0.36
-              );
+              rgba(0, 0, 0, 0.36);
 
             transition:
               transform 0.18s ease,
@@ -386,12 +920,7 @@ function SmartSearchChat() {
 
             box-shadow:
               0 22px 60px
-              rgba(
-                0,
-                0,
-                0,
-                0.45
-              );
+              rgba(0, 0, 0, 0.45);
           }
 
           .findoc-chat-window {
@@ -402,16 +931,12 @@ function SmartSearchChat() {
 
             width: min(
               410px,
-              calc(
-                100vw - 32px
-              )
+              calc(100vw - 32px)
             );
 
             height: min(
               650px,
-              calc(
-                100vh - 145px
-              )
+              calc(100vh - 145px)
             );
 
             display: flex;
@@ -434,12 +959,7 @@ function SmartSearchChat() {
 
             box-shadow:
               0 30px 90px
-              rgba(
-                0,
-                0,
-                0,
-                0.55
-              );
+              rgba(0, 0, 0, 0.55);
 
             font-family:
               -apple-system,
@@ -598,6 +1118,45 @@ function SmartSearchChat() {
             font-size: 15px;
           }
 
+          .findoc-chat-memory {
+            padding:
+              9px 14px;
+
+            border-bottom:
+              1px solid
+              rgba(
+                255,
+                255,
+                255,
+                0.05
+              );
+
+            background:
+              rgba(
+                83,
+                214,
+                189,
+                0.04
+              );
+
+            color:
+              rgba(
+                223,
+                247,
+                241,
+                0.63
+              );
+
+            font-size: 9px;
+
+            white-space: nowrap;
+            overflow-x: auto;
+          }
+
+          .findoc-chat-memory strong {
+            color: #62dcc5;
+          }
+
           .findoc-chat-messages {
             flex: 1;
 
@@ -662,8 +1221,7 @@ function SmartSearchChat() {
             border-bottom-left-radius:
               6px;
 
-            background:
-              #0e2923;
+            background: #0e2923;
 
             color:
               rgba(
@@ -686,6 +1244,34 @@ function SmartSearchChat() {
             font-weight: 600;
           }
 
+          .findoc-chat-context-summary {
+            margin-top: 10px;
+
+            padding:
+              7px 9px;
+
+            border-radius: 10px;
+
+            background:
+              rgba(
+                86,
+                216,
+                191,
+                0.07
+              );
+
+            color:
+              rgba(
+                119,
+                231,
+                210,
+                0.82
+              );
+
+            font-size: 9px;
+            line-height: 1.45;
+          }
+
           .findoc-chat-doctors {
             width: 100%;
 
@@ -697,8 +1283,7 @@ function SmartSearchChat() {
           }
 
           .findoc-chat-doctor {
-            padding:
-              12px;
+            padding: 12px;
 
             border:
               1px solid
@@ -1121,7 +1706,7 @@ function SmartSearchChat() {
 
                   <span className="findoc-chat-status-dot" />
 
-                  Διαθέσιμος τώρα
+                  Μνήμη συνομιλίας ενεργή
 
                 </div>
               </div>
@@ -1154,6 +1739,20 @@ function SmartSearchChat() {
 
           </header>
 
+          {/* MEMORY BAR */}
+
+          {hasContext(
+            searchContext
+          ) && (
+            <div className="findoc-chat-memory">
+              <strong>
+                Θυμάμαι:
+              </strong>
+              {" "}
+              {currentContextSummary}
+            </div>
+          )}
+
           {/* MESSAGES */}
 
           <div className="findoc-chat-messages">
@@ -1170,6 +1769,15 @@ function SmartSearchChat() {
                   <div className="findoc-chat-bubble">
 
                     {message.text}
+
+                    {message.contextSummary && (
+                      <div className="findoc-chat-context-summary">
+                        ✦{" "}
+                        {
+                          message.contextSummary
+                        }
+                      </div>
+                    )}
 
                     {message.doctors &&
                       message.doctors.length >
@@ -1327,7 +1935,7 @@ function SmartSearchChat() {
               className="findoc-chat-suggestion"
               onClick={() =>
                 setInput(
-                  "Θέλω καρδιολόγο στην Αθήνα με ΕΟΠΥΥ μέχρι 50€"
+                  "Θέλω καρδιολόγο στην Αθήνα"
                 )
               }
             >
@@ -1339,11 +1947,11 @@ function SmartSearchChat() {
               className="findoc-chat-suggestion"
               onClick={() =>
                 setInput(
-                  "Θέλω δερματολόγο που κάνει online consultation"
+                  "μόνο με ΕΟΠΥΥ"
                 )
               }
             >
-              Online δερματολόγος
+              + ΕΟΠΥΥ
             </button>
 
             <button
@@ -1351,11 +1959,11 @@ function SmartSearchChat() {
               className="findoc-chat-suggestion"
               onClick={() =>
                 setInput(
-                  "Βρες μου τον γιατρό με την καλύτερη αξιολόγηση"
+                  "και μέχρι 50€"
                 )
               }
             >
-              Καλύτερη αξιολόγηση
+              + μέχρι 50€
             </button>
 
           </div>
@@ -1372,7 +1980,7 @@ function SmartSearchChat() {
             <input
               type="text"
               className="findoc-chat-input"
-              placeholder="Πες μου τι γιατρό ψάχνεις..."
+              placeholder="Συνέχισε τη συζήτηση..."
               value={input}
               disabled={loading}
               onChange={event =>
@@ -1396,7 +2004,7 @@ function SmartSearchChat() {
           </form>
 
           <div className="findoc-chat-footer-note">
-            Findoc Assistant · Smart doctor search
+            Findoc Assistant · Conversational smart search
           </div>
 
         </section>
