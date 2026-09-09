@@ -1,0 +1,192 @@
+/* =====================================================
+   FINDOC — HERO DOCTOR IMAGE
+===================================================== */
+
+
+/* =====================================================
+   PORTRAIT ARCH
+===================================================== */
+
+.portrait-arch {
+  position: relative;
+
+  overflow: hidden !important;
+
+  isolation: isolate;
+
+  background:
+    linear-gradient(
+      180deg,
+      #dcefeb 0%,
+      #b9d9d2 100%
+    ) !important;
+}
+
+
+/* =====================================================
+   NEW DOCTOR IMAGE
+===================================================== */
+
+.hero-doctor-image {
+  position: absolute;
+
+  inset: 0;
+
+  z-index: 2;
+
+  width: 100% !important;
+  height: 100% !important;
+
+  display: block;
+
+  object-fit: cover;
+
+  object-position:
+    center center;
+
+  border-radius: inherit;
+
+  pointer-events: none;
+
+  user-select: none;
+
+  -webkit-user-drag: none;
+}
+
+
+/* =====================================================
+   OLD CSS DOCTOR
+===================================================== */
+
+.portrait-arch
+.doctor-head,
+.portrait-arch
+.doctor-hair,
+.portrait-arch
+.doctor-neck,
+.portrait-arch
+.doctor-body {
+  display: none !important;
+}
+
+
+/* =====================================================
+   PREMIUM OVERLAY
+===================================================== */
+
+.portrait-arch::after {
+  content: "";
+
+  position: absolute;
+
+  inset: 0;
+
+  z-index: 3;
+
+  pointer-events: none;
+
+  border-radius: inherit;
+
+  background:
+    linear-gradient(
+      180deg,
+      rgba(
+        255,
+        255,
+        255,
+        0.03
+      ),
+      transparent 55%,
+      rgba(
+        4,
+        42,
+        35,
+        0.04
+      )
+    );
+
+  box-shadow:
+    inset 0 1px 0
+      rgba(
+        255,
+        255,
+        255,
+        0.4
+      );
+}
+
+
+/* =====================================================
+   DARK THEME
+===================================================== */
+
+:root[data-theme="dark"]
+.portrait-arch {
+  border-color:
+    rgba(
+      255,
+      255,
+      255,
+      0.12
+    ) !important;
+
+  box-shadow:
+    0 30px 60px
+      rgba(
+        0,
+        0,
+        0,
+        0.24
+      );
+}
+
+
+/* =====================================================
+   LIGHT THEME
+===================================================== */
+
+:root[data-theme="light"]
+.portrait-arch {
+  border-color:
+    rgba(
+      20,
+      94,
+      78,
+      0.14
+    ) !important;
+
+  box-shadow:
+    0 28px 58px
+      rgba(
+        23,
+        88,
+        74,
+        0.16
+      );
+}
+
+
+/* =====================================================
+   HOVER
+===================================================== */
+
+.hero-visual:hover
+.portrait-arch {
+  transform:
+    translateY(-4px)
+    scale(1.015);
+}
+
+
+/* =====================================================
+   MOBILE
+===================================================== */
+
+@media (
+  max-width: 700px
+) {
+  .hero-doctor-image {
+    object-position:
+      center center;
+  }
+}

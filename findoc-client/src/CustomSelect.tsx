@@ -4,14 +4,23 @@ import {
   useState,
 } from "react";
 
+import {
+  useTranslation,
+} from "react-i18next";
+
+
 export interface CustomSelectOption {
   value: string;
   label: string;
 }
 
+
 interface CustomSelectProps {
   value: string;
-  options: CustomSelectOption[];
+
+  options:
+    CustomSelectOption[];
+
   onChange: (
     value: string
   ) => void;
@@ -20,6 +29,7 @@ interface CustomSelectProps {
 
   disabled?: boolean;
 }
+
 
 /* =====================================================
    CUSTOM SELECT
@@ -32,15 +42,24 @@ function CustomSelect({
   ariaLabel = "Επιλογή",
   disabled = false,
 }: CustomSelectProps) {
+  const {
+    t,
+  } =
+    useTranslation();
+
+
   const [
     isOpen,
     setIsOpen,
-  ] = useState(false);
+  ] =
+    useState(false);
+
 
   const containerRef =
     useRef<HTMLDivElement | null>(
       null
     );
+
 
   const selectedOption =
     options.find(
@@ -49,6 +68,370 @@ function CustomSelect({
         value
     ) ??
     options[0];
+
+
+  /* ===================================================
+     FILTER TYPE
+  =================================================== */
+
+  function getFilterType() {
+    const normalized =
+      ariaLabel
+        .trim()
+        .toLowerCase();
+
+
+    if (
+      normalized ===
+        "πόλη" ||
+      normalized ===
+        "city"
+    ) {
+      return "city";
+    }
+
+
+    if (
+      normalized ===
+        "ασφάλιση" ||
+      normalized ===
+        "insurance"
+    ) {
+      return "insurance";
+    }
+
+
+    if (
+      normalized ===
+        "rating" ||
+      normalized ===
+        "αξιολόγηση"
+    ) {
+      return "rating";
+    }
+
+
+    if (
+      normalized ===
+        "γλώσσα" ||
+      normalized ===
+        "language"
+    ) {
+      return "language";
+    }
+
+
+    if (
+      normalized ===
+        "ταξινόμηση" ||
+      normalized ===
+        "sort"
+    ) {
+      return "sort";
+    }
+
+
+    if (
+      normalized ===
+        "ειδικότητα" ||
+      normalized ===
+        "specialty"
+    ) {
+      return "specialty";
+    }
+
+
+    return "generic";
+  }
+
+
+  /* ===================================================
+     TRANSLATED OPTION LABEL
+  =================================================== */
+
+  function getOptionLabel(
+    option:
+      CustomSelectOption
+  ) {
+    const filterType =
+      getFilterType();
+
+
+    /* -----------------------------
+       SPECIALTY
+    ----------------------------- */
+
+    if (
+      filterType ===
+      "specialty"
+    ) {
+      if (
+        option.value ===
+        ""
+      ) {
+        return t(
+          "filterOptions.all",
+          {
+            defaultValue:
+              option.label,
+          }
+        );
+      }
+
+
+      return t(
+        `filterOptions.specialties.${option.value}`,
+        {
+          defaultValue:
+            option.label,
+        }
+      );
+    }
+
+
+    /* -----------------------------
+       CITY
+    ----------------------------- */
+
+    if (
+      filterType ===
+      "city"
+    ) {
+      if (
+        option.value ===
+        ""
+      ) {
+        return t(
+          "filterOptions.allGreece",
+          {
+            defaultValue:
+              option.label,
+          }
+        );
+      }
+
+
+      return t(
+        `filterOptions.cities.${option.value}`,
+        {
+          defaultValue:
+            option.label,
+        }
+      );
+    }
+
+
+    /* -----------------------------
+       INSURANCE
+    ----------------------------- */
+
+    if (
+      filterType ===
+      "insurance"
+    ) {
+      if (
+        option.value ===
+        ""
+      ) {
+        return t(
+          "filterOptions.all",
+          {
+            defaultValue:
+              option.label,
+          }
+        );
+      }
+
+
+      if (
+        option.value ===
+        "any-insurance"
+      ) {
+        return t(
+          "filterOptions.acceptsInsurance",
+          {
+            defaultValue:
+              option.label,
+          }
+        );
+      }
+
+
+      return option.label;
+    }
+
+
+    /* -----------------------------
+       RATING
+    ----------------------------- */
+
+    if (
+      filterType ===
+      "rating"
+    ) {
+      if (
+        option.value ===
+        ""
+      ) {
+        return t(
+          "filterOptions.all",
+          {
+            defaultValue:
+              option.label,
+          }
+        );
+      }
+
+
+      return option.label;
+    }
+
+
+    /* -----------------------------
+       LANGUAGE
+    ----------------------------- */
+
+    if (
+      filterType ===
+      "language"
+    ) {
+      if (
+        option.value ===
+        ""
+      ) {
+        return t(
+          "filterOptions.all",
+          {
+            defaultValue:
+              option.label,
+          }
+        );
+      }
+
+
+      return t(
+        `filterOptions.languages.${option.value}`,
+        {
+          defaultValue:
+            option.label,
+        }
+      );
+    }
+
+
+    /* -----------------------------
+       SORT
+    ----------------------------- */
+
+    if (
+      filterType ===
+      "sort"
+    ) {
+      const sortTranslationKeys:
+        Record<
+          string,
+          string
+        > = {
+        rating:
+          "filterOptions.sort.rating",
+
+        reviews:
+          "filterOptions.sort.reviews",
+
+        experience:
+          "filterOptions.sort.experience",
+
+        price_asc:
+          "filterOptions.sort.priceAsc",
+
+        price_desc:
+          "filterOptions.sort.priceDesc",
+      };
+
+
+      const translationKey =
+        sortTranslationKeys[
+          option.value
+        ];
+
+
+      if (
+        translationKey
+      ) {
+        return t(
+          translationKey,
+          {
+            defaultValue:
+              option.label,
+          }
+        );
+      }
+
+
+      return option.label;
+    }
+
+
+    return option.label;
+  }
+
+
+  /* ===================================================
+     TRANSLATED ARIA LABEL
+  =================================================== */
+
+  function getTranslatedAriaLabel() {
+    const filterType =
+      getFilterType();
+
+
+    const translationKeys:
+      Record<
+        string,
+        string
+      > = {
+      specialty:
+        "filters.specialty",
+
+      city:
+        "filters.city",
+
+      insurance:
+        "filters.insurance",
+
+      rating:
+        "filters.rating",
+
+      language:
+        "filters.language",
+
+      sort:
+        "filters.sort",
+    };
+
+
+    const translationKey =
+      translationKeys[
+        filterType
+      ];
+
+
+    if (
+      !translationKey
+    ) {
+      return ariaLabel;
+    }
+
+
+    return t(
+      translationKey,
+      {
+        defaultValue:
+          ariaLabel,
+      }
+    );
+  }
+
 
   /* ===================================================
      CLICK OUTSIDE
@@ -64,19 +447,24 @@ function CustomSelect({
         return;
       }
 
+
       if (
         !containerRef.current.contains(
           event.target as Node
         )
       ) {
-        setIsOpen(false);
+        setIsOpen(
+          false
+        );
       }
     }
+
 
     document.addEventListener(
       "mousedown",
       handleOutsideClick
     );
+
 
     return () => {
       document.removeEventListener(
@@ -85,6 +473,7 @@ function CustomSelect({
       );
     };
   }, []);
+
 
   /* ===================================================
      ESCAPE KEY
@@ -98,14 +487,18 @@ function CustomSelect({
         event.key ===
         "Escape"
       ) {
-        setIsOpen(false);
+        setIsOpen(
+          false
+        );
       }
     }
+
 
     document.addEventListener(
       "keydown",
       handleKeyDown
     );
+
 
     return () => {
       document.removeEventListener(
@@ -114,6 +507,7 @@ function CustomSelect({
       );
     };
   }, []);
+
 
   /* ===================================================
      SELECT OPTION
@@ -126,14 +520,20 @@ function CustomSelect({
       optionValue
     );
 
+
     setIsOpen(
       false
     );
   }
 
+
   /* ===================================================
      UI
   =================================================== */
+
+  const translatedAriaLabel =
+    getTranslatedAriaLabel();
+
 
   return (
     <div
@@ -145,13 +545,11 @@ function CustomSelect({
       }
     >
 
-      {/* TRIGGER */}
-
       <button
         type="button"
         className="custom-select-trigger"
         aria-label={
-          ariaLabel
+          translatedAriaLabel
         }
         aria-haspopup="listbox"
         aria-expanded={
@@ -176,8 +574,11 @@ function CustomSelect({
 
         <span className="custom-select-value">
           {
-            selectedOption?.label ??
-            "Επιλογή"
+            selectedOption
+              ? getOptionLabel(
+                  selectedOption
+                )
+              : "Επιλογή"
           }
         </span>
 
@@ -185,19 +586,18 @@ function CustomSelect({
           className="custom-select-chevron"
           aria-hidden="true"
         >
-         ⌄
+          ⌄
         </span>
 
       </button>
 
-      {/* MENU */}
 
       {isOpen && (
         <div
           className="custom-select-menu"
           role="listbox"
           aria-label={
-            ariaLabel
+            translatedAriaLabel
           }
         >
 
@@ -206,6 +606,7 @@ function CustomSelect({
               const isSelected =
                 option.value ===
                 value;
+
 
               return (
                 <button
@@ -231,7 +632,9 @@ function CustomSelect({
 
                   <span className="custom-select-option-label">
                     {
-                      option.label
+                      getOptionLabel(
+                        option
+                      )
                     }
                   </span>
 
@@ -239,9 +642,11 @@ function CustomSelect({
                     className="custom-select-check"
                     aria-hidden="true"
                   >
-                    {isSelected
-                      ? "✓"
-                      : ""}
+                    {
+                      isSelected
+                        ? "✓"
+                        : ""
+                    }
                   </span>
 
                 </button>
@@ -255,5 +660,6 @@ function CustomSelect({
     </div>
   );
 }
+
 
 export default CustomSelect;

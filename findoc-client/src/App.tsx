@@ -7,6 +7,10 @@ import "./App.css";
 
 import CustomSelect from "./CustomSelect";
 
+import heroDoctorImage
+  from "./assets/findoc-doctor-hero.png";
+
+
 /* =====================================================
    TYPES
 ===================================================== */
@@ -39,10 +43,12 @@ interface Doctor {
   languages: string;
 }
 
+
 interface AvailabilitySlot {
   startsAt: string;
   time: string;
 }
+
 
 interface AuthUser {
   id: number;
@@ -51,11 +57,13 @@ interface AuthUser {
   createdAtUtc?: string;
 }
 
+
 interface AuthResponse {
   token: string;
   expiresIn: number;
   user: AuthUser;
 }
+
 
 interface AppointmentDoctor {
   id: number;
@@ -69,6 +77,7 @@ interface AppointmentDoctor {
   rating: number;
 }
 
+
 interface MyAppointment {
   id: number;
   startsAt: string;
@@ -78,13 +87,16 @@ interface MyAppointment {
   doctor: AppointmentDoctor;
 }
 
+
 interface ApiMessage {
   message?: string;
 }
 
+
 type AuthMode =
   | "login"
   | "register";
+
 
 /* =====================================================
    CONFIG
@@ -94,26 +106,45 @@ const API_URL =
   import.meta.env.VITE_API_URL ??
   "http://localhost:5087";
 
+
 /* =====================================================
    LABELS
 ===================================================== */
 
 const specialtyLabels:
   Record<string, string> = {
-  Cardiologist: "Καρδιολόγος",
-  Dermatologist: "Δερματολόγος",
-  Neurologist: "Νευρολόγος",
-  Pediatrician: "Παιδίατρος",
-  Orthopedic: "Ορθοπαιδικός",
+  Cardiologist:
+    "Καρδιολόγος",
+
+  Dermatologist:
+    "Δερματολόγος",
+
+  Neurologist:
+    "Νευρολόγος",
+
+  Pediatrician:
+    "Παιδίατρος",
+
+  Orthopedic:
+    "Ορθοπαιδικός",
 };
+
 
 const cityLabels:
   Record<string, string> = {
-  Athens: "Αθήνα",
-  Thessaloniki: "Θεσσαλονίκη",
-  Patras: "Πάτρα",
-  Ioannina: "Ιωάννινα",
+  Athens:
+    "Αθήνα",
+
+  Thessaloniki:
+    "Θεσσαλονίκη",
+
+  Patras:
+    "Πάτρα",
+
+  Ioannina:
+    "Ιωάννινα",
 };
+
 
 /* =====================================================
    SELECT OPTIONS
@@ -122,126 +153,177 @@ const cityLabels:
 const cityOptions = [
   {
     value: "",
-    label: "Όλη η Ελλάδα",
+    label:
+      "Όλη η Ελλάδα",
   },
+
   {
     value: "Athens",
-    label: "Αθήνα",
+    label:
+      "Αθήνα",
   },
+
   {
-    value: "Thessaloniki",
-    label: "Θεσσαλονίκη",
+    value:
+      "Thessaloniki",
+
+    label:
+      "Θεσσαλονίκη",
   },
+
   {
     value: "Patras",
-    label: "Πάτρα",
+    label:
+      "Πάτρα",
   },
+
   {
     value: "Ioannina",
-    label: "Ιωάννινα",
+    label:
+      "Ιωάννινα",
   },
 ];
+
 
 const insuranceOptions = [
   {
     value: "",
-    label: "Όλες",
+    label:
+      "Όλες",
   },
+
   {
-    value: "any-insurance",
-    label: "Δέχεται ασφάλιση",
+    value:
+      "any-insurance",
+
+    label:
+      "Δέχεται ασφάλιση",
   },
+
   {
     value: "EOPYY",
     label: "ΕΟΠΥΥ",
   },
+
   {
-    value: "Interamerican",
-    label: "Interamerican",
+    value:
+      "Interamerican",
+
+    label:
+      "Interamerican",
   },
+
   {
     value: "Generali",
     label: "Generali",
   },
+
   {
     value: "Eurolife",
     label: "Eurolife",
   },
 ];
 
+
 const ratingOptions = [
   {
     value: "",
-    label: "Όλα",
+    label:
+      "Όλα",
   },
+
   {
     value: "4",
     label: "4.0+",
   },
+
   {
     value: "4.5",
     label: "4.5+",
   },
+
   {
     value: "4.8",
     label: "4.8+",
   },
+
   {
     value: "4.9",
     label: "4.9+",
   },
 ];
 
+
 const languageOptions = [
   {
     value: "",
-    label: "Όλες",
+    label:
+      "Όλες",
   },
+
   {
     value: "Greek",
-    label: "Ελληνικά",
+    label:
+      "Ελληνικά",
   },
+
   {
     value: "English",
-    label: "Αγγλικά",
+    label:
+      "Αγγλικά",
   },
+
   {
     value: "French",
-    label: "Γαλλικά",
+    label:
+      "Γαλλικά",
   },
+
   {
     value: "German",
-    label: "Γερμανικά",
+    label:
+      "Γερμανικά",
   },
 ];
+
 
 const sortOptions = [
   {
     value: "rating",
+
     label:
       "Καλύτερη αξιολόγηση",
   },
+
   {
     value: "reviews",
+
     label:
       "Περισσότερες κριτικές",
   },
+
   {
     value: "experience",
+
     label:
       "Περισσότερη εμπειρία",
   },
+
   {
     value: "price_asc",
+
     label:
       "Χαμηλότερη τιμή",
   },
+
   {
     value: "price_desc",
+
     label:
       "Υψηλότερη τιμή",
   },
 ];
+
 
 /* =====================================================
    DEMO DOCTOR PHOTOS
@@ -274,6 +356,7 @@ const doctorPhotoMap:
     "https://randomuser.me/api/portraits/men/36.jpg",
 };
 
+
 function getDoctorImageUrl(
   doctorId: number,
   imageUrl?: string
@@ -288,9 +371,11 @@ function getDoctorImageUrl(
     ];
   }
 
+
   if (
     imageUrl &&
-    imageUrl.trim() !== "" &&
+    imageUrl.trim() !==
+      "" &&
     !imageUrl.includes(
       "example.com"
     )
@@ -298,8 +383,10 @@ function getDoctorImageUrl(
     return imageUrl;
   }
 
+
   return "";
 }
+
 
 /* =====================================================
    DATE HELPERS
@@ -327,30 +414,38 @@ function formatDateForInput(
       "0"
     );
 
+
   return `${year}-${month}-${day}`;
 }
+
 
 function getNextAvailableDate() {
   const date =
     new Date();
 
+
   date.setDate(
     date.getDate() + 1
   );
 
+
   while (
-    date.getDay() === 0 ||
-    date.getDay() === 6
+    date.getDay() ===
+      0 ||
+    date.getDay() ===
+      6
   ) {
     date.setDate(
       date.getDate() + 1
     );
   }
 
+
   return formatDateForInput(
     date
   );
 }
+
 
 function formatAppointmentDate(
   value: string
@@ -358,24 +453,40 @@ function formatAppointmentDate(
   const date =
     new Date(value);
 
+
   return new Intl.DateTimeFormat(
     "el-GR",
     {
-      weekday: "long",
-      day: "numeric",
-      month: "long",
-      year: "numeric",
-      hour: "2-digit",
-      minute: "2-digit",
+      weekday:
+        "long",
+
+      day:
+        "numeric",
+
+      month:
+        "long",
+
+      year:
+        "numeric",
+
+      hour:
+        "2-digit",
+
+      minute:
+        "2-digit",
     }
-  ).format(date);
+  ).format(
+    date
+  );
 }
+
 
 /* =====================================================
    APP
 ===================================================== */
 
 function App() {
+
   /* ===================================================
      SEARCH
   =================================================== */
@@ -388,6 +499,7 @@ function App() {
       []
     );
 
+
   const [
     specialties,
     setSpecialties,
@@ -396,59 +508,87 @@ function App() {
       []
     );
 
+
   const [
     specialty,
     setSpecialty,
   ] =
-    useState("");
+    useState(
+      ""
+    );
+
 
   const [
     city,
     setCity,
   ] =
-    useState("");
+    useState(
+      ""
+    );
+
 
   const [
     area,
     setArea,
   ] =
-    useState("");
+    useState(
+      ""
+    );
+
 
   const [
     insurance,
     setInsurance,
   ] =
-    useState("");
+    useState(
+      ""
+    );
+
 
   const [
     maxPrice,
     setMaxPrice,
   ] =
-    useState("");
+    useState(
+      ""
+    );
+
 
   const [
     minRating,
     setMinRating,
   ] =
-    useState("");
+    useState(
+      ""
+    );
+
 
   const [
     language,
     setLanguage,
   ] =
-    useState("");
+    useState(
+      ""
+    );
+
 
   const [
     onlineOnly,
     setOnlineOnly,
   ] =
-    useState(false);
+    useState(
+      false
+    );
+
 
   const [
     verifiedOnly,
     setVerifiedOnly,
   ] =
-    useState(false);
+    useState(
+      false
+    );
+
 
   const [
     sort,
@@ -458,23 +598,33 @@ function App() {
       "rating"
     );
 
+
   const [
     loading,
     setLoading,
   ] =
-    useState(false);
+    useState(
+      false
+    );
+
 
   const [
     searched,
     setSearched,
   ] =
-    useState(false);
+    useState(
+      false
+    );
+
 
   const [
     searchMessage,
     setSearchMessage,
   ] =
-    useState("");
+    useState(
+      ""
+    );
+
 
   /* ===================================================
      PROFILE
@@ -484,15 +634,21 @@ function App() {
     profileDoctor,
     setProfileDoctor,
   ] =
-    useState<Doctor | null>(
+    useState<
+      Doctor | null
+    >(
       null
     );
+
 
   const [
     profileLoading,
     setProfileLoading,
   ] =
-    useState(false);
+    useState(
+      false
+    );
+
 
   /* ===================================================
      BOOKING
@@ -502,9 +658,12 @@ function App() {
     selectedDoctor,
     setSelectedDoctor,
   ] =
-    useState<Doctor | null>(
+    useState<
+      Doctor | null
+    >(
       null
     );
+
 
   const [
     appointmentDate,
@@ -514,57 +673,83 @@ function App() {
       getNextAvailableDate()
     );
 
+
   const [
     availability,
     setAvailability,
   ] =
     useState<
       AvailabilitySlot[]
-    >([]);
+    >(
+      []
+    );
+
 
   const [
     selectedSlot,
     setSelectedSlot,
   ] =
     useState<
-      AvailabilitySlot | null
-    >(null);
+      AvailabilitySlot |
+      null
+    >(
+      null
+    );
+
 
   const [
     patientName,
     setPatientName,
   ] =
-    useState("");
+    useState(
+      ""
+    );
+
 
   const [
     patientEmail,
     setPatientEmail,
   ] =
-    useState("");
+    useState(
+      ""
+    );
+
 
   const [
     availabilityLoading,
     setAvailabilityLoading,
   ] =
-    useState(false);
+    useState(
+      false
+    );
+
 
   const [
     bookingLoading,
     setBookingLoading,
   ] =
-    useState(false);
+    useState(
+      false
+    );
+
 
   const [
     bookingMessage,
     setBookingMessage,
   ] =
-    useState("");
+    useState(
+      ""
+    );
+
 
   const [
     bookingSuccess,
     setBookingSuccess,
   ] =
-    useState(false);
+    useState(
+      false
+    );
+
 
   /* ===================================================
      AUTH
@@ -574,25 +759,34 @@ function App() {
     authUser,
     setAuthUser,
   ] =
-    useState<AuthUser | null>(
+    useState<
+      AuthUser | null
+    >(
       null
     );
+
 
   const [
     authToken,
     setAuthToken,
   ] =
-    useState<string | null>(
+    useState<
+      string | null
+    >(
       localStorage.getItem(
         "findoc_token"
       )
     );
 
+
   const [
     authOpen,
     setAuthOpen,
   ] =
-    useState(false);
+    useState(
+      false
+    );
+
 
   const [
     authMode,
@@ -602,35 +796,51 @@ function App() {
       "login"
     );
 
+
   const [
     authFullName,
     setAuthFullName,
   ] =
-    useState("");
+    useState(
+      ""
+    );
+
 
   const [
     authEmail,
     setAuthEmail,
   ] =
-    useState("");
+    useState(
+      ""
+    );
+
 
   const [
     authPassword,
     setAuthPassword,
   ] =
-    useState("");
+    useState(
+      ""
+    );
+
 
   const [
     authLoading,
     setAuthLoading,
   ] =
-    useState(false);
+    useState(
+      false
+    );
+
 
   const [
     authMessage,
     setAuthMessage,
   ] =
-    useState("");
+    useState(
+      ""
+    );
+
 
   /* ===================================================
      MY APPOINTMENTS
@@ -640,7 +850,10 @@ function App() {
     appointmentsOpen,
     setAppointmentsOpen,
   ] =
-    useState(false);
+    useState(
+      false
+    );
+
 
   const [
     myAppointments,
@@ -648,36 +861,53 @@ function App() {
   ] =
     useState<
       MyAppointment[]
-    >([]);
+    >(
+      []
+    );
+
 
   const [
     appointmentsLoading,
     setAppointmentsLoading,
   ] =
-    useState(false);
+    useState(
+      false
+    );
+
 
   const [
     appointmentsMessage,
     setAppointmentsMessage,
   ] =
-    useState("");
+    useState(
+      ""
+    );
+
 
   const [
     cancellingAppointmentId,
     setCancellingAppointmentId,
   ] =
-    useState<number | null>(
+    useState<
+      number | null
+    >(
       null
     );
+
 
   /* ===================================================
      INITIAL LOAD
   =================================================== */
 
-  useEffect(() => {
-    void loadSpecialties();
-    void restoreSession();
-  }, []);
+  useEffect(
+    () => {
+      void loadSpecialties();
+
+      void restoreSession();
+    },
+    []
+  );
+
 
   /* ===================================================
      AUTH
@@ -689,9 +919,13 @@ function App() {
         "findoc_token"
       );
 
-    if (!token) {
+
+    if (
+      !token
+    ) {
       return;
     }
+
 
     try {
       const response =
@@ -705,20 +939,25 @@ function App() {
           }
         );
 
+
       if (
         !response.ok
       ) {
         logout();
+
         return;
       }
+
 
       const user:
         AuthUser =
         await response.json();
 
+
       setAuthToken(
         token
       );
+
 
       setAuthUser(
         user
@@ -732,6 +971,7 @@ function App() {
       );
     }
   }
+
 
   function openAuth(
     mode: AuthMode
@@ -761,6 +1001,7 @@ function App() {
     );
   }
 
+
   function switchAuthMode(
     mode: AuthMode
   ) {
@@ -776,6 +1017,7 @@ function App() {
       ""
     );
 
+
     if (
       mode ===
       "login"
@@ -786,6 +1028,7 @@ function App() {
     }
   }
 
+
   function closeAuth() {
     if (
       authLoading
@@ -793,14 +1036,17 @@ function App() {
       return;
     }
 
+
     setAuthOpen(
       false
     );
+
 
     setAuthMessage(
       ""
     );
   }
+
 
   async function submitAuth() {
     if (
@@ -815,6 +1061,7 @@ function App() {
       return;
     }
 
+
     if (
       !authEmail.trim()
     ) {
@@ -825,6 +1072,7 @@ function App() {
       return;
     }
 
+
     if (
       !authPassword
     ) {
@@ -834,6 +1082,7 @@ function App() {
 
       return;
     }
+
 
     if (
       authMode ===
@@ -848,6 +1097,7 @@ function App() {
       return;
     }
 
+
     try {
       setAuthLoading(
         true
@@ -857,11 +1107,13 @@ function App() {
         ""
       );
 
+
       const url =
         authMode ===
         "register"
           ? `${API_URL}/api/auth/register`
           : `${API_URL}/api/auth/login`;
+
 
       const body =
         authMode ===
@@ -888,6 +1140,7 @@ function App() {
                 authPassword,
             };
 
+
       const response =
         await fetch(
           url,
@@ -907,12 +1160,14 @@ function App() {
           }
         );
 
+
       const data =
         await response
           .json()
           .catch(
             () => ({})
           );
+
 
       if (
         !response.ok
@@ -941,25 +1196,32 @@ function App() {
         return;
       }
 
+
       const authData =
-        data as AuthResponse;
+        data as
+          AuthResponse;
+
 
       localStorage.setItem(
         "findoc_token",
         authData.token
       );
 
+
       setAuthToken(
         authData.token
       );
+
 
       setAuthUser(
         authData.user
       );
 
+
       setAuthOpen(
         false
       );
+
 
       setAuthFullName(
         ""
@@ -984,6 +1246,7 @@ function App() {
         error
       );
 
+
       setAuthMessage(
         "Δεν ήταν δυνατή η σύνδεση με τον server."
       );
@@ -994,31 +1257,38 @@ function App() {
     }
   }
 
+
   function logout() {
     localStorage.removeItem(
       "findoc_token"
     );
 
+
     setAuthToken(
       null
     );
+
 
     setAuthUser(
       null
     );
 
+
     setAppointmentsOpen(
       false
     );
+
 
     setMyAppointments(
       []
     );
 
+
     setAppointmentsMessage(
       ""
     );
   }
+
 
   /* ===================================================
      SPECIALTIES
@@ -1031,6 +1301,7 @@ function App() {
           `${API_URL}/api/specialties`
         );
 
+
       if (
         !response.ok
       ) {
@@ -1039,9 +1310,11 @@ function App() {
         );
       }
 
+
       const data:
         string[] =
         await response.json();
+
 
       setSpecialties(
         data
@@ -1055,6 +1328,7 @@ function App() {
       );
     }
   }
+
 
   /* ===================================================
      SEARCH
@@ -1081,6 +1355,7 @@ function App() {
     );
   }
 
+
   async function searchDoctors() {
     try {
       setLoading(
@@ -1091,8 +1366,10 @@ function App() {
         ""
       );
 
+
       const params =
         new URLSearchParams();
+
 
       if (
         specialty
@@ -1103,6 +1380,7 @@ function App() {
         );
       }
 
+
       if (
         city
       ) {
@@ -1111,6 +1389,7 @@ function App() {
           city
         );
       }
+
 
       if (
         area.trim()
@@ -1121,6 +1400,7 @@ function App() {
         );
       }
 
+
       if (
         maxPrice
       ) {
@@ -1129,6 +1409,7 @@ function App() {
           maxPrice
         );
       }
+
 
       if (
         minRating
@@ -1139,6 +1420,7 @@ function App() {
         );
       }
 
+
       if (
         language
       ) {
@@ -1147,6 +1429,7 @@ function App() {
           language
         );
       }
+
 
       if (
         insurance
@@ -1167,6 +1450,7 @@ function App() {
         }
       }
 
+
       if (
         onlineOnly
       ) {
@@ -1175,6 +1459,7 @@ function App() {
           "true"
         );
       }
+
 
       if (
         verifiedOnly
@@ -1185,6 +1470,7 @@ function App() {
         );
       }
 
+
       if (
         sort
       ) {
@@ -1194,18 +1480,22 @@ function App() {
         );
       }
 
+
       const query =
         params.toString();
+
 
       const url =
         query
           ? `${API_URL}/api/doctors?${query}`
           : `${API_URL}/api/doctors`;
 
+
       const response =
         await fetch(
           url
         );
+
 
       if (
         !response.ok
@@ -1215,17 +1505,21 @@ function App() {
         );
       }
 
+
       const data:
         Doctor[] =
         await response.json();
+
 
       setDoctors(
         data
       );
 
+
       setSearched(
         true
       );
+
 
       scrollToResults();
     } catch (
@@ -1236,6 +1530,7 @@ function App() {
         error
       );
 
+
       setSearchMessage(
         "Δεν ήταν δυνατή η αναζήτηση γιατρών."
       );
@@ -1245,6 +1540,7 @@ function App() {
       );
     }
   }
+
 
   function clearFilters() {
     setSpecialty(
@@ -1292,6 +1588,7 @@ function App() {
     );
   }
 
+
   /* ===================================================
      DOCTOR PROFILE
   =================================================== */
@@ -1304,10 +1601,12 @@ function App() {
         true
       );
 
+
       const response =
         await fetch(
           `${API_URL}/api/doctors/${doctorId}`
         );
+
 
       if (
         !response.ok
@@ -1317,9 +1616,11 @@ function App() {
         );
       }
 
+
       const data:
         Doctor =
         await response.json();
+
 
       setProfileDoctor(
         data
@@ -1338,11 +1639,13 @@ function App() {
     }
   }
 
+
   function closeDoctorProfile() {
     setProfileDoctor(
       null
     );
   }
+
 
   function bookFromProfile() {
     if (
@@ -1351,17 +1654,21 @@ function App() {
       return;
     }
 
+
     const doctor =
       profileDoctor;
+
 
     setProfileDoctor(
       null
     );
 
+
     openBooking(
       doctor
     );
   }
+
 
   /* ===================================================
      AVAILABILITY
@@ -1376,14 +1683,17 @@ function App() {
         true
       );
 
+
       setSelectedSlot(
         null
       );
+
 
       const response =
         await fetch(
           `${API_URL}/api/doctors/${doctor.id}/availability?date=${date}`
         );
+
 
       if (
         !response.ok
@@ -1393,9 +1703,11 @@ function App() {
         );
       }
 
+
       const data:
         AvailabilitySlot[] =
         await response.json();
+
 
       setAvailability(
         Array.isArray(
@@ -1412,13 +1724,16 @@ function App() {
         error
       );
 
+
       setAvailability(
         []
       );
 
+
       setBookingSuccess(
         false
       );
+
 
       setBookingMessage(
         "Δεν ήταν δυνατή η φόρτωση των διαθέσιμων ωρών."
@@ -1430,47 +1745,57 @@ function App() {
     }
   }
 
+
   function openBooking(
     doctor: Doctor
   ) {
     const defaultDate =
       getNextAvailableDate();
 
+
     setSelectedDoctor(
       doctor
     );
 
+
     setAppointmentDate(
       defaultDate
     );
+
 
     setPatientName(
       authUser?.fullName ||
         ""
     );
 
+
     setPatientEmail(
       authUser?.email ||
         ""
     );
 
+
     setSelectedSlot(
       null
     );
+
 
     setBookingMessage(
       ""
     );
 
+
     setBookingSuccess(
       false
     );
+
 
     void loadAvailability(
       doctor,
       defaultDate
     );
   }
+
 
   function closeBooking() {
     if (
@@ -1479,34 +1804,42 @@ function App() {
       return;
     }
 
+
     setSelectedDoctor(
       null
     );
+
 
     setAvailability(
       []
     );
 
+
     setSelectedSlot(
       null
     );
+
 
     setPatientName(
       ""
     );
 
+
     setPatientEmail(
       ""
     );
+
 
     setBookingMessage(
       ""
     );
 
+
     setBookingSuccess(
       false
     );
   }
+
 
   async function changeAppointmentDate(
     date: string
@@ -1515,17 +1848,21 @@ function App() {
       date
     );
 
+
     setBookingMessage(
       ""
     );
+
 
     setBookingSuccess(
       false
     );
 
+
     setSelectedSlot(
       null
     );
+
 
     if (
       !selectedDoctor ||
@@ -1534,11 +1871,13 @@ function App() {
       return;
     }
 
+
     await loadAvailability(
       selectedDoctor,
       date
     );
   }
+
 
   /* ===================================================
      CREATE APPOINTMENT
@@ -1550,6 +1889,7 @@ function App() {
     ) {
       return;
     }
+
 
     if (
       !selectedSlot
@@ -1565,6 +1905,7 @@ function App() {
       return;
     }
 
+
     if (
       !patientName.trim()
     ) {
@@ -1578,6 +1919,7 @@ function App() {
 
       return;
     }
+
 
     if (
       !patientEmail.trim()
@@ -1593,18 +1935,22 @@ function App() {
       return;
     }
 
+
     try {
       setBookingLoading(
         true
       );
 
+
       setBookingMessage(
         ""
       );
 
+
       setBookingSuccess(
         false
       );
+
 
       const headers:
         Record<
@@ -1615,12 +1961,14 @@ function App() {
           "application/json",
       };
 
+
       if (
         authToken
       ) {
         headers.Authorization =
           `Bearer ${authToken}`;
       }
+
 
       const response =
         await fetch(
@@ -1652,6 +2000,7 @@ function App() {
           }
         );
 
+
       const data:
         ApiMessage =
         await response
@@ -1659,6 +2008,7 @@ function App() {
           .catch(
             () => ({})
           );
+
 
       if (
         !response.ok
@@ -1671,18 +2021,22 @@ function App() {
         return;
       }
 
+
       await loadAvailability(
         selectedDoctor,
         appointmentDate
       );
 
+
       setBookingSuccess(
         true
       );
 
+
       setBookingMessage(
         "Το ραντεβού σου έκλεισε επιτυχώς!"
       );
+
 
       setSelectedSlot(
         null
@@ -1695,9 +2049,11 @@ function App() {
         error
       );
 
+
       setBookingSuccess(
         false
       );
+
 
       setBookingMessage(
         "Παρουσιάστηκε πρόβλημα κατά την κράτηση."
@@ -1708,6 +2064,7 @@ function App() {
       );
     }
   }
+
 
   /* ===================================================
      MY APPOINTMENTS
@@ -1724,12 +2081,15 @@ function App() {
       return;
     }
 
+
     setAppointmentsOpen(
       true
     );
 
+
     await loadMyAppointments();
   }
+
 
   function closeMyAppointments() {
     if (
@@ -1739,14 +2099,17 @@ function App() {
       return;
     }
 
+
     setAppointmentsOpen(
       false
     );
+
 
     setAppointmentsMessage(
       ""
     );
   }
+
 
   async function loadMyAppointments() {
     if (
@@ -1755,14 +2118,17 @@ function App() {
       return;
     }
 
+
     try {
       setAppointmentsLoading(
         true
       );
 
+
       setAppointmentsMessage(
         ""
       );
+
 
       const response =
         await fetch(
@@ -1774,6 +2140,7 @@ function App() {
             },
           }
         );
+
 
       if (
         response.status ===
@@ -1788,6 +2155,7 @@ function App() {
         return;
       }
 
+
       if (
         !response.ok
       ) {
@@ -1796,9 +2164,11 @@ function App() {
         );
       }
 
+
       const data:
         MyAppointment[] =
         await response.json();
+
 
       setMyAppointments(
         data
@@ -1811,6 +2181,7 @@ function App() {
         error
       );
 
+
       setAppointmentsMessage(
         "Δεν ήταν δυνατή η φόρτωση των ραντεβού σου."
       );
@@ -1821,6 +2192,7 @@ function App() {
     }
   }
 
+
   async function cancelAppointment(
     appointmentId: number
   ) {
@@ -1830,10 +2202,12 @@ function App() {
       return;
     }
 
+
     const confirmed =
       window.confirm(
         "Θέλεις σίγουρα να ακυρώσεις αυτό το ραντεβού;"
       );
+
 
     if (
       !confirmed
@@ -1841,14 +2215,17 @@ function App() {
       return;
     }
 
+
     try {
       setCancellingAppointmentId(
         appointmentId
       );
 
+
       setAppointmentsMessage(
         ""
       );
+
 
       const response =
         await fetch(
@@ -1864,11 +2241,14 @@ function App() {
           }
         );
 
+
       const text =
         await response.text();
 
+
       let data:
         ApiMessage = {};
+
 
       if (
         text
@@ -1886,6 +2266,7 @@ function App() {
         }
       }
 
+
       if (
         response.status ===
         401
@@ -1899,6 +2280,7 @@ function App() {
         return;
       }
 
+
       if (
         response.status ===
         403
@@ -1909,6 +2291,7 @@ function App() {
 
         return;
       }
+
 
       if (
         !response.ok
@@ -1921,7 +2304,9 @@ function App() {
         return;
       }
 
+
       await loadMyAppointments();
+
 
       setAppointmentsMessage(
         "Το ραντεβού ακυρώθηκε επιτυχώς."
@@ -1934,6 +2319,7 @@ function App() {
         error
       );
 
+
       setAppointmentsMessage(
         "Δεν ήταν δυνατή η επικοινωνία με το backend."
       );
@@ -1944,6 +2330,7 @@ function App() {
     }
   }
 
+
   /* ===================================================
      SELECT DATA
   =================================================== */
@@ -1951,12 +2338,14 @@ function App() {
   const specialtyOptions = [
     {
       value: "",
-      label: "Όλες",
+      label:
+        "Όλες",
     },
 
     ...specialties.map(
       item => ({
-        value: item,
+        value:
+          item,
 
         label:
           specialtyLabels[
@@ -1967,6 +2356,7 @@ function App() {
     ),
   ];
 
+
   /* ===================================================
      UI
   =================================================== */
@@ -1974,7 +2364,9 @@ function App() {
   return (
     <div className="findoc-app">
 
-      {/* NAVBAR */}
+      {/* =================================================
+          NAVBAR
+      ================================================= */}
 
       <header className="topbar">
 
@@ -1995,6 +2387,7 @@ function App() {
 
           </a>
 
+
           <nav className="main-nav">
 
             <a href="#search">
@@ -2011,6 +2404,7 @@ function App() {
 
           </nav>
 
+
           <div className="nav-actions">
 
             <button
@@ -2019,6 +2413,7 @@ function App() {
             >
               EL
             </button>
+
 
             {!authUser ? (
               <button
@@ -2034,6 +2429,7 @@ function App() {
               </button>
             ) : (
               <>
+
                 <button
                   type="button"
                   className="my-appointments-nav"
@@ -2044,35 +2440,46 @@ function App() {
                   Τα ραντεβού μου
                 </button>
 
+
                 <div className="account-chip">
 
                   <span>
                     {authUser.fullName
-                      .charAt(0)
+                      .charAt(
+                        0
+                      )
                       .toUpperCase()}
                   </span>
 
                   <div>
 
                     <strong>
-                      {authUser.fullName}
+                      {
+                        authUser.fullName
+                      }
                     </strong>
 
                     <small>
-                      {authUser.email}
+                      {
+                        authUser.email
+                      }
                     </small>
 
                   </div>
 
                 </div>
 
+
                 <button
                   type="button"
                   className="logout-button"
-                  onClick={logout}
+                  onClick={
+                    logout
+                  }
                 >
                   Έξοδος
                 </button>
+
               </>
             )}
 
@@ -2082,9 +2489,12 @@ function App() {
 
       </header>
 
+
       <main>
 
-        {/* HERO */}
+        {/* =================================================
+            HERO
+        ================================================= */}
 
         <section
           className="page-width hero"
@@ -2094,6 +2504,7 @@ function App() {
           <div className="decor-circle" />
 
           <div className="decor-bottom" />
+
 
           <div className="hero-left">
 
@@ -2107,42 +2518,44 @@ function App() {
 
             </div>
 
+
             <h1>
               Ο σωστός γιατρός.
 
               <em>
-                Τη στιγμή που τον
-                χρειάζεσαι.
+                Τη στιγμή που τον χρειάζεσαι.
               </em>
 
             </h1>
 
+
             <p className="hero-description">
-              Βρες διαθέσιμους γιατρούς
-              κοντά σου, σύγκρινε
-              αξιολογήσεις και κλείσε
+              Βρες διαθέσιμους γιατρούς κοντά σου,
+              σύγκρινε αξιολογήσεις και κλείσε
               ραντεβού online.
             </p>
 
           </div>
 
-          {/* HERO VISUAL */}
+
+          {/* =================================================
+              HERO DOCTOR
+          ================================================= */}
 
           <div className="hero-visual">
 
             <div className="portrait-arch">
 
-              <div className="doctor-head">
-
-                <div className="doctor-hair" />
-
-              </div>
-
-              <div className="doctor-neck" />
-
-              <div className="doctor-body" />
+              <img
+                src={
+                  heroDoctorImage
+                }
+                alt="Findoc doctor"
+                className="hero-doctor-image"
+              />
 
             </div>
+
 
             <div className="rating-card">
 
@@ -2163,6 +2576,7 @@ function App() {
               </div>
 
             </div>
+
 
             <div className="appointment-card">
 
@@ -2186,7 +2600,10 @@ function App() {
 
           </div>
 
-          {/* MAIN SEARCH */}
+
+          {/* =================================================
+              MAIN SEARCH
+          ================================================= */}
 
           <div className="search-panel">
 
@@ -2203,7 +2620,9 @@ function App() {
                 </label>
 
                 <CustomSelect
-                  value={specialty}
+                  value={
+                    specialty
+                  }
                   options={
                     specialtyOptions
                   }
@@ -2216,6 +2635,7 @@ function App() {
               </div>
 
             </div>
+
 
             <div className="search-item">
 
@@ -2230,7 +2650,9 @@ function App() {
                 </label>
 
                 <CustomSelect
-                  value={city}
+                  value={
+                    city
+                  }
                   options={
                     cityOptions
                   }
@@ -2244,10 +2666,13 @@ function App() {
 
             </div>
 
+
             <button
               type="button"
               className="main-search-button"
-              disabled={loading}
+              disabled={
+                loading
+              }
               onClick={() =>
                 void searchDoctors()
               }
@@ -2259,7 +2684,10 @@ function App() {
 
           </div>
 
-          {/* ADVANCED FILTERS */}
+
+          {/* =================================================
+              ADVANCED FILTERS
+          ================================================= */}
 
           <div className="search-panel">
 
@@ -2274,7 +2702,9 @@ function App() {
                 <input
                   type="text"
                   placeholder="π.χ. Kolonaki"
-                  value={area}
+                  value={
+                    area
+                  }
                   onChange={(
                     event
                   ) =>
@@ -2287,6 +2717,7 @@ function App() {
               </div>
 
             </div>
+
 
             <div className="search-item">
 
@@ -2313,6 +2744,7 @@ function App() {
 
             </div>
 
+
             <div className="search-item">
 
               <div>
@@ -2325,7 +2757,9 @@ function App() {
                   type="number"
                   min="0"
                   placeholder="π.χ. 50"
-                  value={maxPrice}
+                  value={
+                    maxPrice
+                  }
                   onChange={(
                     event
                   ) =>
@@ -2338,6 +2772,7 @@ function App() {
               </div>
 
             </div>
+
 
             <div className="search-item">
 
@@ -2364,6 +2799,7 @@ function App() {
 
             </div>
 
+
             <div className="search-item">
 
               <div>
@@ -2388,6 +2824,7 @@ function App() {
               </div>
 
             </div>
+
 
             <div className="search-item">
 
@@ -2416,6 +2853,7 @@ function App() {
 
           </div>
 
+
           <div className="trust-row">
 
             <label>
@@ -2439,6 +2877,7 @@ function App() {
 
             </label>
 
+
             <label>
 
               <input
@@ -2460,6 +2899,7 @@ function App() {
 
             </label>
 
+
             <button
               type="button"
               onClick={
@@ -2471,15 +2911,21 @@ function App() {
 
           </div>
 
+
           {searchMessage && (
             <div className="empty-results">
-              {searchMessage}
+              {
+                searchMessage
+              }
             </div>
           )}
 
         </section>
 
-        {/* RESULTS */}
+
+        {/* =================================================
+            RESULTS
+        ================================================= */}
 
         {searched && (
           <section
@@ -2503,32 +2949,34 @@ function App() {
 
                 </div>
 
+
                 <p>
-                  {doctors.length}
+                  {
+                    doctors.length
+                  }
                   {" "}
                   αποτελέσματα
                 </p>
 
               </div>
 
+
               {doctors.length ===
               0 ? (
                 <div className="empty-results">
-                  Δεν βρέθηκαν γιατροί
-                  με αυτά τα κριτήρια.
+                  Δεν βρέθηκαν γιατροί με αυτά τα κριτήρια.
                 </div>
               ) : (
                 <div className="doctor-results">
 
                   {doctors.map(
-                    (
-                      doctor
-                    ) => {
+                    doctor => {
                       const doctorImage =
                         getDoctorImageUrl(
                           doctor.id,
                           doctor.imageUrl
                         );
+
 
                       return (
                         <article
@@ -2565,6 +3013,7 @@ function App() {
 
                           </div>
 
+
                           <div className="doctor-card-content">
 
                             <div className="doctor-rating">
@@ -2573,18 +3022,26 @@ function App() {
                                 1
                               )}
                               {" · "}
-                              {doctor.reviewCount}
+                              {
+                                doctor.reviewCount
+                              }
                               {" κριτικές"}
                             </div>
 
+
                             <h3>
-                              {doctor.firstName}
+                              {
+                                doctor.firstName
+                              }
                               {" "}
-                              {doctor.lastName}
+                              {
+                                doctor.lastName
+                              }
 
                               {doctor.isVerified &&
                                 " ✓"}
                             </h3>
+
 
                             <strong className="doctor-specialty">
                               {specialtyLabels[
@@ -2593,11 +3050,15 @@ function App() {
                                 doctor.specialty}
                             </strong>
 
+
                             {doctor.subspecialty && (
                               <p>
-                                {doctor.subspecialty}
+                                {
+                                  doctor.subspecialty
+                                }
                               </p>
                             )}
+
 
                             <p>
                               {cityLabels[
@@ -2609,19 +3070,29 @@ function App() {
                                 ` · ${doctor.area}`}
                             </p>
 
-                            <p>
-                              {doctor.address}
-                            </p>
 
                             <p>
-                              {doctor.yearsOfExperience}
+                              {
+                                doctor.address
+                              }
+                            </p>
+
+
+                            <p>
+                              {
+                                doctor.yearsOfExperience
+                              }
                               {" χρόνια εμπειρίας"}
                             </p>
 
+
                             <p>
                               🌐{" "}
-                              {doctor.languages}
+                              {
+                                doctor.languages
+                              }
                             </p>
+
 
                             {doctor.acceptsInsurance && (
                               <p>
@@ -2632,11 +3103,13 @@ function App() {
                               </p>
                             )}
 
+
                             {doctor.offersOnlineConsultation && (
                               <p>
                                 ✓ Online consultation
                               </p>
                             )}
+
 
                             <div className="doctor-bottom">
 
@@ -2651,6 +3124,7 @@ function App() {
                                 </b>
                               </span>
 
+
                               <div className="doctor-actions">
 
                                 <button
@@ -2664,6 +3138,7 @@ function App() {
                                 >
                                   Προφίλ
                                 </button>
+
 
                                 <button
                                   type="button"
@@ -2698,7 +3173,10 @@ function App() {
 
       </main>
 
-      {/* AUTH MODAL */}
+
+      {/* =================================================
+          AUTH MODAL
+      ================================================= */}
 
       {authOpen && (
         <div
@@ -2727,6 +3205,7 @@ function App() {
               ×
             </button>
 
+
             <div className="auth-logo">
 
               <div className="brand-icon">
@@ -2739,6 +3218,7 @@ function App() {
 
             </div>
 
+
             <span className="auth-eyebrow">
               {authMode ===
               "login"
@@ -2746,12 +3226,14 @@ function App() {
                 : "ΔΗΜΙΟΥΡΓΙΑ ΛΟΓΑΡΙΑΣΜΟΥ"}
             </span>
 
+
             <h2>
               {authMode ===
               "login"
                 ? "Σύνδεση στο Findoc"
                 : "Ξεκίνα με το Findoc"}
             </h2>
+
 
             <div
               style={{
@@ -2778,6 +3260,7 @@ function App() {
                 Σύνδεση
               </button>
 
+
               <button
                 type="button"
                 className="profile-button"
@@ -2791,6 +3274,7 @@ function App() {
               </button>
 
             </div>
+
 
             {authMode ===
               "register" && (
@@ -2818,6 +3302,7 @@ function App() {
               </div>
             )}
 
+
             <div className="auth-field">
 
               <label>
@@ -2840,6 +3325,7 @@ function App() {
               />
 
             </div>
+
 
             <div className="auth-field">
 
@@ -2879,11 +3365,15 @@ function App() {
 
             </div>
 
+
             {authMessage && (
               <div className="auth-message">
-                {authMessage}
+                {
+                  authMessage
+                }
               </div>
             )}
+
 
             <button
               type="button"
@@ -2908,7 +3398,10 @@ function App() {
         </div>
       )}
 
-      {/* MY APPOINTMENTS */}
+
+      {/* =================================================
+          MY APPOINTMENTS
+      ================================================= */}
 
       {appointmentsOpen &&
         authUser && (
@@ -2938,6 +3431,7 @@ function App() {
                 ×
               </button>
 
+
               <div className="appointments-header">
 
                 <span>
@@ -2950,6 +3444,7 @@ function App() {
 
               </div>
 
+
               {appointmentsMessage && (
                 <div className="appointments-message">
                   {
@@ -2958,6 +3453,7 @@ function App() {
                 </div>
               )}
 
+
               {appointmentsLoading ? (
                 <div className="appointments-empty">
                   Φόρτωση...
@@ -2965,16 +3461,13 @@ function App() {
               ) : myAppointments.length ===
                 0 ? (
                 <div className="appointments-empty">
-                  Δεν έχεις ακόμη
-                  ραντεβού.
+                  Δεν έχεις ακόμη ραντεβού.
                 </div>
               ) : (
                 <div className="appointments-list">
 
                   {myAppointments.map(
-                    (
-                      appointment
-                    ) => (
+                    appointment => (
                       <article
                         className="my-appointment-card"
                         key={
@@ -2998,6 +3491,7 @@ function App() {
                               : "Επιβεβαιωμένο"}
                           </span>
 
+
                           <small>
                             #
                             {
@@ -3006,6 +3500,7 @@ function App() {
                           </small>
 
                         </div>
+
 
                         <h3>
                           {
@@ -3021,11 +3516,13 @@ function App() {
                           }
                         </h3>
 
+
                         <p>
                           {formatAppointmentDate(
                             appointment.startsAt
                           )}
                         </p>
+
 
                         <p>
                           {cityLabels[
@@ -3045,6 +3542,7 @@ function App() {
                               .address
                           }
                         </p>
+
 
                         {appointment.status !==
                           "Cancelled" &&
@@ -3084,7 +3582,10 @@ function App() {
           </div>
         )}
 
-      {/* PROFILE LOADING */}
+
+      {/* =================================================
+          PROFILE LOADING
+      ================================================= */}
 
       {profileLoading && (
         <div className="profile-overlay">
@@ -3096,7 +3597,10 @@ function App() {
         </div>
       )}
 
-      {/* DOCTOR PROFILE */}
+
+      {/* =================================================
+          DOCTOR PROFILE
+      ================================================= */}
 
       {profileDoctor && (
         <div
@@ -3124,6 +3628,7 @@ function App() {
             >
               ×
             </button>
+
 
             <div className="profile-top">
 
@@ -3158,6 +3663,7 @@ function App() {
 
               </div>
 
+
               <div className="profile-main-info">
 
                 {profileDoctor.isVerified && (
@@ -3165,6 +3671,7 @@ function App() {
                     ✓ Επαληθευμένος γιατρός
                   </span>
                 )}
+
 
                 <h2>
                   {
@@ -3176,12 +3683,14 @@ function App() {
                   }
                 </h2>
 
+
                 <p className="profile-specialty">
                   {specialtyLabels[
                     profileDoctor.specialty
                   ] ||
                     profileDoctor.specialty}
                 </p>
+
 
                 {profileDoctor.subspecialty && (
                   <p>
@@ -3190,6 +3699,7 @@ function App() {
                     }
                   </p>
                 )}
+
 
                 <div className="profile-rating">
                   ★{" "}
@@ -3212,7 +3722,9 @@ function App() {
 
             </div>
 
+
             <div className="profile-divider" />
+
 
             <div className="profile-details-grid">
 
@@ -3246,6 +3758,7 @@ function App() {
 
               </div>
 
+
               <div className="profile-detail">
 
                 <span>
@@ -3260,6 +3773,7 @@ function App() {
                 </strong>
 
               </div>
+
 
               <div className="profile-detail">
 
@@ -3277,6 +3791,7 @@ function App() {
 
               </div>
 
+
               <div className="profile-detail">
 
                 <span>
@@ -3292,6 +3807,7 @@ function App() {
               </div>
 
             </div>
+
 
             <div className="profile-about">
 
@@ -3310,6 +3826,7 @@ function App() {
 
             </div>
 
+
             <div className="profile-features">
 
               {profileDoctor.acceptsInsurance && (
@@ -3324,6 +3841,7 @@ function App() {
                 </div>
               )}
 
+
               {profileDoctor.offersOnlineConsultation && (
                 <div>
                   <b>
@@ -3333,6 +3851,7 @@ function App() {
                   Online consultation
                 </div>
               )}
+
 
               {profileDoctor.isVerified && (
                 <div>
@@ -3345,6 +3864,7 @@ function App() {
               )}
 
             </div>
+
 
             <div className="profile-footer">
 
@@ -3363,6 +3883,7 @@ function App() {
 
               </div>
 
+
               <button
                 type="button"
                 onClick={
@@ -3379,7 +3900,10 @@ function App() {
         </div>
       )}
 
-      {/* BOOKING MODAL */}
+
+      {/* =================================================
+          BOOKING MODAL
+      ================================================= */}
 
       {selectedDoctor && (
         <div
@@ -3411,6 +3935,7 @@ function App() {
             >
               ×
             </button>
+
 
             <div className="booking-header">
 
@@ -3444,6 +3969,7 @@ function App() {
 
             </div>
 
+
             <div className="booking-section">
 
               <label>
@@ -3472,11 +3998,13 @@ function App() {
 
             </div>
 
+
             <div className="booking-section">
 
               <label>
                 Διαθέσιμες ώρες
               </label>
+
 
               {availabilityLoading ? (
                 <p className="booking-muted">
@@ -3485,16 +4013,13 @@ function App() {
               ) : availability.length ===
                 0 ? (
                 <p className="booking-muted">
-                  Δεν υπάρχουν διαθέσιμα
-                  ραντεβού.
+                  Δεν υπάρχουν διαθέσιμα ραντεβού.
                 </p>
               ) : (
                 <div className="time-grid">
 
                   {availability.map(
-                    (
-                      slot
-                    ) => (
+                    slot => (
                       <button
                         type="button"
                         key={
@@ -3524,6 +4049,7 @@ function App() {
               )}
 
             </div>
+
 
             <div className="booking-section">
 
@@ -3565,6 +4091,7 @@ function App() {
 
             </div>
 
+
             {bookingMessage && (
               <div
                 className={
@@ -3578,6 +4105,7 @@ function App() {
                 }
               </div>
             )}
+
 
             <button
               type="button"
@@ -3603,5 +4131,6 @@ function App() {
     </div>
   );
 }
+
 
 export default App;

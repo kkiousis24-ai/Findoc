@@ -1,0 +1,656 @@
+/* =====================================================
+   FINDOC — LIGHT THEME POLISH
+   Stronger contrast + premium readability
+===================================================== */
+
+
+/* =====================================================
+   GLOBAL LIGHT THEME TEXT
+===================================================== */
+
+:root[data-theme="light"] {
+  --light-text-primary:
+    #102d27;
+
+  --light-text-secondary:
+    #355c54;
+
+  --light-text-muted:
+    #6f8b84;
+
+  --light-border:
+    rgba(
+      18,
+      71,
+      60,
+      0.14
+    );
+
+  --light-border-strong:
+    rgba(
+      18,
+      71,
+      60,
+      0.22
+    );
+
+  --light-surface:
+    rgba(
+      255,
+      255,
+      255,
+      0.78
+    );
+
+  --light-surface-strong:
+    rgba(
+      255,
+      255,
+      255,
+      0.94
+    );
+}
+
+
+/* =====================================================
+   SEARCH PANELS
+===================================================== */
+
+:root[data-theme="light"]
+.hero > .search-panel {
+  border-color:
+    rgba(
+      18,
+      71,
+      60,
+      0.13
+    );
+
+  background:
+    rgba(
+      255,
+      255,
+      255,
+      0.88
+    );
+
+  box-shadow:
+    0 18px 40px
+      rgba(
+        21,
+        78,
+        66,
+        0.08
+      ),
+    inset 0 1px 0
+      rgba(
+        255,
+        255,
+        255,
+        0.95
+      );
+}
+
+
+/* =====================================================
+   FILTER BUBBLES
+===================================================== */
+
+:root[data-theme="light"]
+.search-item {
+  border-color:
+    var(
+      --light-border
+    );
+
+  background:
+    linear-gradient(
+      180deg,
+      rgba(
+        255,
+        255,
+        255,
+        0.98
+      ),
+      rgba(
+        247,
+        252,
+        250,
+        0.95
+      )
+    );
+
+  box-shadow:
+    inset 0 1px 0
+      rgba(
+        255,
+        255,
+        255,
+        1
+      ),
+    0 8px 20px
+      rgba(
+        19,
+        76,
+        64,
+        0.05
+      );
+}
+
+
+:root[data-theme="light"]
+.search-item:hover {
+  border-color:
+    var(
+      --light-border-strong
+    );
+
+  background:
+    #ffffff;
+}
+
+
+:root[data-theme="light"]
+.search-item:focus-within {
+  border-color:
+    rgba(
+      33,
+      156,
+      132,
+      0.42
+    );
+
+  box-shadow:
+    0 0 0 4px
+      rgba(
+        46,
+        187,
+        159,
+        0.08
+      ),
+    0 10px 26px
+      rgba(
+        18,
+        71,
+        60,
+        0.07
+      );
+}
+
+
+/* =====================================================
+   SMALL FILTER LABELS
+===================================================== */
+
+:root[data-theme="light"]
+.search-item label {
+  color:
+    #5d7d76 !important;
+
+  font-weight:
+    850 !important;
+
+  letter-spacing:
+    1.15px;
+
+  opacity:
+    1 !important;
+}
+
+
+/* =====================================================
+   INPUT TEXT
+===================================================== */
+
+:root[data-theme="light"]
+.search-item input {
+  color:
+    var(
+      --light-text-primary
+    ) !important;
+
+  font-weight:
+    720 !important;
+}
+
+
+/* =====================================================
+   PLACEHOLDERS
+===================================================== */
+
+:root[data-theme="light"]
+.search-item input::placeholder {
+  color:
+    #78928c !important;
+
+  opacity:
+    1 !important;
+
+  font-weight:
+    600;
+}
+
+
+/* =====================================================
+   CUSTOM SELECT VALUE
+===================================================== */
+
+:root[data-theme="light"]
+.custom-select-trigger {
+  color:
+    var(
+      --light-text-primary
+    ) !important;
+
+  font-weight:
+    760 !important;
+}
+
+
+:root[data-theme="light"]
+.custom-select-value {
+  color:
+    var(
+      --light-text-primary
+    ) !important;
+
+  opacity:
+    1 !important;
+}
+
+
+/* =====================================================
+   CHEVRONS
+===================================================== */
+
+:root[data-theme="light"]
+.custom-select-chevron {
+  color:
+    #54766e !important;
+
+  opacity:
+    1 !important;
+}
+
+
+/* =====================================================
+   SEARCH ICONS
+===================================================== */
+
+:root[data-theme="light"]
+.search-icon {
+  background:
+    rgba(
+      50,
+      190,
+      161,
+      0.11
+    );
+
+  color:
+    #159979;
+
+  box-shadow:
+    inset 0 1px 0
+      rgba(
+        255,
+        255,
+        255,
+        0.9
+      );
+}
+
+
+/* =====================================================
+   TRUST ROW
+===================================================== */
+
+:root[data-theme="light"]
+.trust-row label {
+  border-color:
+    rgba(
+      18,
+      71,
+      60,
+      0.14
+    ) !important;
+
+  background:
+    rgba(
+      255,
+      255,
+      255,
+      0.84
+    ) !important;
+
+  color:
+    #355b53 !important;
+
+  font-weight:
+    650 !important;
+
+  opacity:
+    1 !important;
+}
+
+
+:root[data-theme="light"]
+.trust-row label:hover {
+  border-color:
+    rgba(
+      31,
+      166,
+      137,
+      0.3
+    ) !important;
+
+  background:
+    rgba(
+      239,
+      252,
+      248,
+      0.96
+    ) !important;
+
+  color:
+    #173d35 !important;
+}
+
+
+:root[data-theme="light"]
+.trust-row label:has(
+  input:checked
+) {
+  border-color:
+    rgba(
+      25,
+      165,
+      136,
+      0.36
+    ) !important;
+
+  background:
+    rgba(
+      210,
+      247,
+      238,
+      0.88
+    ) !important;
+
+  color:
+    #0b745d !important;
+
+  font-weight:
+    750 !important;
+}
+
+
+/* =====================================================
+   CHECKBOXES
+===================================================== */
+
+:root[data-theme="light"]
+.trust-row input[type="checkbox"] {
+  accent-color:
+    #1aaa88;
+
+  opacity:
+    1;
+}
+
+
+/* =====================================================
+   CLEAR FILTERS BUTTON
+===================================================== */
+
+:root[data-theme="light"]
+.trust-row button {
+  border-color:
+    rgba(
+      18,
+      71,
+      60,
+      0.14
+    ) !important;
+
+  background:
+    rgba(
+      255,
+      255,
+      255,
+      0.86
+    ) !important;
+
+  color:
+    #355b53 !important;
+
+  font-weight:
+    750 !important;
+
+  opacity:
+    1 !important;
+}
+
+
+:root[data-theme="light"]
+.trust-row button:hover {
+  border-color:
+    rgba(
+      29,
+      157,
+      132,
+      0.3
+    ) !important;
+
+  background:
+    rgba(
+      240,
+      252,
+      249,
+      1
+    ) !important;
+
+  color:
+    #163d35 !important;
+}
+
+
+/* =====================================================
+   DROPDOWN MENU
+===================================================== */
+
+:root[data-theme="light"]
+.custom-select-menu {
+  border-color:
+    rgba(
+      18,
+      71,
+      60,
+      0.13
+    ) !important;
+
+  background:
+    rgba(
+      255,
+      255,
+      255,
+      0.97
+    ) !important;
+
+  box-shadow:
+    0 24px 60px
+      rgba(
+        18,
+        71,
+        60,
+        0.14
+      ),
+    inset 0 1px 0
+      rgba(
+        255,
+        255,
+        255,
+        1
+      );
+}
+
+
+/* =====================================================
+   DROPDOWN OPTIONS
+===================================================== */
+
+:root[data-theme="light"]
+.custom-select-option {
+  color:
+    #294f47 !important;
+
+  font-weight:
+    650 !important;
+
+  opacity:
+    1 !important;
+}
+
+
+:root[data-theme="light"]
+.custom-select-option:hover {
+  background:
+    rgba(
+      37,
+      181,
+      151,
+      0.08
+    ) !important;
+
+  color:
+    #102f28 !important;
+}
+
+
+:root[data-theme="light"]
+.custom-select-option.selected {
+  background:
+    rgba(
+      43,
+      190,
+      159,
+      0.13
+    ) !important;
+
+  color:
+    #08785e !important;
+
+  font-weight:
+    800 !important;
+}
+
+
+/* =====================================================
+   SELECT CHECKMARK
+===================================================== */
+
+:root[data-theme="light"]
+.custom-select-option.selected
+.custom-select-check {
+  background:
+    #50d8bd !important;
+
+  color:
+    #07382f !important;
+}
+
+
+/* =====================================================
+   SEARCH BUTTON
+===================================================== */
+
+:root[data-theme="light"]
+.main-search-button {
+  color:
+    #ffffff !important;
+
+  font-weight:
+    850 !important;
+
+  box-shadow:
+    0 14px 28px
+      rgba(
+        236,
+        108,
+        87,
+        0.2
+      );
+}
+
+
+/* =====================================================
+   HERO DESCRIPTION
+===================================================== */
+
+:root[data-theme="light"]
+.hero-description {
+  color:
+    #52746c !important;
+
+  font-weight:
+    520;
+}
+
+
+/* =====================================================
+   HEADER NAVIGATION
+===================================================== */
+
+:root[data-theme="light"]
+.main-nav a {
+  color:
+    #365c54 !important;
+
+  font-weight:
+    700 !important;
+}
+
+
+:root[data-theme="light"]
+.main-nav a:hover {
+  color:
+    #0d725b !important;
+}
+
+
+/* =====================================================
+   GENERIC LIGHT MUTED TEXT
+===================================================== */
+
+:root[data-theme="light"]
+.booking-muted,
+:root[data-theme="light"]
+.profile-specialty,
+:root[data-theme="light"]
+.appointments-empty {
+  color:
+    #5f7e77 !important;
+}
+
+
+/* =====================================================
+   MOBILE
+===================================================== */
+
+@media (
+  max-width: 700px
+) {
+  :root[data-theme="light"]
+  .search-item label {
+    font-weight:
+      800 !important;
+  }
+
+  :root[data-theme="light"]
+  .custom-select-trigger,
+  :root[data-theme="light"]
+  .search-item input {
+    font-weight:
+      700 !important;
+  }
+}

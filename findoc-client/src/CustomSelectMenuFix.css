@@ -1,0 +1,292 @@
+/* =====================================================
+   FINDOC — CUSTOM SELECT MENU FIX
+   Dropdown clipping, stacking and pointer-event fix
+===================================================== */
+
+
+/* =====================================================
+   ALLOW DROPDOWNS TO ESCAPE SEARCH CONTAINERS
+===================================================== */
+
+.hero {
+  overflow: visible !important;
+}
+
+.hero > .search-panel {
+  overflow: visible !important;
+}
+
+.search-panel {
+  overflow: visible !important;
+}
+
+.search-item {
+  overflow: visible !important;
+}
+
+
+/* =====================================================
+   BASE STACKING
+===================================================== */
+
+.search-panel {
+  position: relative;
+
+  z-index: 10;
+}
+
+.trust-row {
+  position: relative;
+
+  z-index: 5;
+}
+
+
+/* =====================================================
+   OPEN PANEL MUST COME ABOVE EVERYTHING BELOW IT
+===================================================== */
+
+.search-panel:has(
+  .custom-select.open
+) {
+  z-index: 10000 !important;
+}
+
+
+/* =====================================================
+   OPEN SEARCH ITEM
+===================================================== */
+
+.search-item:has(
+  .custom-select.open
+) {
+  position: relative;
+
+  z-index: 11000 !important;
+}
+
+
+/* =====================================================
+   CUSTOM SELECT
+===================================================== */
+
+.custom-select {
+  position: relative;
+
+  width: 100%;
+
+  z-index: 10;
+}
+
+.custom-select.open {
+  z-index: 12000 !important;
+}
+
+
+/* =====================================================
+   SCROLLABLE DROPDOWN MENU
+===================================================== */
+
+.custom-select-menu {
+  position: absolute;
+
+  z-index: 13000 !important;
+
+  max-height:
+    min(
+      320px,
+      45vh
+    );
+
+  overflow-x:
+    hidden !important;
+
+  overflow-y:
+    auto !important;
+
+  overscroll-behavior:
+    contain;
+
+  pointer-events:
+    auto !important;
+
+  scrollbar-width:
+    thin;
+
+  scrollbar-color:
+    rgba(
+      94,
+      219,
+      196,
+      0.55
+    )
+    rgba(
+      255,
+      255,
+      255,
+      0.05
+    );
+}
+
+
+/* =====================================================
+   DISABLE BACKGROUND CONTROLS WHILE SELECT IS OPEN
+===================================================== */
+
+body:has(
+  .custom-select.open
+)
+.trust-row {
+  pointer-events:
+    none !important;
+}
+
+
+/* Also block other search panels behind the active one */
+
+body:has(
+  .custom-select.open
+)
+.search-panel:not(
+  :has(
+    .custom-select.open
+  )
+) {
+  pointer-events:
+    none;
+}
+
+
+/* Keep active panel interactive */
+
+.search-panel:has(
+  .custom-select.open
+) {
+  pointer-events:
+    auto !important;
+}
+
+
+/* =====================================================
+   WEBKIT SCROLLBAR
+===================================================== */
+
+.custom-select-menu::-webkit-scrollbar {
+  width: 7px;
+}
+
+.custom-select-menu::-webkit-scrollbar-track {
+  background:
+    rgba(
+      255,
+      255,
+      255,
+      0.04
+    );
+
+  border-radius:
+    999px;
+}
+
+.custom-select-menu::-webkit-scrollbar-thumb {
+  background:
+    rgba(
+      94,
+      219,
+      196,
+      0.48
+    );
+
+  border-radius:
+    999px;
+}
+
+.custom-select-menu::-webkit-scrollbar-thumb:hover {
+  background:
+    rgba(
+      94,
+      219,
+      196,
+      0.72
+    );
+}
+
+
+/* =====================================================
+   KEEP OPTIONS USABLE
+===================================================== */
+
+.custom-select-option {
+  position: relative;
+
+  z-index: 1;
+
+  flex-shrink: 0;
+
+  pointer-events:
+    auto !important;
+}
+
+.custom-select-option-label {
+  overflow: visible;
+
+  text-overflow:
+    unset;
+
+  white-space:
+    normal;
+}
+
+
+/* =====================================================
+   OPEN MENU VISIBILITY
+===================================================== */
+
+.custom-select.open
+.custom-select-menu {
+  visibility:
+    visible;
+
+  opacity: 1;
+
+  pointer-events:
+    auto !important;
+}
+
+
+/* =====================================================
+   ACTIVE OPTION
+===================================================== */
+
+.custom-select-option:hover {
+  position: relative;
+
+  z-index: 2;
+}
+
+
+/* =====================================================
+   MOBILE / SMALL HEIGHT SCREENS
+===================================================== */
+
+@media (
+  max-height: 720px
+) {
+  .custom-select-menu {
+    max-height:
+      240px;
+  }
+}
+
+
+@media (
+  max-width: 700px
+) {
+  .custom-select-menu {
+    max-height:
+      min(
+        280px,
+        42vh
+      );
+  }
+}
