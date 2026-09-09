@@ -1,0 +1,642 @@
+/* =====================================================
+   FINDOC — PREMIUM AUTH MODAL
+   Safe override layer
+===================================================== */
+
+
+/* =====================================================
+   OVERLAY
+===================================================== */
+
+.auth-overlay {
+  padding: 28px;
+
+  background:
+    radial-gradient(
+      circle at 50% 12%,
+      rgba(83, 214, 189, 0.09),
+      transparent 34%
+    ),
+    rgba(1, 10, 8, 0.84);
+
+  backdrop-filter:
+    blur(22px)
+    saturate(125%);
+
+  -webkit-backdrop-filter:
+    blur(22px)
+    saturate(125%);
+}
+
+
+/* =====================================================
+   MODAL
+===================================================== */
+
+.auth-modal {
+  position: relative;
+
+  width:
+    min(100%, 510px);
+
+  max-height:
+    calc(100vh - 56px);
+
+  padding:
+    42px;
+
+  overflow-x: hidden;
+  overflow-y: auto;
+
+  border:
+    1px solid
+    rgba(255, 255, 255, 0.085);
+
+  border-radius: 34px;
+
+  background:
+    linear-gradient(
+      145deg,
+      rgba(13, 43, 37, 0.99),
+      rgba(7, 28, 24, 0.99)
+    );
+
+  box-shadow:
+    0 45px 110px
+      rgba(0, 0, 0, 0.58),
+    inset 0 1px 0
+      rgba(255, 255, 255, 0.055);
+
+  animation:
+    authModalEnter
+    0.22s
+    ease-out;
+}
+
+
+.auth-modal::before {
+  content: "";
+
+  position: absolute;
+
+  width: 390px;
+  height: 230px;
+
+  top: -165px;
+  left: 50%;
+
+  transform:
+    translateX(-50%);
+
+  border-radius: 50%;
+
+  background:
+    radial-gradient(
+      circle,
+      rgba(83, 214, 189, 0.18),
+      transparent 68%
+    );
+
+  pointer-events: none;
+}
+
+
+.auth-modal::after {
+  content: "";
+
+  position: absolute;
+
+  top: 0;
+  left: 55px;
+  right: 55px;
+
+  height: 1px;
+
+  background:
+    linear-gradient(
+      90deg,
+      transparent,
+      rgba(105, 229, 205, 0.32),
+      transparent
+    );
+
+  pointer-events: none;
+}
+
+
+@keyframes authModalEnter {
+  from {
+    opacity: 0;
+
+    transform:
+      translateY(12px)
+      scale(0.975);
+  }
+
+  to {
+    opacity: 1;
+
+    transform:
+      translateY(0)
+      scale(1);
+  }
+}
+
+
+/* =====================================================
+   CLOSE BUTTON
+===================================================== */
+
+.auth-modal
+.auth-close {
+  top: 20px;
+  right: 20px;
+
+  width: 42px;
+  height: 42px;
+
+  border:
+    1px solid
+    rgba(255, 255, 255, 0.085);
+
+  border-radius: 15px;
+
+  background:
+    rgba(255, 255, 255, 0.045);
+
+  color:
+    rgba(239, 250, 247, 0.72);
+
+  transition:
+    transform 0.18s ease,
+    background 0.18s ease,
+    border-color 0.18s ease,
+    color 0.18s ease;
+}
+
+
+.auth-modal
+.auth-close:hover {
+  transform:
+    rotate(4deg)
+    scale(1.04);
+
+  border-color:
+    rgba(242, 118, 97, 0.24);
+
+  background:
+    rgba(242, 118, 97, 0.09);
+
+  color: #ff9b87;
+}
+
+
+/* =====================================================
+   LOGO
+===================================================== */
+
+.auth-logo {
+  position: relative;
+  z-index: 2;
+
+  display: flex;
+  align-items: center;
+
+  gap: 11px;
+
+  margin-bottom: 26px;
+}
+
+
+.auth-logo
+.brand-icon {
+  width: 46px;
+  height: 46px;
+
+  border-radius: 15px;
+
+  background:
+    linear-gradient(
+      180deg,
+      #67e2cb,
+      #4fcdb5
+    );
+
+  box-shadow:
+    0 10px 25px
+      rgba(83, 214, 189, 0.2);
+
+  color: #07352d;
+}
+
+
+.auth-logo
+.brand-name {
+  font-size: 25px;
+
+  letter-spacing: -1px;
+}
+
+
+/* =====================================================
+   EYEBROW
+===================================================== */
+
+.auth-eyebrow {
+  position: relative;
+  z-index: 2;
+
+  display: inline-flex;
+
+  padding:
+    7px
+    11px;
+
+  border:
+    1px solid
+    rgba(83, 214, 189, 0.14);
+
+  border-radius: 999px;
+
+  background:
+    rgba(83, 214, 189, 0.07);
+
+  color: #67dfc9;
+
+  font-size: 8px;
+  font-weight: 850;
+
+  letter-spacing: 1.4px;
+}
+
+
+/* =====================================================
+   TITLE
+===================================================== */
+
+.auth-modal h2 {
+  position: relative;
+  z-index: 2;
+
+  margin:
+    14px
+    0
+    24px;
+
+  color: #ffffff;
+
+  font-size:
+    clamp(
+      28px,
+      4vw,
+      34px
+    );
+
+  font-weight: 720;
+
+  line-height: 1.08;
+
+  letter-spacing: -1.2px;
+}
+
+
+/* =====================================================
+   LOGIN / REGISTER SWITCH BUTTONS
+===================================================== */
+
+.auth-modal
+.profile-button {
+  min-height: 42px;
+
+  padding:
+    0
+    17px;
+
+  border:
+    1px solid
+    rgba(83, 214, 189, 0.12);
+
+  border-radius: 13px;
+
+  background:
+    rgba(83, 214, 189, 0.045);
+
+  color:
+    rgba(224, 247, 241, 0.75);
+
+  cursor: pointer;
+
+  font-size: 10px;
+  font-weight: 750;
+
+  transition:
+    transform 0.18s ease,
+    background 0.18s ease,
+    border-color 0.18s ease,
+    color 0.18s ease;
+}
+
+
+.auth-modal
+.profile-button:hover {
+  transform:
+    translateY(-1px);
+
+  border-color:
+    rgba(83, 214, 189, 0.25);
+
+  background:
+    rgba(83, 214, 189, 0.09);
+
+  color: #74e5d0;
+}
+
+
+/* =====================================================
+   FIELDS
+===================================================== */
+
+.auth-field {
+  position: relative;
+  z-index: 2;
+
+  margin-bottom: 17px;
+}
+
+
+.auth-field label {
+  display: block;
+
+  margin-bottom: 8px;
+
+  color:
+    rgba(225, 244, 239, 0.58);
+
+  font-size: 10px;
+  font-weight: 750;
+
+  letter-spacing: 0.25px;
+}
+
+
+.auth-field input {
+  width: 100%;
+  height: 54px;
+
+  padding:
+    0
+    16px;
+
+  outline: 0;
+
+  border:
+    1px solid
+    rgba(255, 255, 255, 0.07);
+
+  border-radius: 15px;
+
+  background:
+    rgba(255, 255, 255, 0.035);
+
+  color: #ffffff;
+
+  box-shadow:
+    inset 0 1px 0
+      rgba(255, 255, 255, 0.025);
+
+  font-size: 12px;
+
+  transition:
+    border-color 0.18s ease,
+    background 0.18s ease,
+    box-shadow 0.18s ease;
+}
+
+
+.auth-field input:focus {
+  border-color:
+    rgba(83, 214, 189, 0.35);
+
+  background:
+    rgba(83, 214, 189, 0.035);
+
+  box-shadow:
+    0 0 0 4px
+      rgba(83, 214, 189, 0.06);
+}
+
+
+.auth-field input::placeholder {
+  color:
+    rgba(226, 244, 240, 0.25);
+}
+
+
+/* =====================================================
+   MESSAGE
+===================================================== */
+
+.auth-message {
+  position: relative;
+  z-index: 2;
+
+  margin-top: 4px;
+  margin-bottom: 16px;
+
+  padding:
+    13px
+    15px;
+
+  border:
+    1px solid
+    rgba(242, 118, 97, 0.14);
+
+  border-radius: 14px;
+
+  background:
+    rgba(242, 118, 97, 0.07);
+
+  color: #ff9f8e;
+
+  font-size: 11px;
+  font-weight: 650;
+
+  line-height: 1.5;
+}
+
+
+/* =====================================================
+   SUBMIT BUTTON
+===================================================== */
+
+.auth-submit {
+  position: relative;
+  z-index: 2;
+
+  width: 100%;
+  height: 56px;
+
+  margin-top: 5px;
+
+  border:
+    1px solid
+    rgba(255, 255, 255, 0.1);
+
+  border-radius: 18px;
+
+  background:
+    linear-gradient(
+      180deg,
+      #65dfc7,
+      #4fcdb5
+    );
+
+  color: #07372f;
+
+  cursor: pointer;
+
+  box-shadow:
+    0 15px 32px
+      rgba(83, 214, 189, 0.18),
+    inset 0 1px 0
+      rgba(255, 255, 255, 0.18);
+
+  font-size: 12px;
+  font-weight: 850;
+
+  transition:
+    transform 0.18s ease,
+    background 0.18s ease,
+    box-shadow 0.18s ease,
+    opacity 0.18s ease;
+}
+
+
+.auth-submit:hover {
+  transform:
+    translateY(-2px);
+
+  background:
+    linear-gradient(
+      180deg,
+      #70e8d0,
+      #58d7bf
+    );
+
+  box-shadow:
+    0 19px 38px
+      rgba(83, 214, 189, 0.23);
+}
+
+
+.auth-submit:active {
+  transform:
+    scale(0.988);
+}
+
+
+.auth-submit:disabled {
+  opacity: 0.55;
+
+  cursor: wait;
+
+  transform: none;
+
+  box-shadow: none;
+}
+
+
+/* =====================================================
+   SCROLLBAR
+===================================================== */
+
+.auth-modal::-webkit-scrollbar {
+  width: 7px;
+}
+
+.auth-modal::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.auth-modal::-webkit-scrollbar-thumb {
+  border-radius: 999px;
+
+  background:
+    rgba(83, 214, 189, 0.18);
+}
+
+
+/* =====================================================
+   MOBILE
+===================================================== */
+
+@media (
+  max-width: 560px
+) {
+
+  .auth-overlay {
+    align-items: flex-end;
+
+    padding: 12px;
+  }
+
+
+  .auth-modal {
+    width: 100%;
+
+    max-height:
+      calc(100vh - 24px);
+
+    padding:
+      30px
+      20px
+      22px;
+
+    border-radius:
+      28px
+      28px
+      22px
+      22px;
+  }
+
+
+  .auth-modal::after {
+    left: 34px;
+    right: 34px;
+  }
+
+
+  .auth-modal
+  .auth-close {
+    top: 15px;
+    right: 15px;
+
+    width: 38px;
+    height: 38px;
+
+    border-radius: 13px;
+  }
+
+
+  .auth-logo {
+    margin-bottom: 22px;
+  }
+
+
+  .auth-modal h2 {
+    font-size: 25px;
+  }
+
+
+  .auth-field input {
+    height: 52px;
+  }
+
+
+  .auth-submit {
+    height: 52px;
+
+    border-radius: 16px;
+  }
+
+}
