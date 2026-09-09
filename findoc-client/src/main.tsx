@@ -25,7 +25,7 @@ import "./LanguageSelector.css";
 /* DROPDOWN FIX */
 import "./CustomSelectMenuFix.css";
 
-/* MUST STAY LAST */
+/* LIGHT THEME POLISH */
 import "./LightThemePolish.css";
 
 import App from "./App.tsx";
@@ -35,6 +35,11 @@ import ThemeToggleMount from "./ThemeToggleMount.tsx";
 import LanguageSelectorMount from "./LanguageSelectorMount.tsx";
 import AppTranslationBridge from "./AppTranslationBridge.tsx";
 import FilterTranslationBridge from "./FilterTranslationBridge.tsx";
+import DoctorResultsTranslationBridge from "./DoctorResultsTranslationBridge.tsx";
+import DoctorProfileTranslationBridge from "./DoctorProfileTranslationBridge.tsx";
+import BookingTranslationBridge from "./BookingTranslationBridge.tsx";
+import AuthTranslationBridge from "./AuthTranslationBridge.tsx";
+import AppointmentsTranslationBridge from "./AppointmentsTranslationBridge.tsx";
 
 
 createRoot(
@@ -56,5 +61,15 @@ createRoot(
     <AppTranslationBridge />
 
     <FilterTranslationBridge />
+
+    <DoctorResultsTranslationBridge />
+
+    <DoctorProfileTranslationBridge />
+
+    <BookingTranslationBridge />
+
+    <AuthTranslationBridge />
+
+    <AppointmentsTranslationBridge />
   </StrictMode>
 );

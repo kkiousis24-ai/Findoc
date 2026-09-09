@@ -7,6 +7,10 @@ import {
 } from "react-i18next";
 
 
+/* =====================================================
+   FINDOC — APP TRANSLATION BRIDGE
+===================================================== */
+
 function AppTranslationBridge() {
   const {
     t,
@@ -16,76 +20,53 @@ function AppTranslationBridge() {
 
 
   useEffect(() => {
+
     /* =================================================
        NAVIGATION
     ================================================= */
 
-    const navLinks =
+    const navigationLinks =
       document.querySelectorAll(
         ".main-nav a"
       );
 
-    if (navLinks[0]) {
-      navLinks[0].textContent =
-        t(
-          "nav.findDoctor"
-        );
-    }
 
-    if (navLinks[1]) {
-      navLinks[1].textContent =
-        t(
-          "nav.howItWorks"
-        );
-    }
+    const navTranslations = [
+      t(
+        "nav.findDoctor"
+      ),
 
-    if (navLinks[2]) {
-      navLinks[2].textContent =
-        t(
-          "nav.forDoctors"
-        );
-    }
+      t(
+        "nav.howItWorks"
+      ),
+
+      t(
+        "nav.forDoctors"
+      ),
+    ];
 
 
-    const loginButton =
-      document.querySelector(
-        ".login-button"
-      );
-
-    if (loginButton) {
-      loginButton.textContent =
-        t(
-          "nav.login"
-        );
-    }
+    navigationLinks.forEach(
+      (
+        link,
+        index
+      ) => {
+        const translated =
+          navTranslations[
+            index
+          ];
 
 
-    const logoutButton =
-      document.querySelector(
-        ".logout-button"
-      );
-
-    if (logoutButton) {
-      logoutButton.textContent =
-        t(
-          "nav.logout"
-        );
-    }
-
-
-    const appointmentsButton =
-      document.querySelector(
-        ".my-appointments-nav"
-      );
-
-    if (
-      appointmentsButton
-    ) {
-      appointmentsButton.textContent =
-        t(
-          "nav.myAppointments"
-        );
-    }
+        if (
+          translated &&
+          link.textContent !==
+            translated
+        ) {
+          link.textContent =
+            translated;
+        }
+      }
+    );
 
 
     /* =================================================
@@ -97,27 +78,54 @@ function AppTranslationBridge() {
         ".hero-badge"
       );
 
-    if (heroBadge) {
-      heroBadge.textContent =
-        "";
 
+    if (
+      heroBadge
+    ) {
       const icon =
-        document.createElement(
+        heroBadge.querySelector(
           "span"
         );
 
-      icon.textContent =
-        "✦";
 
-      heroBadge.appendChild(
+      if (
         icon
-      );
+      ) {
+        /*
+         * Διατηρούμε το ✦ span και αλλάζουμε
+         * μόνο το text node δίπλα του.
+         */
 
-      heroBadge.append(
-        ` ${t(
-          "hero.badge"
-        )}`
-      );
+        const textNodes =
+          Array.from(
+            heroBadge.childNodes
+          ).filter(
+            node =>
+              node.nodeType ===
+              Node.TEXT_NODE
+          );
+
+
+        textNodes.forEach(
+          node => {
+            node.remove();
+          }
+        );
+
+
+        heroBadge.append(
+          document.createTextNode(
+            ` ${t(
+              "hero.badge"
+            )}`
+          )
+        );
+      } else {
+        heroBadge.textContent =
+          t(
+            "hero.badge"
+          );
+      }
     }
 
 
@@ -130,29 +138,71 @@ function AppTranslationBridge() {
         ".hero-left h1"
       );
 
-    if (heroTitle) {
-      heroTitle.textContent =
-        "";
 
-      heroTitle.append(
-        t(
-          "hero.title"
-        )
-      );
-
+    if (
+      heroTitle
+    ) {
       const subtitle =
-        document.createElement(
+        heroTitle.querySelector(
           "em"
         );
 
-      subtitle.textContent =
-        t(
-          "hero.subtitle"
+
+      /*
+       * Το App.tsx έχει:
+       *
+       * <h1>
+       *   title
+       *   <em>subtitle</em>
+       * </h1>
+       *
+       * Δεν κάνουμε textContent στο h1,
+       * γιατί θα σβήσει το <em>.
+       */
+
+      const textNodes =
+        Array.from(
+          heroTitle.childNodes
+        ).filter(
+          node =>
+            node.nodeType ===
+            Node.TEXT_NODE
         );
 
-      heroTitle.appendChild(
-        subtitle
+
+      textNodes.forEach(
+        node => {
+          node.remove();
+        }
       );
+
+
+      const titleText =
+        document.createTextNode(
+          `${t(
+            "hero.title"
+          )} `
+        );
+
+
+      if (
+        subtitle
+      ) {
+        heroTitle.insertBefore(
+          titleText,
+          subtitle
+        );
+
+
+        subtitle.textContent =
+          t(
+            "hero.subtitle"
+          );
+      } else {
+        heroTitle.append(
+          titleText
+        );
+      }
     }
 
 
@@ -165,30 +215,41 @@ function AppTranslationBridge() {
         ".hero-description"
       );
 
+
     if (
       heroDescription
     ) {
-      heroDescription.textContent =
+      const translated =
         t(
           "hero.description"
         );
+
+
+      if (
+        heroDescription.textContent !==
+          translated
+      ) {
+        heroDescription.textContent =
+          translated;
+      }
     }
 
 
     /* =================================================
-       DOCUMENT
+       DOCUMENT LANGUAGE
     ================================================= */
 
     const currentLanguage =
       i18n.language
-        .split("-")[0]
+        .split(
+          "-"
+        )[0]
         .toLowerCase();
+
 
     document.documentElement.lang =
       currentLanguage;
 
-    document.title =
-      "Findoc";
   }, [
     i18n.language,
     t,

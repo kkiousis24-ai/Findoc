@@ -328,6 +328,7 @@ function getInitialLanguage(): string {
       "findoc_language"
     );
 
+
   if (
     savedLanguage &&
     supportedLanguages.some(
@@ -339,10 +340,12 @@ function getInitialLanguage(): string {
     return savedLanguage;
   }
 
+
   const browserLanguage =
     navigator.language
       .split("-")[0]
       .toLowerCase();
+
 
   const browserSupported =
     supportedLanguages.some(
@@ -351,9 +354,13 @@ function getInitialLanguage(): string {
         browserLanguage
     );
 
-  if (browserSupported) {
+
+  if (
+    browserSupported
+  ) {
     return browserLanguage;
   }
+
 
   return "el";
 }
@@ -365,18 +372,46 @@ function getInitialLanguage(): string {
 
 const greekTranslations = {
   translation: {
+
+    /*
+     * Βάζουμε πρώτα τα extended UI translations.
+     * Έτσι δεν υπάρχει duplicate overwrite warning.
+     */
+    ...uiOptionTranslations.el,
+
+
     common: {
-      appName: "Findoc",
-      search: "Αναζήτηση",
-      close: "Κλείσιμο",
-      cancel: "Ακύρωση",
-      save: "Αποθήκευση",
-      loading: "Φόρτωση...",
-      back: "Πίσω",
-      next: "Επόμενο",
-      yes: "Ναι",
-      no: "Όχι",
+      appName:
+        "Findoc",
+
+      search:
+        "Αναζήτηση",
+
+      close:
+        "Κλείσιμο",
+
+      cancel:
+        "Ακύρωση",
+
+      save:
+        "Αποθήκευση",
+
+      loading:
+        "Φόρτωση...",
+
+      back:
+        "Πίσω",
+
+      next:
+        "Επόμενο",
+
+      yes:
+        "Ναι",
+
+      no:
+        "Όχι",
     },
+
 
     nav: {
       findDoctor:
@@ -398,6 +433,7 @@ const greekTranslations = {
         "Τα ραντεβού μου",
     },
 
+
     hero: {
       badge:
         "Η υγεία σου, πιο απλά",
@@ -411,6 +447,7 @@ const greekTranslations = {
       description:
         "Βρες διαθέσιμους γιατρούς κοντά σου, σύγκρινε αξιολογήσεις και κλείσε ραντεβού online.",
     },
+
 
     filters: {
       specialty:
@@ -450,38 +487,23 @@ const greekTranslations = {
         "Όλα",
     },
 
+
+    /*
+     * Merge με το booking από uiOptions,
+     * αντί να το ξαναγράφουμε ολόκληρο.
+     */
     booking: {
+      ...uiOptionTranslations.el.booking,
+
       book:
         "Κλείσε ραντεβού",
 
       confirm:
         "Επιβεβαίωση ραντεβού",
 
-      success:
-        "Το ραντεβού έκλεισε επιτυχώς!",
-
       successDescription:
         "Η κράτηση καταχωρήθηκε επιτυχώς στο Findoc.",
     },
-
-    auth: {
-      login:
-        "Σύνδεση",
-
-      register:
-        "Εγγραφή",
-
-      email:
-        "Email",
-
-      password:
-        "Κωδικός",
-
-      fullName:
-        "Ονοματεπώνυμο",
-    },
-
-    ...uiOptionTranslations.el,
   },
 };
 
@@ -492,18 +514,45 @@ const greekTranslations = {
 
 const englishTranslations = {
   translation: {
+
+    /*
+     * Extended UI translations first.
+     */
+    ...uiOptionTranslations.en,
+
+
     common: {
-      appName: "Findoc",
-      search: "Search",
-      close: "Close",
-      cancel: "Cancel",
-      save: "Save",
-      loading: "Loading...",
-      back: "Back",
-      next: "Next",
-      yes: "Yes",
-      no: "No",
+      appName:
+        "Findoc",
+
+      search:
+        "Search",
+
+      close:
+        "Close",
+
+      cancel:
+        "Cancel",
+
+      save:
+        "Save",
+
+      loading:
+        "Loading...",
+
+      back:
+        "Back",
+
+      next:
+        "Next",
+
+      yes:
+        "Yes",
+
+      no:
+        "No",
     },
+
 
     nav: {
       findDoctor:
@@ -525,6 +574,7 @@ const englishTranslations = {
         "My appointments",
     },
 
+
     hero: {
       badge:
         "Your health, made simpler",
@@ -538,6 +588,7 @@ const englishTranslations = {
       description:
         "Find available doctors near you, compare ratings and book appointments online.",
     },
+
 
     filters: {
       specialty:
@@ -577,38 +628,19 @@ const englishTranslations = {
         "All",
     },
 
+
     booking: {
+      ...uiOptionTranslations.en.booking,
+
       book:
         "Book appointment",
 
       confirm:
         "Confirm appointment",
 
-      success:
-        "Appointment booked successfully!",
-
       successDescription:
         "Your appointment has been successfully booked on Findoc.",
     },
-
-    auth: {
-      login:
-        "Sign in",
-
-      register:
-        "Create account",
-
-      email:
-        "Email",
-
-      password:
-        "Password",
-
-      fullName:
-        "Full name",
-    },
-
-    ...uiOptionTranslations.en,
   },
 };
 
@@ -685,10 +717,12 @@ i18n.on(
         .split("-")[0]
         .toLowerCase();
 
+
     localStorage.setItem(
       "findoc_language",
       normalized
     );
+
 
     document.documentElement.lang =
       normalized;
