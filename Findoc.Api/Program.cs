@@ -1034,16 +1034,14 @@ app.MapPost(
             });
         }
 
-        int? authenticatedUserId =
-            null;
+       var authenticatedUserId =
+    GetAuthenticatedUserId(
+        httpContext.User);
 
-        if (httpContext.User.Identity
-            ?.IsAuthenticated == true)
-        {
-            authenticatedUserId =
-                GetAuthenticatedUserId(
-                    httpContext.User);
-        }
+if (authenticatedUserId is null)
+{
+    return Results.Unauthorized();
+}
 
         var existingAppointment =
             await db.Appointments
@@ -1146,7 +1144,7 @@ app.MapPost(
             });
         }
 
-        return Results.Created(
+               return Results.Created(
             $"/api/appointments/{appointment.Id}",
             new
             {
@@ -1163,8 +1161,8 @@ app.MapPost(
                 appointment.Status,
                 appointment.CreatedAtUtc
             });
-    });
-
+    })
+    .RequireAuthorization();
 // ------------------------------------------------------
 // GET MY APPOINTMENTS
 // ------------------------------------------------------
