@@ -1,0 +1,830 @@
+/* =====================================================
+   FINDOC — PREMIUM MY APPOINTMENTS
+   Safe override layer
+===================================================== */
+
+
+/* =====================================================
+   OVERLAY
+===================================================== */
+
+.appointments-overlay {
+  padding: 28px;
+
+  background:
+    radial-gradient(
+      circle at 50% 10%,
+      rgba(83, 214, 189, 0.08),
+      transparent 34%
+    ),
+    rgba(1, 10, 8, 0.82);
+
+  backdrop-filter:
+    blur(20px)
+    saturate(120%);
+
+  -webkit-backdrop-filter:
+    blur(20px)
+    saturate(120%);
+}
+
+
+/* =====================================================
+   MODAL
+===================================================== */
+
+.appointments-modal {
+  position: relative;
+
+  width:
+    min(100%, 790px);
+
+  max-height:
+    calc(100vh - 56px);
+
+  padding:
+    42px;
+
+  overflow-x: hidden;
+  overflow-y: auto;
+
+  border:
+    1px solid
+    rgba(255, 255, 255, 0.085);
+
+  border-radius: 34px;
+
+  background:
+    linear-gradient(
+      145deg,
+      rgba(13, 43, 37, 0.99),
+      rgba(7, 28, 24, 0.99)
+    );
+
+  box-shadow:
+    0 45px 110px
+      rgba(0, 0, 0, 0.55),
+    inset 0 1px 0
+      rgba(255, 255, 255, 0.055);
+
+  animation:
+    appointmentsEnter
+    0.22s
+    ease-out;
+}
+
+
+/* Glow */
+
+.appointments-modal::before {
+  content: "";
+
+  position: absolute;
+
+  width: 480px;
+  height: 250px;
+
+  top: -180px;
+  left: 50%;
+
+  transform:
+    translateX(-50%);
+
+  border-radius: 50%;
+
+  background:
+    radial-gradient(
+      circle,
+      rgba(83, 214, 189, 0.16),
+      transparent 68%
+    );
+
+  pointer-events: none;
+}
+
+
+/* Top highlight */
+
+.appointments-modal::after {
+  content: "";
+
+  position: absolute;
+
+  top: 0;
+  left: 65px;
+  right: 65px;
+
+  height: 1px;
+
+  background:
+    linear-gradient(
+      90deg,
+      transparent,
+      rgba(105, 229, 205, 0.32),
+      transparent
+    );
+
+  pointer-events: none;
+}
+
+
+@keyframes appointmentsEnter {
+  from {
+    opacity: 0;
+
+    transform:
+      translateY(12px)
+      scale(0.975);
+  }
+
+  to {
+    opacity: 1;
+
+    transform:
+      translateY(0)
+      scale(1);
+  }
+}
+
+
+/* =====================================================
+   SCROLLBAR
+===================================================== */
+
+.appointments-modal::-webkit-scrollbar {
+  width: 7px;
+}
+
+.appointments-modal::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.appointments-modal::-webkit-scrollbar-thumb {
+  border-radius: 999px;
+
+  background:
+    rgba(83, 214, 189, 0.18);
+}
+
+
+/* =====================================================
+   CLOSE BUTTON
+===================================================== */
+
+.appointments-modal
+.appointments-close {
+  top: 20px;
+  right: 20px;
+
+  width: 42px;
+  height: 42px;
+
+  border:
+    1px solid
+    rgba(255, 255, 255, 0.085);
+
+  border-radius: 15px;
+
+  background:
+    rgba(255, 255, 255, 0.045);
+
+  color:
+    rgba(239, 250, 247, 0.72);
+
+  backdrop-filter:
+    blur(14px);
+
+  -webkit-backdrop-filter:
+    blur(14px);
+
+  transition:
+    transform 0.18s ease,
+    background 0.18s ease,
+    border-color 0.18s ease,
+    color 0.18s ease;
+}
+
+
+.appointments-modal
+.appointments-close:hover {
+  transform:
+    rotate(4deg)
+    scale(1.04);
+
+  border-color:
+    rgba(242, 118, 97, 0.25);
+
+  background:
+    rgba(242, 118, 97, 0.09);
+
+  color: #ff9b87;
+}
+
+
+/* =====================================================
+   HEADER
+===================================================== */
+
+.appointments-header {
+  position: relative;
+  z-index: 2;
+
+  padding-right: 60px;
+
+  margin-bottom: 28px;
+}
+
+
+.appointments-header > span {
+  display: inline-flex;
+
+  align-items: center;
+
+  padding:
+    7px
+    11px;
+
+  border:
+    1px solid
+    rgba(83, 214, 189, 0.14);
+
+  border-radius: 999px;
+
+  background:
+    rgba(83, 214, 189, 0.07);
+
+  color: #67dfc9;
+
+  font-size: 8px;
+  font-weight: 850;
+
+  letter-spacing: 1.4px;
+}
+
+
+.appointments-header h2 {
+  margin:
+    14px
+    0
+    0;
+
+  color: #ffffff;
+
+  font-size:
+    clamp(
+      29px,
+      4vw,
+      38px
+    );
+
+  font-weight: 720;
+
+  line-height: 1.08;
+
+  letter-spacing: -1.4px;
+}
+
+
+/* =====================================================
+   MESSAGE
+===================================================== */
+
+.appointments-message {
+  position: relative;
+  z-index: 2;
+
+  margin-bottom: 18px;
+
+  padding:
+    14px
+    16px;
+
+  border:
+    1px solid
+    rgba(242, 118, 97, 0.14);
+
+  border-radius: 15px;
+
+  background:
+    rgba(242, 118, 97, 0.07);
+
+  color: #ff9e8c;
+
+  font-size: 11px;
+  font-weight: 650;
+
+  line-height: 1.5;
+}
+
+
+/* =====================================================
+   EMPTY / LOADING
+===================================================== */
+
+.appointments-empty {
+  position: relative;
+  z-index: 2;
+
+  min-height: 180px;
+
+  display: grid;
+  place-items: center;
+
+  padding: 28px;
+
+  border:
+    1px dashed
+    rgba(83, 214, 189, 0.13);
+
+  border-radius: 22px;
+
+  background:
+    linear-gradient(
+      145deg,
+      rgba(83, 214, 189, 0.035),
+      rgba(255, 255, 255, 0.018)
+    );
+
+  color:
+    rgba(225, 244, 239, 0.48);
+
+  text-align: center;
+
+  font-size: 12px;
+  font-weight: 650;
+}
+
+
+/* =====================================================
+   APPOINTMENTS LIST
+===================================================== */
+
+.appointments-list {
+  position: relative;
+  z-index: 2;
+
+  display: grid;
+
+  gap: 14px;
+
+  margin-top: 4px;
+}
+
+
+/* =====================================================
+   APPOINTMENT CARD
+===================================================== */
+
+.my-appointment-card {
+  position: relative;
+
+  overflow: hidden;
+
+  padding:
+    22px
+    22px
+    20px;
+
+  border:
+    1px solid
+    rgba(255, 255, 255, 0.065);
+
+  border-radius: 22px;
+
+  background:
+    linear-gradient(
+      145deg,
+      rgba(255, 255, 255, 0.045),
+      rgba(255, 255, 255, 0.018)
+    );
+
+  box-shadow:
+    inset 0 1px 0
+      rgba(255, 255, 255, 0.025);
+
+  transition:
+    transform 0.2s ease,
+    border-color 0.2s ease,
+    background 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+
+.my-appointment-card::before {
+  content: "";
+
+  position: absolute;
+
+  top: 0;
+  bottom: 0;
+  left: 0;
+
+  width: 3px;
+
+  background:
+    linear-gradient(
+      180deg,
+      #62dfc8,
+      rgba(83, 214, 189, 0.15)
+    );
+
+  opacity: 0.7;
+}
+
+
+.my-appointment-card:hover {
+  transform:
+    translateY(-2px);
+
+  border-color:
+    rgba(83, 214, 189, 0.14);
+
+  background:
+    linear-gradient(
+      145deg,
+      rgba(83, 214, 189, 0.055),
+      rgba(255, 255, 255, 0.02)
+    );
+
+  box-shadow:
+    0 18px 38px
+      rgba(0, 0, 0, 0.16),
+    inset 0 1px 0
+      rgba(255, 255, 255, 0.035);
+}
+
+
+/* =====================================================
+   CARD TOP LINE
+===================================================== */
+
+.appointment-top-line {
+  display: flex;
+
+  align-items: center;
+  justify-content: space-between;
+
+  gap: 12px;
+
+  margin-bottom: 15px;
+}
+
+
+.appointment-top-line small {
+  color:
+    rgba(224, 242, 238, 0.27);
+
+  font-size: 9px;
+  font-weight: 700;
+
+  letter-spacing: 0.5px;
+}
+
+
+/* =====================================================
+   STATUS
+===================================================== */
+
+.appointment-status {
+  display: inline-flex;
+
+  align-items: center;
+
+  gap: 6px;
+
+  padding:
+    7px
+    11px;
+
+  border:
+    1px solid transparent;
+
+  border-radius: 999px;
+
+  font-size: 9px;
+  font-weight: 850;
+
+  letter-spacing: 0.25px;
+}
+
+
+.appointment-status::before {
+  content: "";
+
+  width: 6px;
+  height: 6px;
+
+  border-radius: 50%;
+}
+
+
+.appointment-status.confirmed {
+  border-color:
+    rgba(83, 214, 189, 0.15);
+
+  background:
+    rgba(83, 214, 189, 0.08);
+
+  color: #69e1ca;
+}
+
+
+.appointment-status.confirmed::before {
+  background: #65dfc7;
+
+  box-shadow:
+    0 0 0 4px
+      rgba(83, 214, 189, 0.08);
+}
+
+
+.appointment-status.cancelled {
+  border-color:
+    rgba(242, 118, 97, 0.14);
+
+  background:
+    rgba(242, 118, 97, 0.07);
+
+  color: #ff9d8c;
+}
+
+
+.appointment-status.cancelled::before {
+  background: #f47b67;
+
+  box-shadow:
+    0 0 0 4px
+      rgba(242, 118, 97, 0.07);
+}
+
+
+/* =====================================================
+   DOCTOR NAME
+===================================================== */
+
+.my-appointment-card h3 {
+  margin:
+    0
+    0
+    12px;
+
+  color: #ffffff;
+
+  font-size: 19px;
+  font-weight: 720;
+
+  letter-spacing: -0.45px;
+}
+
+
+/* =====================================================
+   APPOINTMENT INFO
+===================================================== */
+
+.my-appointment-card > p {
+  margin:
+    7px
+    0;
+
+  color:
+    rgba(225, 244, 239, 0.49);
+
+  font-size: 11px;
+
+  line-height: 1.5;
+}
+
+
+.my-appointment-card > p:first-of-type {
+  display: flex;
+
+  width: fit-content;
+
+  align-items: center;
+
+  margin-top: 0;
+
+  padding:
+    8px
+    11px;
+
+  border:
+    1px solid
+    rgba(83, 214, 189, 0.1);
+
+  border-radius: 12px;
+
+  background:
+    rgba(83, 214, 189, 0.045);
+
+  color:
+    rgba(225, 248, 242, 0.78);
+
+  font-weight: 700;
+}
+
+
+.my-appointment-card > p:first-of-type::before {
+  content: "◷";
+
+  margin-right: 7px;
+
+  color: #63ddc5;
+
+  font-size: 13px;
+}
+
+
+.my-appointment-card > p:nth-of-type(2)::before {
+  content: "⌖";
+
+  margin-right: 7px;
+
+  color:
+    rgba(83, 214, 189, 0.72);
+
+  font-weight: 800;
+}
+
+
+/* =====================================================
+   CANCEL BUTTON
+===================================================== */
+
+.cancel-appointment-button {
+  min-height: 42px;
+
+  margin-top: 15px;
+
+  padding:
+    0
+    16px;
+
+  border:
+    1px solid
+    rgba(242, 118, 97, 0.14);
+
+  border-radius: 13px;
+
+  background:
+    rgba(242, 118, 97, 0.055);
+
+  color: #ff9a88;
+
+  cursor: pointer;
+
+  font-size: 10px;
+  font-weight: 800;
+
+  transition:
+    transform 0.18s ease,
+    border-color 0.18s ease,
+    background 0.18s ease,
+    color 0.18s ease,
+    box-shadow 0.18s ease;
+}
+
+
+.cancel-appointment-button:hover {
+  transform:
+    translateY(-1px);
+
+  border-color:
+    rgba(242, 118, 97, 0.3);
+
+  background:
+    rgba(242, 118, 97, 0.11);
+
+  color: #ffb09f;
+
+  box-shadow:
+    0 10px 22px
+      rgba(242, 118, 97, 0.08);
+}
+
+
+.cancel-appointment-button:active {
+  transform:
+    scale(0.985);
+}
+
+
+.cancel-appointment-button:disabled {
+  opacity: 0.5;
+
+  cursor: wait;
+
+  transform: none;
+
+  box-shadow: none;
+}
+
+
+/* =====================================================
+   TABLET
+===================================================== */
+
+@media (
+  max-width: 760px
+) {
+
+  .appointments-modal {
+    padding:
+      34px
+      28px;
+  }
+
+}
+
+
+/* =====================================================
+   MOBILE
+===================================================== */
+
+@media (
+  max-width: 560px
+) {
+
+  .appointments-overlay {
+    align-items: flex-end;
+
+    padding: 12px;
+  }
+
+
+  .appointments-modal {
+    width: 100%;
+
+    max-height:
+      calc(100vh - 24px);
+
+    padding:
+      28px
+      18px
+      20px;
+
+    border-radius:
+      28px
+      28px
+      22px
+      22px;
+  }
+
+
+  .appointments-modal::after {
+    left: 34px;
+    right: 34px;
+  }
+
+
+  .appointments-modal
+  .appointments-close {
+    top: 15px;
+    right: 15px;
+
+    width: 38px;
+    height: 38px;
+
+    border-radius: 13px;
+  }
+
+
+  .appointments-header {
+    padding-right: 45px;
+
+    margin-bottom: 22px;
+  }
+
+
+  .appointments-header h2 {
+    font-size: 26px;
+  }
+
+
+  .my-appointment-card {
+    padding:
+      19px
+      17px
+      18px;
+
+    border-radius: 19px;
+  }
+
+
+  .my-appointment-card h3 {
+    font-size: 17px;
+  }
+
+
+  .appointment-top-line {
+    margin-bottom: 13px;
+  }
+
+
+  .cancel-appointment-button {
+    width: 100%;
+
+    min-height: 44px;
+  }
+
+}

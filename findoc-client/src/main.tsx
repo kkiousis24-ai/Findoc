@@ -6,6 +6,7 @@ import "./FilterBubbles.css";
 import "./DoctorCards.css";
 import "./ProfileModal.css";
 import "./BookingModal.css";
+import "./MyAppointments.css";
 
 import App from "./App.tsx";
 import SmartSearchChat from "./SmartSearchChat.tsx";
