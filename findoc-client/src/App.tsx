@@ -10,12 +10,27 @@ interface Doctor {
   firstName: string;
   lastName: string;
   specialty: string;
+  subspecialty: string;
   city: string;
+  area: string;
   address: string;
   bio: string;
+  phone: string;
+  email: string;
+  website: string;
   consultationPrice: number;
+  yearsOfExperience: number;
   rating: number;
+  reviewCount: number;
   imageUrl: string;
+  acceptsInsurance: boolean;
+  insuranceProviders: string;
+  offersOnlineConsultation: boolean;
+  isVerified: boolean;
+  isActive: boolean;
+  latitude: number | null;
+  longitude: number | null;
+  languages: string;
 }
 
 interface AvailabilitySlot {
@@ -42,6 +57,7 @@ interface AppointmentDoctor {
   lastName: string;
   specialty: string;
   city: string;
+  area?: string;
   address: string;
   consultationPrice: number;
   rating: number;
@@ -71,10 +87,13 @@ const API_URL =
   "http://localhost:5087";
 
 /* =====================================================
-   SPECIALTY LABELS
+   LABELS
 ===================================================== */
 
-const specialtyLabels: Record<string, string> = {
+const specialtyLabels: Record<
+  string,
+  string
+> = {
   Cardiologist: "Καρδιολόγος",
   Dermatologist: "Δερματολόγος",
   Neurologist: "Νευρολόγος",
@@ -82,11 +101,24 @@ const specialtyLabels: Record<string, string> = {
   Orthopedic: "Ορθοπαιδικός",
 };
 
+const cityLabels: Record<
+  string,
+  string
+> = {
+  Athens: "Αθήνα",
+  Thessaloniki: "Θεσσαλονίκη",
+  Patras: "Πάτρα",
+  Ioannina: "Ιωάννινα",
+};
+
 /* =====================================================
    DEMO DOCTOR PHOTOS
 ===================================================== */
 
-const doctorPhotoMap: Record<number, string> = {
+const doctorPhotoMap: Record<
+  number,
+  string
+> = {
   1: "https://randomuser.me/api/portraits/women/44.jpg",
   2: "https://randomuser.me/api/portraits/men/32.jpg",
   3: "https://randomuser.me/api/portraits/women/65.jpg",
@@ -120,7 +152,9 @@ function getDoctorImageUrl(
    DATE HELPERS
 ===================================================== */
 
-function formatDateForInput(date: Date) {
+function formatDateForInput(
+  date: Date
+) {
   const year = date.getFullYear();
 
   const month = String(
@@ -137,13 +171,17 @@ function formatDateForInput(date: Date) {
 function getNextAvailableDate() {
   const date = new Date();
 
-  date.setDate(date.getDate() + 1);
+  date.setDate(
+    date.getDate() + 1
+  );
 
   while (
     date.getDay() === 0 ||
     date.getDay() === 6
   ) {
-    date.setDate(date.getDate() + 1);
+    date.setDate(
+      date.getDate() + 1
+    );
   }
 
   return formatDateForInput(date);
@@ -187,6 +225,11 @@ function App() {
   ] = useState<string[]>([]);
 
   const [
+    searchText,
+    setSearchText,
+  ] = useState("");
+
+  const [
     specialty,
     setSpecialty,
   ] = useState("");
@@ -197,9 +240,44 @@ function App() {
   ] = useState("");
 
   const [
+    area,
+    setArea,
+  ] = useState("");
+
+  const [
     insurance,
     setInsurance,
   ] = useState("");
+
+  const [
+    maxPrice,
+    setMaxPrice,
+  ] = useState("");
+
+  const [
+    minRating,
+    setMinRating,
+  ] = useState("");
+
+  const [
+    language,
+    setLanguage,
+  ] = useState("");
+
+  const [
+    onlineOnly,
+    setOnlineOnly,
+  ] = useState(false);
+
+  const [
+    verifiedOnly,
+    setVerifiedOnly,
+  ] = useState(false);
+
+  const [
+    sort,
+    setSort,
+  ] = useState("rating");
 
   const [
     loading,
@@ -210,6 +288,11 @@ function App() {
     searched,
     setSearched,
   ] = useState(false);
+
+  const [
+    searchMessage,
+    setSearchMessage,
+  ] = useState("");
 
   /* ===================================================
      PROFILE
@@ -375,9 +458,9 @@ function App() {
   const [
     cancellingAppointmentId,
     setCancellingAppointmentId,
-  ] = useState<number | null>(
-    null
-  );
+  ] = useState<
+    number | null
+  >(null);
 
   /* ===================================================
      INITIAL LOAD
@@ -389,7 +472,7 @@ function App() {
   }, []);
 
   /* ===================================================
-     AUTH FUNCTIONS
+     AUTH
   =================================================== */
 
   async function restoreSession() {
@@ -403,15 +486,16 @@ function App() {
     }
 
     try {
-      const response = await fetch(
-        `${API_URL}/api/auth/me`,
-        {
-          headers: {
-            Authorization:
-              `Bearer ${token}`,
-          },
-        }
-      );
+      const response =
+        await fetch(
+          `${API_URL}/api/auth/me`,
+          {
+            headers: {
+              Authorization:
+                `Bearer ${token}`,
+            },
+          }
+        );
 
       if (!response.ok) {
         logout();
@@ -435,12 +519,10 @@ function App() {
     mode: AuthMode
   ) {
     setAuthMode(mode);
-
     setAuthFullName("");
     setAuthEmail("");
     setAuthPassword("");
     setAuthMessage("");
-
     setAuthOpen(true);
   }
 
@@ -525,36 +607,36 @@ function App() {
                 authPassword,
             };
 
-      const response = await fetch(
-        url,
-        {
-          method: "POST",
+      const response =
+        await fetch(
+          url,
+          {
+            method: "POST",
 
-          headers: {
-            "Content-Type":
-              "application/json",
-          },
+            headers: {
+              "Content-Type":
+                "application/json",
+            },
 
-          body:
-            JSON.stringify(body),
-        }
-      );
+            body:
+              JSON.stringify(body),
+          }
+        );
 
-      const data = await response
-        .json()
-        .catch(() => ({}));
+      const data =
+        await response
+          .json()
+          .catch(() => ({}));
 
       if (!response.ok) {
         if (
-          response.status ===
-          401
+          response.status === 401
         ) {
           setAuthMessage(
             "Λάθος email ή κωδικός."
           );
         } else if (
-          response.status ===
-          409
+          response.status === 409
         ) {
           setAuthMessage(
             "Υπάρχει ήδη λογαριασμός με αυτό το email."
@@ -619,210 +701,15 @@ function App() {
   }
 
   /* ===================================================
-     MY APPOINTMENTS
-  =================================================== */
-
-  async function openMyAppointments() {
-    if (!authToken) {
-      openAuth("login");
-      return;
-    }
-
-    setAppointmentsOpen(true);
-
-    await loadMyAppointments();
-  }
-
-  function closeMyAppointments() {
-    if (
-      cancellingAppointmentId !==
-      null
-    ) {
-      return;
-    }
-
-    setAppointmentsOpen(false);
-    setAppointmentsMessage("");
-  }
-
-  async function loadMyAppointments() {
-    if (!authToken) {
-      return;
-    }
-
-    try {
-      setAppointmentsLoading(
-        true
-      );
-
-      setAppointmentsMessage("");
-
-      const response = await fetch(
-        `${API_URL}/api/appointments/my`,
-        {
-          headers: {
-            Authorization:
-              `Bearer ${authToken}`,
-          },
-        }
-      );
-
-      if (
-        response.status === 401
-      ) {
-        logout();
-        openAuth("login");
-        return;
-      }
-
-      if (!response.ok) {
-        throw new Error(
-          "Could not load appointments"
-        );
-      }
-
-      const data:
-        MyAppointment[] =
-        await response.json();
-
-      setMyAppointments(data);
-    } catch (error) {
-      console.error(
-        "My appointments error:",
-        error
-      );
-
-      setAppointmentsMessage(
-        "Δεν ήταν δυνατή η φόρτωση των ραντεβού σου."
-      );
-    } finally {
-      setAppointmentsLoading(
-        false
-      );
-    }
-  }
-
-  /* ===================================================
-     CANCEL APPOINTMENT
-  =================================================== */
-
-  async function cancelAppointment(
-    appointmentId: number
-  ) {
-    if (!authToken) {
-      return;
-    }
-
-    const confirmed =
-      window.confirm(
-        "Θέλεις σίγουρα να ακυρώσεις αυτό το ραντεβού;"
-      );
-
-    if (!confirmed) {
-      return;
-    }
-
-    try {
-      setCancellingAppointmentId(
-        appointmentId
-      );
-
-      setAppointmentsMessage("");
-
-      const response = await fetch(
-        `${API_URL}/api/appointments/${appointmentId}/cancel`,
-        {
-          method: "PATCH",
-
-          headers: {
-            Authorization:
-              `Bearer ${authToken}`,
-          },
-        }
-      );
-
-      const text =
-        await response.text();
-
-      let data: ApiMessage = {};
-
-      if (text) {
-        try {
-          data = JSON.parse(text);
-        } catch {
-          data = {
-            message: text,
-          };
-        }
-      }
-
-      if (
-        response.status === 401
-      ) {
-        logout();
-        openAuth("login");
-        return;
-      }
-
-      if (
-        response.status === 403
-      ) {
-        setAppointmentsMessage(
-          "Δεν έχεις δικαίωμα να ακυρώσεις αυτό το ραντεβού."
-        );
-
-        return;
-      }
-
-      if (
-        response.status === 404
-      ) {
-        setAppointmentsMessage(
-          "Το endpoint ακύρωσης δεν βρέθηκε."
-        );
-
-        return;
-      }
-
-      if (!response.ok) {
-        setAppointmentsMessage(
-          data.message ||
-            `Η ακύρωση απέτυχε. HTTP ${response.status}`
-        );
-
-        return;
-      }
-
-      await loadMyAppointments();
-
-      setAppointmentsMessage(
-        "Το ραντεβού ακυρώθηκε επιτυχώς."
-      );
-    } catch (error) {
-      console.error(
-        "Cancel appointment error:",
-        error
-      );
-
-      setAppointmentsMessage(
-        "Δεν ήταν δυνατή η επικοινωνία με το backend."
-      );
-    } finally {
-      setCancellingAppointmentId(
-        null
-      );
-    }
-  }
-
-  /* ===================================================
      SPECIALTIES
   =================================================== */
 
   async function loadSpecialties() {
     try {
-      const response = await fetch(
-        `${API_URL}/api/specialties`
-      );
+      const response =
+        await fetch(
+          `${API_URL}/api/specialties`
+        );
 
       if (!response.ok) {
         throw new Error(
@@ -843,15 +730,23 @@ function App() {
   }
 
   /* ===================================================
-     SEARCH
+     ADVANCED SEARCH
   =================================================== */
 
   async function searchDoctors() {
     try {
       setLoading(true);
+      setSearchMessage("");
 
       const params =
         new URLSearchParams();
+
+      if (searchText.trim()) {
+        params.append(
+          "q",
+          searchText.trim()
+        );
+      }
 
       if (specialty) {
         params.append(
@@ -867,12 +762,79 @@ function App() {
         );
       }
 
+      if (area.trim()) {
+        params.append(
+          "area",
+          area.trim()
+        );
+      }
+
+      if (maxPrice) {
+        params.append(
+          "maxPrice",
+          maxPrice
+        );
+      }
+
+      if (minRating) {
+        params.append(
+          "minRating",
+          minRating
+        );
+      }
+
+      if (insurance) {
+        if (
+          insurance ===
+          "any-insurance"
+        ) {
+          params.append(
+            "acceptsInsurance",
+            "true"
+          );
+        } else {
+          params.append(
+            "insurance",
+            insurance
+          );
+        }
+      }
+
+      if (onlineOnly) {
+        params.append(
+          "online",
+          "true"
+        );
+      }
+
+      if (verifiedOnly) {
+        params.append(
+          "verified",
+          "true"
+        );
+      }
+
+      if (language) {
+        params.append(
+          "language",
+          language
+        );
+      }
+
+      if (sort) {
+        params.append(
+          "sort",
+          sort
+        );
+      }
+
       const query =
         params.toString();
 
-      const url = query
-        ? `${API_URL}/api/doctors?${query}`
-        : `${API_URL}/api/doctors`;
+      const url =
+        query
+          ? `${API_URL}/api/doctors?${query}`
+          : `${API_URL}/api/doctors`;
 
       const response =
         await fetch(url);
@@ -891,7 +853,9 @@ function App() {
 
       window.setTimeout(() => {
         document
-          .getElementById("results")
+          .getElementById(
+            "results"
+          )
           ?.scrollIntoView({
             behavior: "smooth",
             block: "start",
@@ -902,9 +866,27 @@ function App() {
         "Doctors search error:",
         error
       );
+
+      setSearchMessage(
+        "Δεν ήταν δυνατή η αναζήτηση γιατρών."
+      );
     } finally {
       setLoading(false);
     }
+  }
+
+  function clearFilters() {
+    setSearchText("");
+    setSpecialty("");
+    setCity("");
+    setArea("");
+    setInsurance("");
+    setMaxPrice("");
+    setMinRating("");
+    setLanguage("");
+    setOnlineOnly(false);
+    setVerifiedOnly(false);
+    setSort("rating");
   }
 
   /* ===================================================
@@ -917,9 +899,10 @@ function App() {
     try {
       setProfileLoading(true);
 
-      const response = await fetch(
-        `${API_URL}/api/doctors/${doctorId}`
-      );
+      const response =
+        await fetch(
+          `${API_URL}/api/doctors/${doctorId}`
+        );
 
       if (!response.ok) {
         throw new Error(
@@ -973,9 +956,10 @@ function App() {
 
       setSelectedSlot(null);
 
-      const response = await fetch(
-        `${API_URL}/api/doctors/${doctor.id}/availability?date=${date}`
-      );
+      const response =
+        await fetch(
+          `${API_URL}/api/doctors/${doctor.id}/availability?date=${date}`
+        );
 
       if (!response.ok) {
         throw new Error(
@@ -1033,7 +1017,6 @@ function App() {
     );
 
     setSelectedSlot(null);
-
     setBookingMessage("");
     setBookingSuccess(false);
 
@@ -1049,13 +1032,10 @@ function App() {
     }
 
     setSelectedDoctor(null);
-
     setAvailability([]);
     setSelectedSlot(null);
-
     setPatientName("");
     setPatientEmail("");
-
     setBookingMessage("");
     setBookingSuccess(false);
   }
@@ -1067,7 +1047,6 @@ function App() {
 
     setBookingMessage("");
     setBookingSuccess(false);
-
     setSelectedSlot(null);
 
     if (
@@ -1139,30 +1118,32 @@ function App() {
           `Bearer ${authToken}`;
       }
 
-      const response = await fetch(
-        `${API_URL}/api/appointments`,
-        {
-          method: "POST",
+      const response =
+        await fetch(
+          `${API_URL}/api/appointments`,
+          {
+            method: "POST",
 
-          headers,
+            headers,
 
-          body: JSON.stringify({
-            doctorId:
-              selectedDoctor.id,
+            body:
+              JSON.stringify({
+                doctorId:
+                  selectedDoctor.id,
 
-            patientName:
-              patientName.trim(),
+                patientName:
+                  patientName.trim(),
 
-            patientEmail:
-              patientEmail
-                .trim()
-                .toLowerCase(),
+                patientEmail:
+                  patientEmail
+                    .trim()
+                    .toLowerCase(),
 
-            startsAt:
-              selectedSlot.startsAt,
-          }),
-        }
-      );
+                startsAt:
+                  selectedSlot.startsAt,
+              }),
+          }
+        );
 
       const data:
         ApiMessage =
@@ -1206,15 +1187,198 @@ function App() {
   }
 
   /* ===================================================
+     MY APPOINTMENTS
+  =================================================== */
+
+  async function openMyAppointments() {
+    if (!authToken) {
+      openAuth("login");
+      return;
+    }
+
+    setAppointmentsOpen(true);
+
+    await loadMyAppointments();
+  }
+
+  function closeMyAppointments() {
+    if (
+      cancellingAppointmentId !==
+      null
+    ) {
+      return;
+    }
+
+    setAppointmentsOpen(false);
+    setAppointmentsMessage("");
+  }
+
+  async function loadMyAppointments() {
+    if (!authToken) {
+      return;
+    }
+
+    try {
+      setAppointmentsLoading(
+        true
+      );
+
+      setAppointmentsMessage("");
+
+      const response =
+        await fetch(
+          `${API_URL}/api/appointments/my`,
+          {
+            headers: {
+              Authorization:
+                `Bearer ${authToken}`,
+            },
+          }
+        );
+
+      if (
+        response.status === 401
+      ) {
+        logout();
+        openAuth("login");
+        return;
+      }
+
+      if (!response.ok) {
+        throw new Error(
+          "Could not load appointments"
+        );
+      }
+
+      const data:
+        MyAppointment[] =
+        await response.json();
+
+      setMyAppointments(data);
+    } catch (error) {
+      console.error(
+        "My appointments error:",
+        error
+      );
+
+      setAppointmentsMessage(
+        "Δεν ήταν δυνατή η φόρτωση των ραντεβού σου."
+      );
+    } finally {
+      setAppointmentsLoading(
+        false
+      );
+    }
+  }
+
+  async function cancelAppointment(
+    appointmentId: number
+  ) {
+    if (!authToken) {
+      return;
+    }
+
+    const confirmed =
+      window.confirm(
+        "Θέλεις σίγουρα να ακυρώσεις αυτό το ραντεβού;"
+      );
+
+    if (!confirmed) {
+      return;
+    }
+
+    try {
+      setCancellingAppointmentId(
+        appointmentId
+      );
+
+      setAppointmentsMessage("");
+
+      const response =
+        await fetch(
+          `${API_URL}/api/appointments/${appointmentId}/cancel`,
+          {
+            method: "PATCH",
+
+            headers: {
+              Authorization:
+                `Bearer ${authToken}`,
+            },
+          }
+        );
+
+      const text =
+        await response.text();
+
+      let data: ApiMessage = {};
+
+      if (text) {
+        try {
+          data =
+            JSON.parse(text);
+        } catch {
+          data = {
+            message: text,
+          };
+        }
+      }
+
+      if (
+        response.status === 401
+      ) {
+        logout();
+        openAuth("login");
+        return;
+      }
+
+      if (
+        response.status === 403
+      ) {
+        setAppointmentsMessage(
+          "Δεν έχεις δικαίωμα να ακυρώσεις αυτό το ραντεβού."
+        );
+
+        return;
+      }
+
+      if (!response.ok) {
+        setAppointmentsMessage(
+          data.message ||
+            `Η ακύρωση απέτυχε. HTTP ${response.status}`
+        );
+
+        return;
+      }
+
+      await loadMyAppointments();
+
+      setAppointmentsMessage(
+        "Το ραντεβού ακυρώθηκε επιτυχώς."
+      );
+    } catch (error) {
+      console.error(
+        "Cancel appointment error:",
+        error
+      );
+
+      setAppointmentsMessage(
+        "Δεν ήταν δυνατή η επικοινωνία με το backend."
+      );
+    } finally {
+      setCancellingAppointmentId(
+        null
+      );
+    }
+  }
+
+  /* ===================================================
      UI
   =================================================== */
 
   return (
     <div className="findoc-app">
 
-      {/* =================================================
-          NAVBAR
-      ================================================= */}
+      {/* NAVBAR */}
 
       <header className="topbar">
         <div className="page-width navbar">
@@ -1309,10 +1473,6 @@ function App() {
         </div>
       </header>
 
-      {/* =================================================
-          MAIN
-      ================================================= */}
-
       <main>
 
         {/* HERO */}
@@ -1344,10 +1504,8 @@ function App() {
               Βρες διαθέσιμους γιατρούς
               κοντά σου, σύγκρινε
               αξιολογήσεις και κλείσε
-              ραντεβού online — χωρίς
-              αναμονή στο τηλέφωνο.
+              ραντεβού online.
             </p>
-
           </div>
 
           {/* HERO VISUAL */}
@@ -1390,38 +1548,56 @@ function App() {
                 </strong>
 
                 <small>
-                  Σήμερα, 18:30
+                  Άμεσα και online
                 </small>
               </div>
             </div>
 
-            <div className="dot-pattern">
-              {Array.from({
-                length: 24,
-              }).map(
-                (_, index) => (
-                  <span
-                    key={index}
-                  />
-                )
-              )}
-            </div>
-
           </div>
 
-          {/* SEARCH PANEL */}
+          {/* MAIN SEARCH */}
 
           <div className="search-panel">
 
             <div className="search-item">
+              <div className="search-icon">
+                ⌕
+              </div>
 
+              <div>
+                <label>
+                  ΑΝΑΖΗΤΗΣΗ
+                </label>
+
+                <input
+                  type="text"
+                  placeholder="Όνομα, ειδικότητα, περιοχή..."
+                  value={searchText}
+                  onChange={(event) =>
+                    setSearchText(
+                      event.target.value
+                    )
+                  }
+                  onKeyDown={(event) => {
+                    if (
+                      event.key ===
+                      "Enter"
+                    ) {
+                      void searchDoctors();
+                    }
+                  }}
+                />
+              </div>
+            </div>
+
+            <div className="search-item">
               <div className="search-icon">
                 ♧
               </div>
 
               <div>
                 <label>
-                  ΤΙ ΧΡΕΙΑΖΕΣΑΙ;
+                  ΕΙΔΙΚΟΤΗΤΑ
                 </label>
 
                 <select
@@ -1433,7 +1609,7 @@ function App() {
                   }
                 >
                   <option value="">
-                    Όλες οι ειδικότητες
+                    Όλες
                   </option>
 
                   {specialties.map(
@@ -1449,19 +1625,17 @@ function App() {
                     )
                   )}
                 </select>
-
               </div>
             </div>
 
             <div className="search-item">
-
               <div className="search-icon">
                 ⌖
               </div>
 
               <div>
                 <label>
-                  ΠΟΥ;
+                  ΠΟΛΗ
                 </label>
 
                 <select
@@ -1491,18 +1665,48 @@ function App() {
                   <option value="Ioannina">
                     Ιωάννινα
                   </option>
-
                 </select>
               </div>
+            </div>
 
+            <button
+              type="button"
+              className="main-search-button"
+              disabled={loading}
+              onClick={() =>
+                void searchDoctors()
+              }
+            >
+              {loading
+                ? "Αναζήτηση..."
+                : "Αναζήτηση"}
+            </button>
+          </div>
+
+          {/* ADVANCED FILTERS */}
+
+          <div className="search-panel">
+
+            <div className="search-item">
+              <div>
+                <label>
+                  ΠΕΡΙΟΧΗ
+                </label>
+
+                <input
+                  type="text"
+                  placeholder="π.χ. Kolonaki"
+                  value={area}
+                  onChange={(event) =>
+                    setArea(
+                      event.target.value
+                    )
+                  }
+                />
+              </div>
             </div>
 
             <div className="search-item">
-
-              <div className="search-icon">
-                ♢
-              </div>
-
               <div>
                 <label>
                   ΑΣΦΑΛΙΣΗ
@@ -1520,60 +1724,210 @@ function App() {
                     Όλες
                   </option>
 
+                  <option value="any-insurance">
+                    Δέχεται ασφάλιση
+                  </option>
+
                   <option value="EOPYY">
                     ΕΟΠΥΥ
                   </option>
 
-                  <option value="Private">
-                    Ιδιωτική
+                  <option value="Interamerican">
+                    Interamerican
                   </option>
 
+                  <option value="Generali">
+                    Generali
+                  </option>
+
+                  <option value="Eurolife">
+                    Eurolife
+                  </option>
                 </select>
               </div>
-
             </div>
 
-            <button
-              type="button"
-              className="main-search-button"
-              disabled={loading}
-              onClick={() =>
-                void searchDoctors()
-              }
-            >
-              {loading
-                ? "Αναζήτηση..."
-                : "Αναζήτηση"}
-            </button>
+            <div className="search-item">
+              <div>
+                <label>
+                  MAX ΤΙΜΗ
+                </label>
+
+                <input
+                  type="number"
+                  min="0"
+                  placeholder="π.χ. 50"
+                  value={maxPrice}
+                  onChange={(event) =>
+                    setMaxPrice(
+                      event.target.value
+                    )
+                  }
+                />
+              </div>
+            </div>
+
+            <div className="search-item">
+              <div>
+                <label>
+                  RATING
+                </label>
+
+                <select
+                  value={minRating}
+                  onChange={(event) =>
+                    setMinRating(
+                      event.target.value
+                    )
+                  }
+                >
+                  <option value="">
+                    Όλα
+                  </option>
+
+                  <option value="4">
+                    4.0+
+                  </option>
+
+                  <option value="4.5">
+                    4.5+
+                  </option>
+
+                  <option value="4.8">
+                    4.8+
+                  </option>
+
+                  <option value="4.9">
+                    4.9+
+                  </option>
+                </select>
+              </div>
+            </div>
+
+            <div className="search-item">
+              <div>
+                <label>
+                  ΓΛΩΣΣΑ
+                </label>
+
+                <select
+                  value={language}
+                  onChange={(event) =>
+                    setLanguage(
+                      event.target.value
+                    )
+                  }
+                >
+                  <option value="">
+                    Όλες
+                  </option>
+
+                  <option value="Greek">
+                    Ελληνικά
+                  </option>
+
+                  <option value="English">
+                    Αγγλικά
+                  </option>
+
+                  <option value="French">
+                    Γαλλικά
+                  </option>
+
+                  <option value="German">
+                    Γερμανικά
+                  </option>
+                </select>
+              </div>
+            </div>
+
+            <div className="search-item">
+              <div>
+                <label>
+                  ΤΑΞΙΝΟΜΗΣΗ
+                </label>
+
+                <select
+                  value={sort}
+                  onChange={(event) =>
+                    setSort(
+                      event.target.value
+                    )
+                  }
+                >
+                  <option value="rating">
+                    Καλύτερη αξιολόγηση
+                  </option>
+
+                  <option value="reviews">
+                    Περισσότερες κριτικές
+                  </option>
+
+                  <option value="experience">
+                    Περισσότερη εμπειρία
+                  </option>
+
+                  <option value="price_asc">
+                    Χαμηλότερη τιμή
+                  </option>
+
+                  <option value="price_desc">
+                    Υψηλότερη τιμή
+                  </option>
+                </select>
+              </div>
+            </div>
 
           </div>
 
           <div className="trust-row">
 
-            <span>
-              <b>✓</b>{" "}
-              Επαληθευμένες
-              αξιολογήσεις
-            </span>
+            <label>
+              <input
+                type="checkbox"
+                checked={onlineOnly}
+                onChange={(event) =>
+                  setOnlineOnly(
+                    event.target.checked
+                  )
+                }
+              />
+              {" "}
+              Online consultation
+            </label>
 
-            <span>
-              <b>◷</b>{" "}
-              Διαθεσιμότητα σε
-              πραγματικό χρόνο
-            </span>
+            <label>
+              <input
+                type="checkbox"
+                checked={verifiedOnly}
+                onChange={(event) =>
+                  setVerifiedOnly(
+                    event.target.checked
+                  )
+                }
+              />
+              {" "}
+              Μόνο επαληθευμένοι
+            </label>
 
-            <span>
-              <b>♢</b>{" "}
-              Ασφαλής κράτηση
-            </span>
+            <button
+              type="button"
+              onClick={clearFilters}
+            >
+              Καθαρισμός φίλτρων
+            </button>
 
           </div>
 
+          {searchMessage && (
+            <div className="empty-results">
+              {searchMessage}
+            </div>
+          )}
+
         </section>
 
-        {/* =================================================
-            RESULTS
-        ================================================= */}
+        {/* RESULTS */}
 
         {searched && (
           <section
@@ -1653,15 +2007,17 @@ function App() {
                               {doctor.rating.toFixed(
                                 1
                               )}
+                              {" · "}
+                              {doctor.reviewCount}
+                              {" κριτικές"}
                             </div>
 
                             <h3>
-                              {
-                                doctor.firstName
-                              }{" "}
-                              {
-                                doctor.lastName
-                              }
+                              {doctor.firstName}{" "}
+                              {doctor.lastName}
+
+                              {doctor.isVerified &&
+                                " ✓"}
                             </h3>
 
                             <strong className="doctor-specialty">
@@ -1671,15 +2027,48 @@ function App() {
                                 doctor.specialty}
                             </strong>
 
+                            {doctor.subspecialty && (
+                              <p>
+                                {doctor.subspecialty}
+                              </p>
+                            )}
+
                             <p>
-                              {doctor.city}
-                              {" · "}
+                              {cityLabels[
+                                doctor.city
+                              ] ||
+                                doctor.city}
+
+                              {doctor.area &&
+                                ` · ${doctor.area}`}
+                            </p>
+
+                            <p>
                               {doctor.address}
                             </p>
 
-                            {doctor.bio && (
+                            <p>
+                              {doctor.yearsOfExperience}
+                              {" χρόνια εμπειρίας"}
+                            </p>
+
+                            <p>
+                              🌐{" "}
+                              {doctor.languages}
+                            </p>
+
+                            {doctor.acceptsInsurance && (
                               <p>
-                                {doctor.bio}
+                                ✓ Ασφάλιση:{" "}
+                                {
+                                  doctor.insuranceProviders
+                                }
+                              </p>
+                            )}
+
+                            {doctor.offersOnlineConsultation && (
+                              <p>
+                                ✓ Online consultation
                               </p>
                             )}
 
@@ -1718,8 +2107,7 @@ function App() {
                                     )
                                   }
                                 >
-                                  Δες
-                                  διαθεσιμότητα
+                                  Δες διαθεσιμότητα
                                 </button>
 
                               </div>
@@ -1742,16 +2130,12 @@ function App() {
 
       </main>
 
-      {/* =================================================
-          AUTH MODAL
-      ================================================= */}
+      {/* AUTH MODAL */}
 
       {authOpen && (
         <div
           className="auth-overlay"
-          onMouseDown={(
-            event
-          ) => {
+          onMouseDown={(event) => {
             if (
               event.target ===
               event.currentTarget
@@ -1784,11 +2168,9 @@ function App() {
             </div>
 
             <span className="auth-eyebrow">
-
               {authMode === "login"
                 ? "ΚΑΛΩΣ ΗΡΘΕΣ ΠΙΣΩ"
                 : "ΔΗΜΙΟΥΡΓΙΑ ΛΟΓΑΡΙΑΣΜΟΥ"}
-
             </span>
 
             <h2>
@@ -1796,54 +2178,6 @@ function App() {
                 ? "Σύνδεση στο Findoc"
                 : "Ξεκίνα με το Findoc"}
             </h2>
-
-            <p className="auth-description">
-              {authMode === "login"
-                ? "Συνδέσου για να διαχειρίζεσαι τα ραντεβού σου."
-                : "Δημιούργησε λογαριασμό για εύκολη και γρήγορη κράτηση ραντεβού."}
-            </p>
-
-            <div className="auth-tabs">
-
-              <button
-                type="button"
-                className={
-                  authMode ===
-                  "login"
-                    ? "active"
-                    : ""
-                }
-                onClick={() => {
-                  setAuthMode(
-                    "login"
-                  );
-
-                  setAuthMessage("");
-                }}
-              >
-                Σύνδεση
-              </button>
-
-              <button
-                type="button"
-                className={
-                  authMode ===
-                  "register"
-                    ? "active"
-                    : ""
-                }
-                onClick={() => {
-                  setAuthMode(
-                    "register"
-                  );
-
-                  setAuthMessage("");
-                }}
-              >
-                Εγγραφή
-              </button>
-
-            </div>
 
             {authMode ===
               "register" && (
@@ -1855,13 +2189,10 @@ function App() {
 
                 <input
                   type="text"
-                  placeholder="π.χ. Κώστας Κιούσης"
                   value={
                     authFullName
                   }
-                  onChange={(
-                    event
-                  ) =>
+                  onChange={(event) =>
                     setAuthFullName(
                       event.target.value
                     )
@@ -1879,11 +2210,8 @@ function App() {
 
               <input
                 type="email"
-                placeholder="name@example.com"
                 value={authEmail}
-                onChange={(
-                  event
-                ) =>
+                onChange={(event) =>
                   setAuthEmail(
                     event.target.value
                   )
@@ -1900,32 +2228,14 @@ function App() {
 
               <input
                 type="password"
-                placeholder={
-                  authMode ===
-                  "register"
-                    ? "Τουλάχιστον 8 χαρακτήρες"
-                    : "Ο κωδικός σου"
-                }
                 value={
                   authPassword
                 }
-                onChange={(
-                  event
-                ) =>
+                onChange={(event) =>
                   setAuthPassword(
                     event.target.value
                   )
                 }
-                onKeyDown={(
-                  event
-                ) => {
-                  if (
-                    event.key ===
-                    "Enter"
-                  ) {
-                    void submitAuth();
-                  }
-                }}
               />
 
             </div>
@@ -1954,47 +2264,17 @@ function App() {
                   : "Δημιουργία λογαριασμού"}
             </button>
 
-            <p className="auth-bottom-text">
-
-              {authMode === "login"
-                ? "Δεν έχεις λογαριασμό;"
-                : "Έχεις ήδη λογαριασμό;"}
-
-              <button
-                type="button"
-                onClick={() => {
-                  setAuthMode(
-                    authMode ===
-                      "login"
-                      ? "register"
-                      : "login"
-                  );
-
-                  setAuthMessage("");
-                }}
-              >
-                {authMode === "login"
-                  ? " Εγγραφή"
-                  : " Σύνδεση"}
-              </button>
-
-            </p>
-
           </section>
         </div>
       )}
 
-      {/* =================================================
-          MY APPOINTMENTS
-      ================================================= */}
+      {/* MY APPOINTMENTS */}
 
       {appointmentsOpen &&
         authUser && (
           <div
             className="appointments-overlay"
-            onMouseDown={(
-              event
-            ) => {
+            onMouseDown={(event) => {
               if (
                 event.target ===
                 event.currentTarget
@@ -2017,7 +2297,6 @@ function App() {
               </button>
 
               <div className="appointments-header">
-
                 <span>
                   Ο ΛΟΓΑΡΙΑΣΜΟΣ ΜΟΥ
                 </span>
@@ -2025,37 +2304,6 @@ function App() {
                 <h2>
                   Τα ραντεβού μου
                 </h2>
-
-                <p>
-                  Δες και διαχειρίσου
-                  τις κρατήσεις σου
-                  στο Findoc.
-                </p>
-
-              </div>
-
-              <div className="appointments-user">
-
-                <div>
-                  {authUser.fullName
-                    .charAt(0)
-                    .toUpperCase()}
-                </div>
-
-                <section>
-
-                  <strong>
-                    {
-                      authUser.fullName
-                    }
-                  </strong>
-
-                  <small>
-                    {authUser.email}
-                  </small>
-
-                </section>
-
               </div>
 
               {appointmentsMessage && (
@@ -2068,231 +2316,119 @@ function App() {
 
               {appointmentsLoading ? (
                 <div className="appointments-empty">
-                  Φόρτωση
-                  ραντεβού...
+                  Φόρτωση...
                 </div>
               ) : myAppointments.length ===
                 0 ? (
                 <div className="appointments-empty">
-
-                  <div>
-                    ◷
-                  </div>
-
-                  <strong>
-                    Δεν έχεις ακόμη
-                    ραντεβού
-                  </strong>
-
-                  <p>
-                    Όταν κλείσεις ένα
-                    ραντεβού, θα
-                    εμφανιστεί εδώ.
-                  </p>
-
+                  Δεν έχεις ακόμη
+                  ραντεβού.
                 </div>
               ) : (
                 <div className="appointments-list">
 
                   {myAppointments.map(
-                    (
-                      appointment
-                    ) => {
-                      const appointmentImage =
-                        getDoctorImageUrl(
-                          appointment
-                            .doctor.id
-                        );
+                    (appointment) => (
+                      <article
+                        className="my-appointment-card"
+                        key={
+                          appointment.id
+                        }
+                      >
 
-                      return (
-                        <article
-                          className="my-appointment-card"
-                          key={
-                            appointment.id
+                        <div className="appointment-top-line">
+
+                          <span
+                            className={
+                              appointment.status ===
+                              "Cancelled"
+                                ? "appointment-status cancelled"
+                                : "appointment-status confirmed"
+                            }
+                          >
+                            {appointment.status ===
+                            "Cancelled"
+                              ? "Ακυρωμένο"
+                              : "Επιβεβαιωμένο"}
+                          </span>
+
+                          <small>
+                            #
+                            {
+                              appointment.id
+                            }
+                          </small>
+
+                        </div>
+
+                        <h3>
+                          {
+                            appointment
+                              .doctor
+                              .firstName
+                          }{" "}
+                          {
+                            appointment
+                              .doctor
+                              .lastName
                           }
-                        >
+                        </h3>
 
-                          <div className="appointment-top-line">
+                        <p>
+                          {formatAppointmentDate(
+                            appointment.startsAt
+                          )}
+                        </p>
 
-                            <span
-                              className={
-                                appointment.status ===
-                                "Cancelled"
-                                  ? "appointment-status cancelled"
-                                  : "appointment-status confirmed"
+                        <p>
+                          {
+                            appointment
+                              .doctor
+                              .city
+                          }
+                          {" · "}
+                          {
+                            appointment
+                              .doctor
+                              .address
+                          }
+                        </p>
+
+                        {appointment.status !==
+                          "Cancelled" &&
+                          new Date(
+                            appointment.startsAt
+                          ) >
+                            new Date() && (
+                            <button
+                              type="button"
+                              className="cancel-appointment-button"
+                              disabled={
+                                cancellingAppointmentId ===
+                                appointment.id
+                              }
+                              onClick={() =>
+                                void cancelAppointment(
+                                  appointment.id
+                                )
                               }
                             >
-                              {appointment.status ===
-                              "Cancelled"
-                                ? "Ακυρωμένο"
-                                : "Επιβεβαιωμένο"}
-                            </span>
+                              Ακύρωση ραντεβού
+                            </button>
+                          )}
 
-                            <small>
-                              #
-                              {
-                                appointment.id
-                              }
-                            </small>
-
-                          </div>
-
-                          <div className="appointment-doctor-row">
-
-                            <div className="appointment-doctor-avatar">
-
-                              {appointmentImage ? (
-                                <img
-                                  src={
-                                    appointmentImage
-                                  }
-                                  alt={`${appointment.doctor.firstName} ${appointment.doctor.lastName}`}
-                                />
-                              ) : (
-                                <>
-                                  {appointment.doctor.firstName
-                                    .charAt(0)
-                                    .toUpperCase()}
-
-                                  {appointment.doctor.lastName
-                                    .charAt(0)
-                                    .toUpperCase()}
-                                </>
-                              )}
-
-                            </div>
-
-                            <div>
-
-                              <h3>
-                                {
-                                  appointment
-                                    .doctor
-                                    .firstName
-                                }{" "}
-                                {
-                                  appointment
-                                    .doctor
-                                    .lastName
-                                }
-                              </h3>
-
-                              <p>
-                                {specialtyLabels[
-                                  appointment
-                                    .doctor
-                                    .specialty
-                                ] ||
-                                  appointment
-                                    .doctor
-                                    .specialty}
-                              </p>
-
-                            </div>
-
-                          </div>
-
-                          <div className="appointment-information">
-
-                            <div>
-
-                              <span>
-                                ΗΜΕΡΟΜΗΝΙΑ
-                              </span>
-
-                              <strong>
-                                {formatAppointmentDate(
-                                  appointment.startsAt
-                                )}
-                              </strong>
-
-                            </div>
-
-                            <div>
-
-                              <span>
-                                ΤΟΠΟΘΕΣΙΑ
-                              </span>
-
-                              <strong>
-                                {
-                                  appointment
-                                    .doctor
-                                    .city
-                                }
-                              </strong>
-
-                              <small>
-                                {
-                                  appointment
-                                    .doctor
-                                    .address
-                                }
-                              </small>
-
-                            </div>
-
-                            <div>
-
-                              <span>
-                                ΚΟΣΤΟΣ
-                              </span>
-
-                              <strong>
-                                €
-                                {
-                                  appointment
-                                    .doctor
-                                    .consultationPrice
-                                }
-                              </strong>
-
-                            </div>
-
-                          </div>
-
-                          {appointment.status !==
-                            "Cancelled" &&
-                            new Date(
-                              appointment.startsAt
-                            ) >
-                              new Date() && (
-                              <button
-                                type="button"
-                                className="cancel-appointment-button"
-                                disabled={
-                                  cancellingAppointmentId ===
-                                  appointment.id
-                                }
-                                onClick={() =>
-                                  void cancelAppointment(
-                                    appointment.id
-                                  )
-                                }
-                              >
-                                {cancellingAppointmentId ===
-                                appointment.id
-                                  ? "Γίνεται ακύρωση..."
-                                  : "Ακύρωση ραντεβού"}
-                              </button>
-                            )}
-
-                        </article>
-                      );
-                    }
+                      </article>
+                    )
                   )}
 
                 </div>
               )}
 
             </section>
-
           </div>
         )}
 
-      {/* =================================================
-          PROFILE LOADING
-      ================================================= */}
+      {/* PROFILE LOADING */}
 
       {profileLoading && (
         <div className="profile-overlay">
@@ -2302,16 +2438,12 @@ function App() {
         </div>
       )}
 
-      {/* =================================================
-          DOCTOR PROFILE
-      ================================================= */}
+      {/* DOCTOR PROFILE */}
 
       {profileDoctor && (
         <div
           className="profile-overlay"
-          onMouseDown={(
-            event
-          ) => {
+          onMouseDown={(event) => {
             if (
               event.target ===
               event.currentTarget
@@ -2364,10 +2496,11 @@ function App() {
 
               <div className="profile-main-info">
 
-                <span className="verified-doctor">
-                  ✓ Επαληθευμένος
-                  γιατρός
-                </span>
+                {profileDoctor.isVerified && (
+                  <span className="verified-doctor">
+                    ✓ Επαληθευμένος γιατρός
+                  </span>
+                )}
 
                 <h2>
                   {
@@ -2385,8 +2518,13 @@ function App() {
                     profileDoctor.specialty}
                 </p>
 
-                <div className="profile-rating">
+                <p>
+                  {
+                    profileDoctor.subspecialty
+                  }
+                </p>
 
+                <div className="profile-rating">
                   ★{" "}
                   {profileDoctor.rating.toFixed(
                     1
@@ -2394,9 +2532,12 @@ function App() {
 
                   <span>
                     {" "}
-                    αξιολόγηση ασθενών
+                    (
+                    {
+                      profileDoctor.reviewCount
+                    }{" "}
+                    κριτικές)
                   </span>
-
                 </div>
 
               </div>
@@ -2408,27 +2549,27 @@ function App() {
             <div className="profile-details-grid">
 
               <div className="profile-detail">
-
                 <span>
                   ΤΟΠΟΘΕΣΙΑ
                 </span>
 
                 <strong>
-                  {
+                  {cityLabels[
                     profileDoctor.city
-                  }
+                  ] ||
+                    profileDoctor.city}
                 </strong>
 
                 <p>
+                  {profileDoctor.area}
+                  {" · "}
                   {
                     profileDoctor.address
                   }
                 </p>
-
               </div>
 
               <div className="profile-detail">
-
                 <span>
                   ΚΟΣΤΟΣ ΕΠΙΣΚΕΨΗΣ
                 </span>
@@ -2439,17 +2580,36 @@ function App() {
                     profileDoctor.consultationPrice
                   }
                 </strong>
+              </div>
 
-                <p>
-                  ανά επίσκεψη
-                </p>
+              <div className="profile-detail">
+                <span>
+                  ΕΜΠΕΙΡΙΑ
+                </span>
 
+                <strong>
+                  {
+                    profileDoctor.yearsOfExperience
+                  }{" "}
+                  χρόνια
+                </strong>
+              </div>
+
+              <div className="profile-detail">
+                <span>
+                  ΓΛΩΣΣΕΣ
+                </span>
+
+                <strong>
+                  {
+                    profileDoctor.languages
+                  }
+                </strong>
               </div>
 
             </div>
 
             <div className="profile-about">
-
               <span>
                 ΣΧΕΤΙΚΑ ΜΕ ΤΟΝ ΓΙΑΤΡΟ
               </span>
@@ -2462,32 +2622,44 @@ function App() {
                 {profileDoctor.bio ||
                   "Δεν υπάρχει διαθέσιμο βιογραφικό."}
               </p>
-
             </div>
 
             <div className="profile-features">
 
-              <div>
-                <b>✓</b>
-                Online κράτηση
-              </div>
+              {profileDoctor
+                .acceptsInsurance && (
+                <div>
+                  <b>✓</b>
+                  {" "}
+                  {
+                    profileDoctor.insuranceProviders
+                  }
+                </div>
+              )}
 
-              <div>
-                <b>✓</b>
-                Επιβεβαιωμένο προφίλ
-              </div>
+              {profileDoctor
+                .offersOnlineConsultation && (
+                <div>
+                  <b>✓</b>
+                  {" "}
+                  Online consultation
+                </div>
+              )}
 
-              <div>
-                <b>✓</b>
-                Άμεση διαθεσιμότητα
-              </div>
+              {profileDoctor
+                .isVerified && (
+                <div>
+                  <b>✓</b>
+                  {" "}
+                  Επιβεβαιωμένο προφίλ
+                </div>
+              )}
 
             </div>
 
             <div className="profile-footer">
 
               <div>
-
                 <small>
                   Κόστος επίσκεψης
                 </small>
@@ -2498,7 +2670,6 @@ function App() {
                     profileDoctor.consultationPrice
                   }
                 </strong>
-
               </div>
 
               <button
@@ -2517,16 +2688,12 @@ function App() {
         </div>
       )}
 
-      {/* =================================================
-          BOOKING MODAL
-      ================================================= */}
+      {/* BOOKING MODAL */}
 
       {selectedDoctor && (
         <div
           className="booking-overlay"
-          onMouseDown={(
-            event
-          ) => {
+          onMouseDown={(event) => {
             if (
               event.target ===
               event.currentTarget
@@ -2580,33 +2747,6 @@ function App() {
 
             </div>
 
-            {authUser && (
-              <div className="booking-user">
-
-                <span>
-                  ✓
-                </span>
-
-                <div>
-
-                  <strong>
-                    Κράτηση ως{" "}
-                    {
-                      authUser.fullName
-                    }
-                  </strong>
-
-                  <small>
-                    {
-                      authUser.email
-                    }
-                  </small>
-
-                </div>
-
-              </div>
-            )}
-
             <div className="booking-section">
 
               <label>
@@ -2624,9 +2764,7 @@ function App() {
                     new Date()
                   )
                 }
-                onChange={(
-                  event
-                ) =>
+                onChange={(event) =>
                   void changeAppointmentDate(
                     event.target.value
                   )
@@ -2643,15 +2781,13 @@ function App() {
 
               {availabilityLoading ? (
                 <p className="booking-muted">
-                  Φόρτωση
-                  διαθεσιμότητας...
+                  Φόρτωση...
                 </p>
               ) : availability.length ===
                 0 ? (
                 <p className="booking-muted">
-                  Δεν υπάρχουν
-                  διαθέσιμα ραντεβού
-                  αυτή την ημέρα.
+                  Δεν υπάρχουν διαθέσιμα
+                  ραντεβού.
                 </p>
               ) : (
                 <div className="time-grid">
@@ -2670,19 +2806,11 @@ function App() {
                             ? "time-slot active"
                             : "time-slot"
                         }
-                        onClick={() => {
+                        onClick={() =>
                           setSelectedSlot(
                             slot
-                          );
-
-                          setBookingMessage(
-                            ""
-                          );
-
-                          setBookingSuccess(
-                            false
-                          );
-                        }}
+                          )
+                        }
                       >
                         {slot.time}
                       </button>
@@ -2707,9 +2835,7 @@ function App() {
                 value={
                   patientName
                 }
-                onChange={(
-                  event
-                ) =>
+                onChange={(event) =>
                   setPatientName(
                     event.target.value
                   )
@@ -2723,9 +2849,7 @@ function App() {
                 value={
                   patientEmail
                 }
-                onChange={(
-                  event
-                ) =>
+                onChange={(event) =>
                   setPatientEmail(
                     event.target.value
                   )
@@ -2733,25 +2857,6 @@ function App() {
               />
 
             </div>
-
-            {selectedSlot && (
-              <div className="booking-muted">
-
-                Επιλεγμένο
-                ραντεβού:{" "}
-
-                <strong>
-                  {
-                    appointmentDate
-                  }{" "}
-                  στις{" "}
-                  {
-                    selectedSlot.time
-                  }
-                </strong>
-
-              </div>
-            )}
 
             {bookingMessage && (
               <div
@@ -2782,7 +2887,6 @@ function App() {
             </button>
 
           </section>
-
         </div>
       )}
 

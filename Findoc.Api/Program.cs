@@ -129,14 +129,10 @@ using (var scope = app.Services.CreateScope())
 
     if (isPostgreSql)
     {
-        // Production PostgreSQL:
-        // create the schema directly from the current EF model.
         await db.Database.EnsureCreatedAsync();
     }
     else
     {
-        // Local SQLite:
-        // continue using the existing migrations.
         await db.Database.MigrateAsync();
     }
 
@@ -488,46 +484,246 @@ app.MapGet(
 // ======================================================
 
 // ------------------------------------------------------
-// GET ALL DOCTORS
+// ADVANCED DOCTOR SEARCH
 // ------------------------------------------------------
 
 app.MapGet(
     "/api/doctors",
     async (
+        string? q,
         string? specialty,
         string? city,
+        string? area,
+        decimal? maxPrice,
+        double? minRating,
+        bool? acceptsInsurance,
+        string? insurance,
+        bool? online,
+        string? language,
+        bool? verified,
+        string? sort,
         FindocDbContext db) =>
     {
         var query =
             db.Doctors
                 .AsNoTracking()
+                .Where(d => d.IsActive)
                 .AsQueryable();
+
+        // ==================================================
+        // GENERAL SEARCH
+        // ==================================================
+
+        if (!string.IsNullOrWhiteSpace(q))
+        {
+            var search =
+                q.Trim()
+                    .ToLower();
+
+            query =
+                query.Where(d =>
+                    d.FirstName.ToLower().Contains(search) ||
+                    d.LastName.ToLower().Contains(search) ||
+                    d.Specialty.ToLower().Contains(search) ||
+                    d.Subspecialty.ToLower().Contains(search) ||
+                    d.City.ToLower().Contains(search) ||
+                    d.Area.ToLower().Contains(search));
+        }
+
+        // ==================================================
+        // SPECIALTY
+        // ==================================================
 
         if (!string.IsNullOrWhiteSpace(specialty))
         {
+            var specialtyValue =
+                specialty.Trim()
+                    .ToLower();
+
             query =
-                query.Where(
-                    d =>
-                        EF.Functions.Like(
-                            d.Specialty,
-                            $"%{specialty.Trim()}%"));
+                query.Where(d =>
+                    d.Specialty
+                        .ToLower()
+                        .Contains(specialtyValue) ||
+                    d.Subspecialty
+                        .ToLower()
+                        .Contains(specialtyValue));
         }
+
+        // ==================================================
+        // CITY
+        // ==================================================
 
         if (!string.IsNullOrWhiteSpace(city))
         {
+            var cityValue =
+                city.Trim()
+                    .ToLower();
+
             query =
-                query.Where(
-                    d =>
-                        EF.Functions.Like(
-                            d.City,
-                            $"%{city.Trim()}%"));
+                query.Where(d =>
+                    d.City
+                        .ToLower()
+                        .Contains(cityValue));
         }
 
+        // ==================================================
+        // AREA
+        // ==================================================
+
+        if (!string.IsNullOrWhiteSpace(area))
+        {
+            var areaValue =
+                area.Trim()
+                    .ToLower();
+
+            query =
+                query.Where(d =>
+                    d.Area
+                        .ToLower()
+                        .Contains(areaValue));
+        }
+
+        // ==================================================
+        // MAXIMUM PRICE
+        // ==================================================
+
+        if (maxPrice.HasValue &&
+            maxPrice.Value >= 0)
+        {
+            query =
+                query.Where(d =>
+                    d.ConsultationPrice <=
+                    maxPrice.Value);
+        }
+
+        // ==================================================
+        // MINIMUM RATING
+        // ==================================================
+
+        if (minRating.HasValue &&
+            minRating.Value >= 0)
+        {
+            query =
+                query.Where(d =>
+                    d.Rating >=
+                    minRating.Value);
+        }
+
+        // ==================================================
+        // ACCEPTS INSURANCE
+        // ==================================================
+
+        if (acceptsInsurance.HasValue)
+        {
+            query =
+                query.Where(d =>
+                    d.AcceptsInsurance ==
+                    acceptsInsurance.Value);
+        }
+
+        // ==================================================
+        // SPECIFIC INSURANCE PROVIDER
+        // ==================================================
+
+        if (!string.IsNullOrWhiteSpace(insurance))
+        {
+            var insuranceValue =
+                insurance.Trim()
+                    .ToLower();
+
+            query =
+                query.Where(d =>
+                    d.InsuranceProviders
+                        .ToLower()
+                        .Contains(insuranceValue));
+        }
+
+        // ==================================================
+        // ONLINE CONSULTATION
+        // ==================================================
+
+        if (online.HasValue)
+        {
+            query =
+                query.Where(d =>
+                    d.OffersOnlineConsultation ==
+                    online.Value);
+        }
+
+        // ==================================================
+        // LANGUAGE
+        // ==================================================
+
+        if (!string.IsNullOrWhiteSpace(language))
+        {
+            var languageValue =
+                language.Trim()
+                    .ToLower();
+
+            query =
+                query.Where(d =>
+                    d.Languages
+                        .ToLower()
+                        .Contains(languageValue));
+        }
+
+        // ==================================================
+        // VERIFIED DOCTOR
+        // ==================================================
+
+        if (verified.HasValue)
+        {
+            query =
+                query.Where(d =>
+                    d.IsVerified ==
+                    verified.Value);
+        }
+
+        // ==================================================
+        // SORTING
+        // ==================================================
+
+        query =
+            sort?.Trim().ToLower() switch
+            {
+                "price_asc" =>
+                    query
+                        .OrderBy(d =>
+                            d.ConsultationPrice),
+
+                "price_desc" =>
+                    query
+                        .OrderByDescending(d =>
+                            d.ConsultationPrice),
+
+                "rating" =>
+                    query
+                        .OrderByDescending(d =>
+                            d.Rating)
+                        .ThenByDescending(d =>
+                            d.ReviewCount),
+
+                "experience" =>
+                    query
+                        .OrderByDescending(d =>
+                            d.YearsOfExperience),
+
+                "reviews" =>
+                    query
+                        .OrderByDescending(d =>
+                            d.ReviewCount),
+
+                _ =>
+                    query
+                        .OrderByDescending(d =>
+                            d.Rating)
+                        .ThenByDescending(d =>
+                            d.ReviewCount)
+            };
+
         var doctors =
-            await query
-                .OrderByDescending(
-                    d => d.Rating)
-                .ToListAsync();
+            await query.ToListAsync();
 
         return Results.Ok(doctors);
     });
@@ -546,7 +742,9 @@ app.MapGet(
             await db.Doctors
                 .AsNoTracking()
                 .FirstOrDefaultAsync(
-                    d => d.Id == id);
+                    d =>
+                        d.Id == id &&
+                        d.IsActive);
 
         if (doctor is null)
         {
@@ -570,11 +768,10 @@ app.MapGet(
         var specialties =
             await db.Doctors
                 .AsNoTracking()
-                .Select(
-                    d => d.Specialty)
+                .Where(d => d.IsActive)
+                .Select(d => d.Specialty)
                 .Distinct()
-                .OrderBy(
-                    s => s)
+                .OrderBy(s => s)
                 .ToListAsync();
 
         return Results.Ok(specialties);
@@ -593,7 +790,9 @@ app.MapGet(
     {
         var doctorExists =
             await db.Doctors.AnyAsync(
-                d => d.Id == id);
+                d =>
+                    d.Id == id &&
+                    d.IsActive);
 
         if (!doctorExists)
         {
@@ -723,8 +922,11 @@ app.MapPost(
         }
 
         var doctor =
-            await db.Doctors.FindAsync(
-                request.DoctorId);
+            await db.Doctors
+                .FirstOrDefaultAsync(
+                    d =>
+                        d.Id == request.DoctorId &&
+                        d.IsActive);
 
         if (doctor is null)
         {
@@ -957,6 +1159,7 @@ app.MapGet(
                                 a.Doctor.LastName,
                                 a.Doctor.Specialty,
                                 a.Doctor.City,
+                                a.Doctor.Area,
                                 a.Doctor.Address,
                                 a.Doctor.ConsultationPrice,
                                 a.Doctor.Rating
@@ -1028,6 +1231,7 @@ app.MapGet(
                     appointment.Doctor.LastName,
                     appointment.Doctor.Specialty,
                     appointment.Doctor.City,
+                    appointment.Doctor.Area,
                     appointment.Doctor.Address,
                     appointment.Doctor.ConsultationPrice,
                     appointment.Doctor.Rating
