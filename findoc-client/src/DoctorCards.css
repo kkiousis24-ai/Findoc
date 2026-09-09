@@ -1,0 +1,504 @@
+/* =====================================================
+   FINDOC — PREMIUM DOCTOR RESULT CARDS
+   Safe override layer
+===================================================== */
+
+/* -----------------------------------------------------
+   RESULTS LAYOUT
+----------------------------------------------------- */
+
+.doctor-results {
+  gap: 22px;
+}
+
+/* -----------------------------------------------------
+   CARD
+----------------------------------------------------- */
+
+.doctor-card {
+  position: relative;
+
+  min-height: 285px;
+
+  grid-template-columns:
+    104px
+    minmax(0, 1fr);
+
+  gap: 22px;
+
+  padding: 26px;
+
+  overflow: hidden;
+
+  border:
+    1px solid
+    rgba(255, 255, 255, 0.065);
+
+  border-radius: 28px;
+
+  background:
+    linear-gradient(
+      145deg,
+      rgba(16, 48, 42, 0.96),
+      rgba(8, 31, 27, 0.98)
+    );
+
+  box-shadow:
+    0 18px 50px
+      rgba(0, 0, 0, 0.18),
+    inset 0 1px 0
+      rgba(255, 255, 255, 0.035);
+
+  transition:
+    transform 0.22s ease,
+    border-color 0.22s ease,
+    box-shadow 0.22s ease,
+    background 0.22s ease;
+}
+
+/* subtle premium glow */
+
+.doctor-card::before {
+  content: "";
+
+  position: absolute;
+
+  width: 220px;
+  height: 220px;
+
+  top: -140px;
+  right: -100px;
+
+  border-radius: 50%;
+
+  background:
+    radial-gradient(
+      circle,
+      rgba(83, 214, 189, 0.12),
+      transparent 68%
+    );
+
+  pointer-events: none;
+}
+
+/* tiny top highlight */
+
+.doctor-card::after {
+  content: "";
+
+  position: absolute;
+
+  top: 0;
+  left: 32px;
+  right: 32px;
+
+  height: 1px;
+
+  background:
+    linear-gradient(
+      90deg,
+      transparent,
+      rgba(114, 227, 207, 0.22),
+      transparent
+    );
+
+  pointer-events: none;
+}
+
+.doctor-card:hover {
+  transform:
+    translateY(-5px);
+
+  border-color:
+    rgba(83, 214, 189, 0.22);
+
+  background:
+    linear-gradient(
+      145deg,
+      rgba(17, 53, 46, 0.98),
+      rgba(9, 34, 30, 0.98)
+    );
+
+  box-shadow:
+    0 28px 65px
+      rgba(0, 0, 0, 0.25),
+    0 0 0 1px
+      rgba(83, 214, 189, 0.025),
+    inset 0 1px 0
+      rgba(255, 255, 255, 0.045);
+}
+
+/* -----------------------------------------------------
+   AVATAR
+----------------------------------------------------- */
+
+.doctor-card-avatar {
+  width: 104px;
+  height: 104px;
+
+  border-radius: 26px;
+
+  border:
+    1px solid
+    rgba(255, 255, 255, 0.12);
+
+  background:
+    linear-gradient(
+      145deg,
+      #62dfc8,
+      #3dbda6
+    );
+
+  box-shadow:
+    0 14px 30px
+      rgba(0, 0, 0, 0.2),
+    0 0 0 5px
+      rgba(83, 214, 189, 0.045);
+
+  font-size: 26px;
+
+  transition:
+    transform 0.22s ease,
+    box-shadow 0.22s ease;
+}
+
+.doctor-card:hover
+.doctor-card-avatar {
+  transform:
+    translateY(-2px);
+
+  box-shadow:
+    0 18px 36px
+      rgba(0, 0, 0, 0.24),
+    0 0 0 5px
+      rgba(83, 214, 189, 0.07);
+}
+
+.doctor-card-avatar img {
+  transition:
+    transform 0.35s ease;
+}
+
+.doctor-card:hover
+.doctor-card-avatar img {
+  transform:
+    scale(1.06);
+}
+
+/* -----------------------------------------------------
+   CONTENT
+----------------------------------------------------- */
+
+.doctor-card-content {
+  position: relative;
+  z-index: 2;
+}
+
+/* -----------------------------------------------------
+   RATING PILL
+----------------------------------------------------- */
+
+.doctor-rating {
+  display: inline-flex;
+  align-items: center;
+
+  width: fit-content;
+
+  margin-bottom: 11px;
+
+  padding:
+    6px 10px;
+
+  border:
+    1px solid
+    rgba(255, 210, 111, 0.12);
+
+  border-radius: 999px;
+
+  background:
+    rgba(255, 210, 111, 0.065);
+
+  color: #ffd477;
+
+  font-size: 10px;
+  font-weight: 800;
+
+  letter-spacing: 0.1px;
+}
+
+/* -----------------------------------------------------
+   DOCTOR NAME
+----------------------------------------------------- */
+
+.doctor-card h3 {
+  margin: 0;
+
+  color: #ffffff;
+
+  font-size: 23px;
+  font-weight: 750;
+
+  letter-spacing: -0.75px;
+
+  line-height: 1.15;
+}
+
+/* -----------------------------------------------------
+   SPECIALTY
+----------------------------------------------------- */
+
+.doctor-specialty {
+  display: inline-flex;
+
+  width: fit-content;
+
+  margin-top: 8px;
+
+  padding:
+    6px 10px;
+
+  border:
+    1px solid
+    rgba(83, 214, 189, 0.12);
+
+  border-radius: 999px;
+
+  background:
+    rgba(83, 214, 189, 0.07);
+
+  color: #6ce0cb;
+
+  font-size: 11px;
+  font-weight: 750;
+}
+
+/* -----------------------------------------------------
+   META INFORMATION
+----------------------------------------------------- */
+
+.doctor-card-content > p {
+  margin:
+    8px 0 0;
+
+  color:
+    rgba(226, 244, 240, 0.57);
+
+  font-size: 11.5px;
+
+  line-height: 1.45;
+}
+
+.doctor-card-content > p + p {
+  margin-top: 7px;
+
+  color:
+    rgba(226, 244, 240, 0.57);
+
+  -webkit-line-clamp: 1;
+}
+
+/* -----------------------------------------------------
+   BOTTOM SECTION
+----------------------------------------------------- */
+
+.doctor-bottom {
+  margin-top: auto;
+
+  padding-top: 20px;
+
+  border-top:
+    1px solid
+    rgba(255, 255, 255, 0.055);
+}
+
+/* -----------------------------------------------------
+   PRICE
+----------------------------------------------------- */
+
+.doctor-bottom > span {
+  display: flex;
+  flex-direction: column;
+
+  gap: 2px;
+
+  color:
+    rgba(221, 240, 235, 0.38);
+
+  font-size: 9px;
+
+  text-transform: uppercase;
+
+  letter-spacing: 0.7px;
+}
+
+.doctor-bottom > span b {
+  margin-left: 0;
+
+  color: #ffffff;
+
+  font-size: 22px;
+  font-weight: 780;
+
+  letter-spacing: -0.5px;
+}
+
+/* -----------------------------------------------------
+   ACTION BUTTONS
+----------------------------------------------------- */
+
+.doctor-card
+.doctor-actions {
+  gap: 9px;
+}
+
+.doctor-card
+.profile-button,
+.doctor-card
+.availability-button {
+  height: 43px;
+
+  padding:
+    0 16px;
+
+  border-radius: 14px;
+
+  font-size: 10.5px;
+  font-weight: 800;
+
+  transition:
+    transform 0.18s ease,
+    border-color 0.18s ease,
+    background 0.18s ease,
+    box-shadow 0.18s ease;
+}
+
+/* profile */
+
+.doctor-card
+.profile-button {
+  border:
+    1px solid
+    rgba(255, 255, 255, 0.085);
+
+  background:
+    rgba(255, 255, 255, 0.035);
+
+  color:
+    rgba(245, 252, 250, 0.88);
+}
+
+.doctor-card
+.profile-button:hover {
+  transform:
+    translateY(-2px);
+
+  border-color:
+    rgba(83, 214, 189, 0.18);
+
+  background:
+    rgba(83, 214, 189, 0.065);
+}
+
+/* availability */
+
+.doctor-card
+.availability-button {
+  border:
+    1px solid
+    rgba(255, 255, 255, 0.08);
+
+  background:
+    linear-gradient(
+      180deg,
+      #f78370,
+      #ee6e5a
+    );
+
+  color: #ffffff;
+
+  box-shadow:
+    0 9px 22px
+    rgba(242, 118, 97, 0.16);
+}
+
+.doctor-card
+.availability-button:hover {
+  transform:
+    translateY(-2px);
+
+  background:
+    linear-gradient(
+      180deg,
+      #fa907c,
+      #f27864
+    );
+
+  box-shadow:
+    0 13px 28px
+    rgba(242, 118, 97, 0.23);
+}
+
+/* -----------------------------------------------------
+   RESPONSIVE
+----------------------------------------------------- */
+
+@media (
+  max-width: 1100px
+) {
+  .doctor-results {
+    grid-template-columns:
+      1fr;
+  }
+}
+
+@media (
+  max-width: 650px
+) {
+  .doctor-card {
+    grid-template-columns:
+      76px
+      minmax(0, 1fr);
+
+    gap: 16px;
+
+    min-height: 0;
+
+    padding: 20px;
+
+    border-radius: 23px;
+  }
+
+  .doctor-card-avatar {
+    width: 76px;
+    height: 76px;
+
+    border-radius: 20px;
+  }
+
+  .doctor-card h3 {
+    font-size: 19px;
+  }
+
+  .doctor-bottom {
+    grid-column:
+      1 / -1;
+
+    flex-direction: column;
+
+    align-items: stretch;
+
+    gap: 14px;
+  }
+
+  .doctor-card
+  .doctor-actions {
+    width: 100%;
+  }
+
+  .doctor-card
+  .profile-button,
+  .doctor-card
+  .availability-button {
+    flex: 1;
+  }
+}
