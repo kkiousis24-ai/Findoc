@@ -5,30 +5,6 @@ import {
 } from "react-i18next";
 
 import {
-  westernEuropeTranslations,
-} from "./locales/westernEurope";
-
-import {
-  centralEuropeTranslations,
-} from "./locales/centralEurope";
-
-import {
-  easternEuropeTranslations,
-} from "./locales/easternEurope";
-
-import {
-  northernEuropeTranslations,
-} from "./locales/northernEurope";
-
-import {
-  remainingEuropeTranslations,
-} from "./locales/remainingEurope";
-
-import {
-  extendedEuropeTranslations,
-} from "./locales/extendedEurope";
-
-import {
   uiOptionTranslations,
 } from "./locales/uiOptions";
 
@@ -41,7 +17,7 @@ export interface SupportedLanguage {
 
 
 /* =====================================================
-   SUPPORTED EUROPEAN LANGUAGES
+   SUPPORTED LANGUAGES
 ===================================================== */
 
 export const supportedLanguages:
@@ -56,264 +32,6 @@ export const supportedLanguages:
     code: "en",
     name: "English",
     nativeName: "English",
-  },
-
-  {
-    code: "de",
-    name: "German",
-    nativeName: "Deutsch",
-  },
-
-  {
-    code: "fr",
-    name: "French",
-    nativeName: "Français",
-  },
-
-  {
-    code: "es",
-    name: "Spanish",
-    nativeName: "Español",
-  },
-
-  {
-    code: "it",
-    name: "Italian",
-    nativeName: "Italiano",
-  },
-
-  {
-    code: "pt",
-    name: "Portuguese",
-    nativeName: "Português",
-  },
-
-  {
-    code: "nl",
-    name: "Dutch",
-    nativeName: "Nederlands",
-  },
-
-  {
-    code: "pl",
-    name: "Polish",
-    nativeName: "Polski",
-  },
-
-  {
-    code: "ro",
-    name: "Romanian",
-    nativeName: "Română",
-  },
-
-  {
-    code: "bg",
-    name: "Bulgarian",
-    nativeName: "Български",
-  },
-
-  {
-    code: "cs",
-    name: "Czech",
-    nativeName: "Čeština",
-  },
-
-  {
-    code: "sk",
-    name: "Slovak",
-    nativeName: "Slovenčina",
-  },
-
-  {
-    code: "hu",
-    name: "Hungarian",
-    nativeName: "Magyar",
-  },
-
-  {
-    code: "hr",
-    name: "Croatian",
-    nativeName: "Hrvatski",
-  },
-
-  {
-    code: "sl",
-    name: "Slovenian",
-    nativeName: "Slovenščina",
-  },
-
-  {
-    code: "sr",
-    name: "Serbian",
-    nativeName: "Српски",
-  },
-
-  {
-    code: "bs",
-    name: "Bosnian",
-    nativeName: "Bosanski",
-  },
-
-  {
-    code: "sq",
-    name: "Albanian",
-    nativeName: "Shqip",
-  },
-
-  {
-    code: "mk",
-    name: "Macedonian",
-    nativeName: "Македонски",
-  },
-
-  {
-    code: "uk",
-    name: "Ukrainian",
-    nativeName: "Українська",
-  },
-
-  {
-    code: "be",
-    name: "Belarusian",
-    nativeName: "Беларуская",
-  },
-
-  {
-    code: "ru",
-    name: "Russian",
-    nativeName: "Русский",
-  },
-
-  {
-    code: "sv",
-    name: "Swedish",
-    nativeName: "Svenska",
-  },
-
-  {
-    code: "da",
-    name: "Danish",
-    nativeName: "Dansk",
-  },
-
-  {
-    code: "fi",
-    name: "Finnish",
-    nativeName: "Suomi",
-  },
-
-  {
-    code: "no",
-    name: "Norwegian",
-    nativeName: "Norsk",
-  },
-
-  {
-    code: "is",
-    name: "Icelandic",
-    nativeName: "Íslenska",
-  },
-
-  {
-    code: "et",
-    name: "Estonian",
-    nativeName: "Eesti",
-  },
-
-  {
-    code: "lv",
-    name: "Latvian",
-    nativeName: "Latviešu",
-  },
-
-  {
-    code: "lt",
-    name: "Lithuanian",
-    nativeName: "Lietuvių",
-  },
-
-  {
-    code: "ga",
-    name: "Irish",
-    nativeName: "Gaeilge",
-  },
-
-  {
-    code: "mt",
-    name: "Maltese",
-    nativeName: "Malti",
-  },
-
-  {
-    code: "ca",
-    name: "Catalan",
-    nativeName: "Català",
-  },
-
-  {
-    code: "eu",
-    name: "Basque",
-    nativeName: "Euskara",
-  },
-
-  {
-    code: "gl",
-    name: "Galician",
-    nativeName: "Galego",
-  },
-
-  {
-    code: "cy",
-    name: "Welsh",
-    nativeName: "Cymraeg",
-  },
-
-  {
-    code: "lb",
-    name: "Luxembourgish",
-    nativeName: "Lëtzebuergesch",
-  },
-
-  {
-    code: "tr",
-    name: "Turkish",
-    nativeName: "Türkçe",
-  },
-
-  {
-    code: "rm",
-    name: "Romansh",
-    nativeName: "Rumantsch",
-  },
-
-  {
-    code: "fo",
-    name: "Faroese",
-    nativeName: "Føroyskt",
-  },
-
-  {
-    code: "hy",
-    name: "Armenian",
-    nativeName: "Հայերեն",
-  },
-
-  {
-    code: "ka",
-    name: "Georgian",
-    nativeName: "ქართული",
-  },
-
-  {
-    code: "az",
-    name: "Azerbaijani",
-    nativeName: "Azərbaycanca",
-  },
-
-  {
-    code: "cnr",
-    name: "Montenegrin",
-    nativeName: "Crnogorski",
   },
 ];
 
@@ -373,10 +91,6 @@ function getInitialLanguage(): string {
 const greekTranslations = {
   translation: {
 
-    /*
-     * Βάζουμε πρώτα τα extended UI translations.
-     * Έτσι δεν υπάρχει duplicate overwrite warning.
-     */
     ...uiOptionTranslations.el,
 
 
@@ -488,10 +202,6 @@ const greekTranslations = {
     },
 
 
-    /*
-     * Merge με το booking από uiOptions,
-     * αντί να το ξαναγράφουμε ολόκληρο.
-     */
     booking: {
       ...uiOptionTranslations.el.booking,
 
@@ -515,9 +225,6 @@ const greekTranslations = {
 const englishTranslations = {
   translation: {
 
-    /*
-     * Extended UI translations first.
-     */
     ...uiOptionTranslations.en,
 
 
@@ -646,7 +353,7 @@ const englishTranslations = {
 
 
 /* =====================================================
-   ALL TRANSLATION RESOURCES
+   TRANSLATION RESOURCES
 ===================================================== */
 
 const resources = {
@@ -655,18 +362,6 @@ const resources = {
 
   en:
     englishTranslations,
-
-  ...westernEuropeTranslations,
-
-  ...centralEuropeTranslations,
-
-  ...easternEuropeTranslations,
-
-  ...northernEuropeTranslations,
-
-  ...remainingEuropeTranslations,
-
-  ...extendedEuropeTranslations,
 };
 
 

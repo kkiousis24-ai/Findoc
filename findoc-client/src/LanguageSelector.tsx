@@ -168,11 +168,13 @@ function LanguageSelector() {
         >
           <div className="language-selector-header">
             <strong>
-              Language
+              {currentLanguageCode === "el"
+                ? "Γλώσσα"
+                : "Language"}
             </strong>
 
             <small>
-              Europe
+              EL / EN
             </small>
           </div>
 
