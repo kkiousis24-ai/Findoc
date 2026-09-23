@@ -764,6 +764,12 @@ app.MapGet(
 app.MapDoctorSearchEndpoints();
 
 // ------------------------------------------------------
+// DOCTOR INTEREST REQUESTS
+// ------------------------------------------------------
+
+app.MapDoctorInterestEndpoints();
+
+// ------------------------------------------------------
 // GET DOCTOR BY ID
 // ------------------------------------------------------
 
@@ -912,6 +918,7 @@ app.MapGet(
                 slots.Add(new
                 {
                     startsAt = current,
+
                     time =
                         current.ToString(
                             "HH:mm")
@@ -934,128 +941,208 @@ app.MapGet(
 // ------------------------------------------------------
 
 app.MapPost(
-    "/api/appointments",
-    async (
-        CreateAppointmentRequest request,
-        HttpContext httpContext,
-        FindocDbContext db) =>
-    {
-        if (string.IsNullOrWhiteSpace(
-                request.PatientName))
+        "/api/appointments",
+        async (
+            CreateAppointmentRequest request,
+            HttpContext httpContext,
+            FindocDbContext db) =>
         {
-            return Results.BadRequest(new
+            if (string.IsNullOrWhiteSpace(
+                    request.PatientName))
             {
-                message =
-                    "Patient name is required"
-            });
-        }
+                return Results.BadRequest(new
+                {
+                    message =
+                        "Patient name is required"
+                });
+            }
 
-        if (string.IsNullOrWhiteSpace(
-                request.PatientEmail))
-        {
-            return Results.BadRequest(new
+            if (string.IsNullOrWhiteSpace(
+                    request.PatientEmail))
             {
-                message =
-                    "Patient email is required"
-            });
-        }
+                return Results.BadRequest(new
+                {
+                    message =
+                        "Patient email is required"
+                });
+            }
 
-        var doctor =
-            await db.Doctors
-                .FirstOrDefaultAsync(
-                    d =>
-                        d.Id ==
-                        request.DoctorId &&
-                        d.IsActive);
+            var doctor =
+                await db.Doctors
+                    .FirstOrDefaultAsync(
+                        d =>
+                            d.Id ==
+                            request.DoctorId &&
+                            d.IsActive);
 
-        if (doctor is null)
-        {
-            return Results.NotFound(new
+            if (doctor is null)
             {
-                message =
-                    "Doctor not found"
-            });
-        }
+                return Results.NotFound(new
+                {
+                    message =
+                        "Doctor not found"
+                });
+            }
 
-        if (request.StartsAt <=
-            DateTime.Now)
-        {
-            return Results.BadRequest(new
+            if (request.StartsAt <=
+                DateTime.Now)
             {
-                message =
-                    "Appointment cannot be in the past"
-            });
-        }
+                return Results.BadRequest(new
+                {
+                    message =
+                        "Appointment cannot be in the past"
+                });
+            }
 
-        if (request.StartsAt.DayOfWeek
-            is DayOfWeek.Saturday
-            or DayOfWeek.Sunday)
-        {
-            return Results.BadRequest(new
+            if (request.StartsAt.DayOfWeek
+                is DayOfWeek.Saturday
+                or DayOfWeek.Sunday)
             {
-                message =
-                    "Appointments are not available on weekends"
-            });
-        }
+                return Results.BadRequest(new
+                {
+                    message =
+                        "Appointments are not available on weekends"
+                });
+            }
 
-        var openingTime =
-            new TimeSpan(
-                9,
-                0,
-                0);
+            var openingTime =
+                new TimeSpan(
+                    9,
+                    0,
+                    0);
 
-        var closingTime =
-            new TimeSpan(
-                17,
-                0,
-                0);
+            var closingTime =
+                new TimeSpan(
+                    17,
+                    0,
+                    0);
 
-        if (request.StartsAt.TimeOfDay <
-                openingTime ||
-            request.StartsAt.TimeOfDay >=
-                closingTime)
-        {
-            return Results.BadRequest(new
+            if (request.StartsAt.TimeOfDay <
+                    openingTime ||
+                request.StartsAt.TimeOfDay >=
+                    closingTime)
             {
-                message =
-                    "Appointment time must be between 09:00 and 17:00"
-            });
-        }
+                return Results.BadRequest(new
+                {
+                    message =
+                        "Appointment time must be between 09:00 and 17:00"
+                });
+            }
 
-        if (request.StartsAt.Second != 0 ||
-            request.StartsAt.Millisecond != 0 ||
-            request.StartsAt.Minute
-            is not 0 and not 30)
-        {
-            return Results.BadRequest(new
+            if (request.StartsAt.Second != 0 ||
+                request.StartsAt.Millisecond != 0 ||
+                request.StartsAt.Minute
+                is not 0 and not 30)
             {
-                message =
-                    "Appointments must start on a 30-minute slot"
-            });
-        }
+                return Results.BadRequest(new
+                {
+                    message =
+                        "Appointments must start on a 30-minute slot"
+                });
+            }
 
-       var authenticatedUserId =
-    GetAuthenticatedUserId(
-        httpContext.User);
+            var authenticatedUserId =
+                GetAuthenticatedUserId(
+                    httpContext.User);
 
-if (authenticatedUserId is null)
-{
-    return Results.Unauthorized();
-}
+            if (authenticatedUserId is null)
+            {
+                return Results.Unauthorized();
+            }
 
-        var existingAppointment =
-            await db.Appointments
-                .FirstOrDefaultAsync(
-                    a =>
-                        a.DoctorId ==
-                        request.DoctorId &&
-                        a.StartsAt ==
-                        request.StartsAt);
+            var existingAppointment =
+                await db.Appointments
+                    .FirstOrDefaultAsync(
+                        a =>
+                            a.DoctorId ==
+                            request.DoctorId &&
+                            a.StartsAt ==
+                            request.StartsAt);
 
-        if (existingAppointment is not null)
-        {
-            if (existingAppointment.Status !=
-                "Cancelled")
+            if (existingAppointment is not null)
+            {
+                if (existingAppointment.Status !=
+                    "Cancelled")
+                {
+                    return Results.Conflict(new
+                    {
+                        message =
+                            "This appointment slot is no longer available"
+                    });
+                }
+
+                existingAppointment.UserId =
+                    authenticatedUserId;
+
+                existingAppointment.PatientName =
+                    request.PatientName.Trim();
+
+                existingAppointment.PatientEmail =
+                    request.PatientEmail
+                        .Trim()
+                        .ToLowerInvariant();
+
+                existingAppointment.Status =
+                    "Confirmed";
+
+                existingAppointment.CreatedAtUtc =
+                    DateTime.UtcNow;
+
+                await db.SaveChangesAsync();
+
+                return Results.Ok(new
+                {
+                    existingAppointment.Id,
+                    existingAppointment.DoctorId,
+                    existingAppointment.UserId,
+
+                    doctorName =
+                        $"{doctor.FirstName} {doctor.LastName}",
+
+                    existingAppointment.PatientName,
+                    existingAppointment.PatientEmail,
+                    existingAppointment.StartsAt,
+                    existingAppointment.Status,
+                    existingAppointment.CreatedAtUtc
+                });
+            }
+
+            var appointment =
+                new Appointment
+                {
+                    DoctorId =
+                        request.DoctorId,
+
+                    UserId =
+                        authenticatedUserId,
+
+                    PatientName =
+                        request.PatientName
+                            .Trim(),
+
+                    PatientEmail =
+                        request.PatientEmail
+                            .Trim()
+                            .ToLowerInvariant(),
+
+                    StartsAt =
+                        request.StartsAt,
+
+                    Status =
+                        "Confirmed",
+
+                    CreatedAtUtc =
+                        DateTime.UtcNow
+                };
+
+            db.Appointments.Add(
+                appointment);
+
+            try
+            {
+                await db.SaveChangesAsync();
+            }
+            catch (DbUpdateException)
             {
                 return Results.Conflict(new
                 {
@@ -1064,105 +1151,26 @@ if (authenticatedUserId is null)
                 });
             }
 
-            existingAppointment.UserId =
-                authenticatedUserId;
+            return Results.Created(
+                $"/api/appointments/{appointment.Id}",
+                new
+                {
+                    appointment.Id,
+                    appointment.DoctorId,
+                    appointment.UserId,
 
-            existingAppointment.PatientName =
-                request.PatientName.Trim();
+                    doctorName =
+                        $"{doctor.FirstName} {doctor.LastName}",
 
-            existingAppointment.PatientEmail =
-                request.PatientEmail
-                    .Trim()
-                    .ToLowerInvariant();
-
-            existingAppointment.Status =
-                "Confirmed";
-
-            existingAppointment.CreatedAtUtc =
-                DateTime.UtcNow;
-
-            await db.SaveChangesAsync();
-
-            return Results.Ok(new
-            {
-                existingAppointment.Id,
-                existingAppointment.DoctorId,
-                existingAppointment.UserId,
-
-                doctorName =
-                    $"{doctor.FirstName} {doctor.LastName}",
-
-                existingAppointment.PatientName,
-                existingAppointment.PatientEmail,
-                existingAppointment.StartsAt,
-                existingAppointment.Status,
-                existingAppointment.CreatedAtUtc
-            });
-        }
-
-        var appointment =
-            new Appointment
-            {
-                DoctorId =
-                    request.DoctorId,
-
-                UserId =
-                    authenticatedUserId,
-
-                PatientName =
-                    request.PatientName
-                        .Trim(),
-
-                PatientEmail =
-                    request.PatientEmail
-                        .Trim()
-                        .ToLowerInvariant(),
-
-                StartsAt =
-                    request.StartsAt,
-
-                Status =
-                    "Confirmed",
-
-                CreatedAtUtc =
-                    DateTime.UtcNow
-            };
-
-        db.Appointments.Add(
-            appointment);
-
-        try
-        {
-            await db.SaveChangesAsync();
-        }
-        catch (DbUpdateException)
-        {
-            return Results.Conflict(new
-            {
-                message =
-                    "This appointment slot is no longer available"
-            });
-        }
-
-               return Results.Created(
-            $"/api/appointments/{appointment.Id}",
-            new
-            {
-                appointment.Id,
-                appointment.DoctorId,
-                appointment.UserId,
-
-                doctorName =
-                    $"{doctor.FirstName} {doctor.LastName}",
-
-                appointment.PatientName,
-                appointment.PatientEmail,
-                appointment.StartsAt,
-                appointment.Status,
-                appointment.CreatedAtUtc
-            });
-    })
+                    appointment.PatientName,
+                    appointment.PatientEmail,
+                    appointment.StartsAt,
+                    appointment.Status,
+                    appointment.CreatedAtUtc
+                });
+        })
     .RequireAuthorization();
+
 // ------------------------------------------------------
 // GET MY APPOINTMENTS
 // ------------------------------------------------------

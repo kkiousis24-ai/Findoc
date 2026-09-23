@@ -21,6 +21,8 @@ import "./HeroDoctorImage.css";
 import "./HeroFeedback.css";
 import "./Theme.css";
 import "./LanguageSelector.css";
+import "./HowItWorks.css";
+import "./ForDoctors.css";
 
 /* DROPDOWN FIX */
 import "./CustomSelectMenuFix.css";
@@ -33,6 +35,8 @@ import SmartSearchChat from "./SmartSearchChat.tsx";
 import BookingSuccessToast from "./BookingSuccessToast.tsx";
 import ThemeToggleMount from "./ThemeToggleMount.tsx";
 import LanguageSelectorMount from "./LanguageSelectorMount.tsx";
+import HowItWorksMount from "./HowItWorksMount.tsx";
+import ForDoctorsMount from "./ForDoctorsMount.tsx";
 import AppTranslationBridge from "./AppTranslationBridge.tsx";
 import FilterTranslationBridge from "./FilterTranslationBridge.tsx";
 import DoctorResultsTranslationBridge from "./DoctorResultsTranslationBridge.tsx";
@@ -48,6 +52,7 @@ createRoot(
   )!
 ).render(
   <StrictMode>
+
     <App />
 
     <SmartSearchChat />
@@ -57,6 +62,10 @@ createRoot(
     <ThemeToggleMount />
 
     <LanguageSelectorMount />
+
+    <HowItWorksMount />
+
+    <ForDoctorsMount />
 
     <AppTranslationBridge />
 
@@ -71,5 +80,6 @@ createRoot(
     <AuthTranslationBridge />
 
     <AppointmentsTranslationBridge />
+
   </StrictMode>
 );
